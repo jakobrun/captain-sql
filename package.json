@@ -1,0 +1,19 @@
+{
+  "name": "gandalf",
+  "version": "0.0.0",
+  "description": "sql client",
+  "main": "index.html",
+  "window": {
+    "toolbar": true
+  },
+  "devDependencies": {
+    "gaze": "~0.4.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "gh:jakobrun/gandalf.git"
+  },
+  "author": "Jakob Már Rúnarsson",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}

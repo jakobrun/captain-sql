@@ -1,0 +1,21 @@
+{
+  "name": "Gandalf",
+  "version": "0.0.0",
+  "authors": [
+    "jakobrun <jakob.runarsson@gmail.com>"
+  ],
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "less": "~1.6.1",
+    "codemirror": "~3.21.0"
+  }
+}
