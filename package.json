@@ -6,6 +6,9 @@
   "window": {
     "toolbar": true
   },
+  "dependencies": {
+    "jt400": "http://github.com/jakobrun/jt400/tarball/master"
+  },
   "devDependencies": {
     "gaze": "~0.4.3"
   },

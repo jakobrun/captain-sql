@@ -1,0 +1,15 @@
+<div id="editor"></div>
+<div>
+  <table class="table">
+    <thead class="table-head">
+      <tr>
+        <th style="width: 50px" ng-repeat="c in result.metadata.columns">{{c.name}}</th>
+      </tr>
+    </thead>
+    <tbody class="table-body">
+      <tr ng-repeat="row in result.data">
+        <td style="width: 50px" ng-repeat="value in row track by $index">{{value}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
