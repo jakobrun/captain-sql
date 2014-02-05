@@ -38,6 +38,9 @@ angular.module('gandalf', ['ngRoute'])
       }).fail(function(err) {
         alert('got error: ' + err);
       });
+      $scope.columnWidth = function (index) {
+          return Math.min(300, $scope.result.metadata.columns[index].precision*9);
+      };
 
     },
       cm = CodeMirror(document.getElementById('editor'), {
