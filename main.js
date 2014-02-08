@@ -1,5 +1,8 @@
 'use strict';
-var connection = require('./js/connection');
+var connection = require('./js/connection'),
+  fs = require('fs'),
+  tables = [],
+  settings = require(process.env.HOME + '/.gandalf/settings');
 
 angular.module('gandalf', ['ngRoute'])
   .config(function($routeProvider) {
@@ -13,10 +16,30 @@ angular.module('gandalf', ['ngRoute'])
       redirectTo: '/'
     });
   }).controller('LoginCtrl', function($scope, $location) {
+    $scope.errorMsg = '';
+    $scope.connections = settings.connections;
+
     $scope.login = function() {
+      //Load schema
+      tables = {};
+      $scope.conn.schema.forEach(function(schemaFile) {
+        fs.readFile(schemaFile, function(err, schema) {
+          if (err) {
+            console.log(err);
+          } else {
+            JSON.parse(schema).forEach(function(table) {
+              tables[table.table] = table.columns.map(function(column) {
+                return column.name;
+              });
+            });
+          }
+        });
+      });
+
+      //Connect
       connection.connect({
-        host: $scope.host,
-        user: $scope.username,
+        host: $scope.conn.host,
+        user: $scope.conn.user,
         password: $scope.password
       }).then(function() {
         $scope.$apply(function() {
@@ -38,11 +61,12 @@ angular.module('gandalf', ['ngRoute'])
       }).fail(function(err) {
         alert('got error: ' + err);
       });
-      $scope.columnWidth = function (index) {
-          return Math.min(300, $scope.result.metadata.columns[index].precision*9);
-      };
-
     },
+      assist = function() {
+        CodeMirror.showHint(cm, null, {
+          tables: tables
+        });
+      },
       cm = CodeMirror(document.getElementById('editor'), {
         value: 'SELECT * FROM ',
         mode: 'text/x-sql',
@@ -50,8 +74,12 @@ angular.module('gandalf', ['ngRoute'])
         autofocus: true,
         theme: 'base16-dark',
         extraKeys: {
-          'Ctrl-Enter': runQurey
+          'Ctrl-Enter': runQurey,
+          'Ctrl-Space': assist
         }
       });
+    $scope.columnWidth = function(index) {
+      return Math.min(300, $scope.result.metadata.columns[index].precision * 9);
+    };
 
   });

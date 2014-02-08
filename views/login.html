@@ -1,14 +1,19 @@
 <div class="error">$scope.errorMsg</div>
 <div>
-	<label for="host">Host:</label>
-	<input id="host" ng-modle="host" autofocus>
+  <select ng-model="conn" ng-options="c.name for c in connections" autofocus>
+    <option value="">-- choose conection --</option>
+  </select>
 </div>
 <div>
-	<label for="username">Username:</label>
-	<input id="username" ng-modle="username">
+  <label for="host">Host:</label>
+  <input id="host" ng-model="conn.host">
 </div>
 <div>
-	<label for="password">password:</label>
-	<input id="password" ng-modle="password" type="password">
+  <label for="username">Username:</label>
+  <input id="username" ng-model="conn.user">
+</div>
+<div>
+  <label for="password">password:</label>
+  <input id="password" ng-model="password" type="password">
 </div>
 <button ng-click="login()">Login</button>
