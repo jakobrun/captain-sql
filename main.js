@@ -1,5 +1,5 @@
 'use strict';
-var connection = require('./js/connection'),
+var connection = require('./js/remoteconnection'),
   fs = require('fs'),
   tables = [],
   settings = require(process.env.HOME + '/.gandalf/settings');
@@ -16,7 +16,6 @@ angular.module('gandalf', ['ngRoute'])
       redirectTo: '/'
     });
   }).controller('LoginCtrl', function($scope, $location) {
-    $scope.errorMsg = '';
     $scope.connections = settings.connections;
 
     $scope.login = function() {
@@ -56,10 +55,14 @@ angular.module('gandalf', ['ngRoute'])
     var runQurey = function(editor) {
       connection.execute(editor.getValue(' ')).then(function(result) {
         $scope.$apply(function() {
+          $scope.errorMsg = '';
           $scope.result = result;
         });
       }).fail(function(err) {
-        alert('got error: ' + err);
+        $scope.$apply(function () {
+          $scope.result = {};
+          $scope.errorMsg = err.message;
+        });
       });
     },
       assist = function() {
