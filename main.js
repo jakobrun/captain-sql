@@ -52,14 +52,19 @@ angular.module('gandalf', ['ngRoute'])
 
     };
   }).controller('SqlCtrl', function($scope) {
+    $scope.status = 'connected!';
     var runQurey = function(editor) {
+      $scope.$apply(function() {
+        $scope.status = 'executing...';
+      });
       connection.execute(editor.getValue(' ')).then(function(result) {
         $scope.$apply(function() {
           $scope.errorMsg = '';
+          $scope.status = 'done';
           $scope.result = result;
         });
       }).fail(function(err) {
-        $scope.$apply(function () {
+        $scope.$apply(function() {
           $scope.result = {};
           $scope.errorMsg = err.message;
         });
