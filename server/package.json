@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "dnode": "~1.2.0",
-    "jt400": "http://github.com/jakobrun/jt400/tarball/master"
+    "jt400": "http://github.com/tryggingamidstodin/jt400/tarball/master",
+    "JSONStream": "~0.8.0"
   }
 }

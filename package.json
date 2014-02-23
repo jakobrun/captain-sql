@@ -7,9 +7,9 @@
     "toolbar": false
   },
   "dependencies": {
-    "jt400": "http://github.com/jakobrun/jt400/tarball/master",
-    "dnode": "~1.2.0",
-    "q": "~1.0.0"
+    "jt400": "http://github.com/tryggingamidstodin/jt400/tarball/master",
+    "q": "~1.0.0",
+    "JSONStream": "~0.8.0"
   },
   "devDependencies": {
     "gaze": "~0.4.3"

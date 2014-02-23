@@ -16,6 +16,7 @@ angular.module('gandalf', ['ngRoute'])
       redirectTo: '/'
     });
   }).controller('LoginCtrl', function($scope, $location) {
+
     $scope.connections = settings.connections;
 
     $scope.login = function() {
@@ -52,20 +53,51 @@ angular.module('gandalf', ['ngRoute'])
 
     };
   }).controller('SqlCtrl', function($scope) {
+
     $scope.status = 'connected!';
-    var runQurey = function(editor) {
+    var batchSize = 100;
+    var sqlStream;
+
+    //Run query
+    var runQuery = function(editor) {
+      var t = Date.now(),
+        metaTime;
+      if (sqlStream) {
+        sqlStream.close();
+      }
       $scope.$apply(function() {
+        $scope.metadata = null;
+        $scope.data = [];
         $scope.status = 'executing...';
       });
-      connection.execute(editor.getValue(' ')).then(function(result) {
+
+      sqlStream = connection.executeAsStream(editor.getValue(' '));
+
+      var data = [];
+
+      sqlStream.on('data', function(row) {
+          if (!$scope.metadata) {
+            metaTime = Date.now() - t;
+            //Metadata
+            $scope.metadata = row;
+          } else {
+            //data
+            data.push(row);
+          }
+      });
+
+      sqlStream.on('end', function() {
+        var time = Date.now() - t;
+
         $scope.$apply(function() {
-          $scope.errorMsg = '';
-          $scope.status = 'done';
-          $scope.result = result;
+          $scope.data = data;
+          $scope.status = 'done, time: (' + metaTime + ', ' + time + ')';
         });
-      }).fail(function(err) {
+      });
+
+      //Error
+      sqlStream.on('error', function(err) {
         $scope.$apply(function() {
-          $scope.result = {};
           $scope.errorMsg = err.message;
         });
       });
@@ -82,12 +114,16 @@ angular.module('gandalf', ['ngRoute'])
         autofocus: true,
         theme: 'base16-dark',
         extraKeys: {
-          'Ctrl-Enter': runQurey,
+          'Ctrl-Enter': runQuery,
           'Ctrl-Space': assist
         }
       });
     $scope.columnWidth = function(index) {
-      return Math.min(300, $scope.result.metadata.columns[index].precision * 9);
+      if ($scope.metadata) {
+        return Math.min(300, $scope.metadata[index].precision * 9);
+      } else {
+        return 300;
+      }
     };
 
   });

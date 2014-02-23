@@ -1,34 +1,52 @@
 'use strict';
-var dnode = require('dnode'),
-    q = require('q'),
-    remote,
-    remoteConnect = function(deferred, options) {
-        remote.connect(options, function(err, res) {
-            if (err) {
-                deferred.reject(new Error(err));
-            } else {
-                deferred.resolve(res);
-            }
-        });
+var q = require('q'),
+  JSONStream = require('JSONStream'),
+  remote = require('net').connect(5004),
+  connection = {
+    connect: function(options) {
+      console.log('connecting...');
+      var deferred = q.defer(),
+        jsonStream = JSONStream.parse();
+      remote.write(JSON.stringify({
+        command: 'connect',
+        options: options
+      }));
+
+      remote.pipe(jsonStream);
+
+      jsonStream.on('root', function(result) {
+        console.log('connect result', result);
+        remote.unpipe(jsonStream);
+        deferred.resolve(result.connected);
+      });
+
+      jsonStream.on('error', function(err) {
+        deferred.reject(err);
+      });
+
+      return deferred.promise;
     },
-    connection = {
-        connect: function(options) {
-            console.log('connecting...');
-            var deferred = q.defer();
-            if (remote) {
-                remoteConnect(deferred, options);
-            } else {
-                var d = dnode.connect(5004);
-                d.on('remote', function(rem) {
-                    remote = rem;
-                    remoteConnect(deferred, options);
-                });
-            }
-            return deferred.promise;
-        },
-        execute: function(sqlStatement) {
-            return q.nfcall(remote.execute, sqlStatement);
-        }
-    };
+    executeAsStream: function(sqlStatement) {
+      var jsonStream = JSONStream.parse([true]);
+      remote.pipe(jsonStream);
+      remote.write(JSON.stringify({
+        command: 'execute',
+        sql: sqlStatement
+      }));
+
+      jsonStream.on('root', function() {
+        remote.unpipe(jsonStream);
+        jsonStream.emit('end');
+      });
+
+      jsonStream.close = function() {
+        remote.write(JSON.stringify({
+          command: 'close'
+        }));
+      };
+
+      return jsonStream;
+    }
+  };
 
 module.exports = connection;

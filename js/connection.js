@@ -8,8 +8,8 @@ var jt400 = require('jt400'),
                 return true;
             });
         },
-        execute: function(sqlStatement) {
-            return jt400.executeQuery(sqlStatement);
+        executeAsStream: function(sqlStatement) {
+            return jt400.executeAsStream(sqlStatement);
         }
     };
 
