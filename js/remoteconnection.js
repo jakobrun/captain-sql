@@ -1,51 +1,48 @@
 'use strict';
 var q = require('q'),
-  JSONStream = require('JSONStream'),
-  remote = require('net').connect(5004),
+  dnode = require('dnode'),
+  dConnection,
+  remote,
+  currentStream,
   connection = {
     connect: function(options) {
       console.log('connecting...');
-      var deferred = q.defer(),
-        jsonStream = JSONStream.parse();
-      remote.write(JSON.stringify({
-        command: 'connect',
-        options: options
-      }));
+      var deferred = q.defer();
+      dConnection = dnode.connect(5004);
 
-      remote.pipe(jsonStream);
-
-      jsonStream.on('root', function(result) {
-        console.log('connect result', result);
-        remote.unpipe(jsonStream);
-        deferred.resolve(result.connected);
+      dConnection.on('remote', function(r) {
+        console.log('got remote');
+        remote = r;
+        remote.useInMemory(function(err, res) {
+          if (err) {
+            deferred.reject(err);
+          } else {
+            deferred.resolve(res);
+          }
+        });
       });
-
-      jsonStream.on('error', function(err) {
-        deferred.reject(err);
+      dConnection.on('error', function(err) {
+        console.log('error', err);
       });
-
       return deferred.promise;
     },
-    executeAsStream: function(sqlStatement) {
-      var jsonStream = JSONStream.parse([true]);
-      remote.pipe(jsonStream);
-      remote.write(JSON.stringify({
-        command: 'execute',
-        sql: sqlStatement
-      }));
-
-      jsonStream.on('root', function() {
-        remote.unpipe(jsonStream);
-        jsonStream.emit('end');
-      });
-
-      jsonStream.close = function() {
-        remote.write(JSON.stringify({
-          command: 'close'
-        }));
+    execute: function(sqlStatement) {
+      var execuded = false,
+        metadatacb;
+      return {
+        metadata: function(cb) {
+          metadatacb = cb;
+        },
+        next: function(cb) {
+          if (execuded) {
+            remote.next(cb);
+            execuded = true;
+          } else {
+            remote.execute(sqlStatement, cb, metadatacb);
+          }
+        },
+        close: remote.close
       };
-
-      return jsonStream;
     }
   };
 

@@ -55,52 +55,43 @@ angular.module('gandalf', ['ngRoute'])
   }).controller('SqlCtrl', function($scope) {
 
     $scope.status = 'connected!';
-    var batchSize = 100;
-    var sqlStream;
 
     //Run query
     var runQuery = function(editor) {
-      var t = Date.now(),
-        metaTime;
-      if (sqlStream) {
-        sqlStream.close();
-      }
+      var t = Date.now();
+
       $scope.$apply(function() {
+        $scope.errorMsg = '';
         $scope.metadata = null;
         $scope.data = [];
         $scope.status = 'executing...';
       });
 
-      sqlStream = connection.executeAsStream(editor.getValue(' '));
+      var sqlStream = connection.execute(editor.getValue(' '));
 
-      var data = [];
-
-      sqlStream.on('data', function(row) {
-          if (!$scope.metadata) {
-            metaTime = Date.now() - t;
-            //Metadata
-            $scope.metadata = row;
+      sqlStream.metadata(function (err, metadata) {
+        $scope.$apply(function () {
+          if (err) {
+            $scope.errorMsg = err;
           } else {
-            //data
-            data.push(row);
+            $scope.metadata = metadata;
+          }          
+        });
+      });
+
+      sqlStream.next(function(err, dataBuffer, more) {
+        $scope.$apply(function() {
+          var time = Date.now() - t;
+          if (err) {
+            $scope.errorMsg = err;
+          } else {
+            $scope.data = $scope.data.concat(dataBuffer);
+            $scope.more = more;
           }
-      });
-
-      sqlStream.on('end', function() {
-        var time = Date.now() - t;
-
-        $scope.$apply(function() {
-          $scope.data = data;
-          $scope.status = 'done, time: (' + metaTime + ', ' + time + ')';
+          $scope.status = 'done, time: (' + time + ')';
         });
       });
 
-      //Error
-      sqlStream.on('error', function(err) {
-        $scope.$apply(function() {
-          $scope.errorMsg = err.message;
-        });
-      });
     },
       assist = function() {
         CodeMirror.showHint(cm, null, {
@@ -119,7 +110,7 @@ angular.module('gandalf', ['ngRoute'])
         }
       });
     $scope.columnWidth = function(index) {
-      if ($scope.metadata) {
+      if ($scope.metadata && $scope.metadata[index] && $scope.metadata[index].precision) {
         return Math.min(300, $scope.metadata[index].precision * 9);
       } else {
         return 300;

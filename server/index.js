@@ -1,44 +1,101 @@
 'use strict';
 var jt400 = require('jt400'),
-    JSONStream = require('JSONStream'),
-    net = require('net');
+  net = require('net'),
+  dnode = require('dnode');
 
+net.createServer(function(con) {
+  console.log('new connection');
+  var d = dnode({
 
-function connect(con, options) {
-    console.log('connecting...');
-    jt400.configure(options);
-    jt400.query('SELECT * FROM SYSIBM.SYSDUMMY1').then(function(res) {
+    connect: function(options, cb) {
+      console.log('connecting...');
+      jt400Instance = jt400.configure(options);
+      jt400Instance.query('SELECT * FROM SYSIBM.SYSDUMMY1').then(function(res) {
         console.log('connected!!');
-        con.write(JSON.stringify({connected: true}));
-    }, function(err) {
+        cb(null, true);
+      }, function(err) {
         console.log('error', err);
-        con.emit('error', err);
-    });
-    return jt400;
-}
+        cb(err);
+      });
+    },
 
-net.createServer(function (con) {
-    var dbConnection,
-        jdbcStream;
-    console.log('connection started', con.localAddress, con.remoteAddress);
+    useInMemory: function(cb) {
+      jt400Instance = jt400.useInMemoryDb();
+      require('./fakedata')(jt400Instance).then(function() {
+          cb(null, true);
+        }, cb);
+    },
 
-    con.pipe(JSONStream.parse()).on('data', function (data) {
-        if(data.command === 'connect') {
-            dbConnection = connect(con, data.options);
-        } else if(data.command === 'execute') {
-            console.log('execute', data.sql);
-            if(jdbcStream) {
-                jdbcStream.close();
-            }
-            jdbcStream = dbConnection.executeAsStream({sql: data.sql, metadata: true, objectMode: false});
-            jdbcStream.pipe(con, {end: false});
-        } else if(data.command === 'close' && jdbcStream) {
-            jdbcStream.close();
+    execute: function(sql, cb, metadatacb) {
+      var buffer = [],
+        callback = cb,
+        first = true;
+
+      console.log('execute', sql);
+
+      //close previous stream.
+      if (stream) {
+        stream.close();
+      }
+
+      // execute query
+      try  {
+        stream = jt400Instance.executeAsStream({
+          sql: sql,
+          bufferSize: 30,
+          metadata: true,
+          objectMode: true
+        });
+      } catch (err) {
+        cb(err);
+        return;
+      }
+
+      //on data
+      stream.on('data', function(data) {
+        if (first && metadatacb) {
+          console.log('metadata', data);
+          metadatacb(null, data);
+        } else {
+          buffer.push(data);
+          if (buffer.length >= 31) {
+            console.log('callback but more data');
+            callback(null, buffer.splice(0, 30), true);
+            stream.pause();
+          }
         }
-    });
+        first = false;
+      });
 
-    con.on('end', function () {
-        console.log('connection ended');
-    });
-}).listen(5004);
+      //on end
+      stream.on('end', function() {
+        console.log('callback end', buffer);
+        callback(null, buffer, false);
+        stream = null;
+      });
 
+      //on error
+      stream.on('error', function(err) {
+        callback(err);
+      });
+    },
+
+    next: function(cb) {
+      console.log('resume');
+      callback = cb;
+      stream.resume();
+    }
+  }),
+    callback,
+    jt400Instance,
+    stream;
+
+
+  con.on('end', function() {
+    console.log('connection ended');
+  });
+
+  con.pipe(d).pipe(con);
+}).listen(5004, function() {
+  console.log('listening on port 5004');
+});
