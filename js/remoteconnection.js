@@ -36,9 +36,9 @@ var q = require('q'),
         next: function(cb) {
           if (execuded) {
             remote.next(cb);
-            execuded = true;
           } else {
             remote.execute(sqlStatement, cb, metadatacb);
+            execuded = true;
           }
         },
         close: remote.close

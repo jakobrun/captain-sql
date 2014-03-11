@@ -1,17 +1,17 @@
 <div id="editor" class="editor"></div>
 <div class="result table">
-    <div class="error">{{errorMsg}}</div>
-    <table class="table-head">
-        <tr>
-            <th style="width: {{columnWidth($index)}}px" ng-repeat="c in metadata" title="{{c.name}}">{{c.name}}</th>
-        </tr>
+  <div class="error">{{errorMsg}}</div>
+  <table class="table-head">
+    <tr>
+      <th style="width: {{columnWidth($index)}}px" ng-repeat="c in metadata" title="{{c.name}}">{{c.name}}</th>
+    </tr>
+  </table>
+  <div class="table-body" id="table-body" gd-scroll="showMore()">
+    <table class="table-body-rows">
+      <tr ng-repeat="row in data">
+        <td style="width: {{columnWidth($index)}}px" ng-repeat="value in row track by $index">{{value}}</td>
+      </tr>
     </table>
-    <div class="table-body" id="table-body">
-        <table class="table-body-rows">
-            <tr ng-repeat="row in data">
-                <td style="width: {{columnWidth($index)}}px" ng-repeat="value in row track by $index">{{value}}</td>
-            </tr>
-        </table>
-    </div>
+  </div>
 </div>
 <div class="statusbar">{{status}}</div>

@@ -23,14 +23,17 @@ net.createServer(function(con) {
       jt400Instance = jt400.useInMemoryDb();
       require('./fakedata')(jt400Instance).then(function() {
           cb(null, true);
-        }, cb);
+        }, function (err) {
+          console.log('error', err);
+          cb(null, true);
+        });
     },
 
     execute: function(sql, cb, metadatacb) {
       var buffer = [],
-        callback = cb,
         first = true;
 
+      callback = cb;
       console.log('execute', sql);
 
       //close previous stream.
@@ -42,7 +45,7 @@ net.createServer(function(con) {
       try  {
         stream = jt400Instance.executeAsStream({
           sql: sql,
-          bufferSize: 30,
+          bufferSize: 230,
           metadata: true,
           objectMode: true
         });
@@ -58,9 +61,9 @@ net.createServer(function(con) {
           metadatacb(null, data);
         } else {
           buffer.push(data);
-          if (buffer.length >= 31) {
+          if (buffer.length >= 131) {
             console.log('callback but more data');
-            callback(null, buffer.splice(0, 30), true);
+            callback(null, buffer.splice(0, 131), true);
             stream.pause();
           }
         }
@@ -81,6 +84,9 @@ net.createServer(function(con) {
     },
 
     next: function(cb) {
+      if(!stream) {
+        return;
+      }
       console.log('resume');
       callback = cb;
       stream.resume();

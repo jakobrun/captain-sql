@@ -67,15 +67,15 @@ angular.module('gandalf', ['ngRoute'])
         $scope.status = 'executing...';
       });
 
-      var sqlStream = connection.execute(editor.getValue(' '));
+      sqlStream = connection.execute(editor.getValue(' '));
 
-      sqlStream.metadata(function (err, metadata) {
-        $scope.$apply(function () {
+      sqlStream.metadata(function(err, metadata) {
+        $scope.$apply(function() {
           if (err) {
             $scope.errorMsg = err;
           } else {
             $scope.metadata = metadata;
-          }          
+          }
         });
       });
 
@@ -108,7 +108,25 @@ angular.module('gandalf', ['ngRoute'])
           'Ctrl-Enter': runQuery,
           'Ctrl-Space': assist
         }
+      }),
+      sqlStream;
+
+    $scope.showMore = function() {
+      if(!$scope.more) {
+        return;
+      }
+      sqlStream.next(function(err, dataBuffer, more) {
+        $scope.$apply(function() {
+          if (err) {
+            $scope.errorMsg = err;
+          } else {
+            $scope.data = $scope.data.concat(dataBuffer);
+            $scope.more = more;
+          }
+        });
       });
+    };
+
     $scope.columnWidth = function(index) {
       if ($scope.metadata && $scope.metadata[index] && $scope.metadata[index].precision) {
         return Math.min(300, $scope.metadata[index].precision * 9);
@@ -117,4 +135,16 @@ angular.module('gandalf', ['ngRoute'])
       }
     };
 
+  })
+  .directive('gdScroll', function() {
+    return {
+      link: function(scope, element, attrs) {
+        element.on('scroll', function (e) {
+          if(element[0].scrollTop + element[0].clientHeight + 30 >= element[0].scrollHeight &&
+            element[0].clientHeight < element[0].scrollHeight){
+            scope.$eval(attrs.gdScroll);
+          }
+        });
+      }
+    };
   });
