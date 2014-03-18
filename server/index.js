@@ -45,7 +45,7 @@ net.createServer(function(con) {
       try  {
         stream = jt400Instance.executeAsStream({
           sql: sql,
-          bufferSize: 230,
+          bufferSize: 130,
           metadata: true,
           objectMode: true
         });

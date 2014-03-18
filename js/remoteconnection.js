@@ -11,15 +11,20 @@ var q = require('q'),
       dConnection = dnode.connect(5004);
 
       dConnection.on('remote', function(r) {
-        console.log('got remote');
-        remote = r;
-        remote.useInMemory(function(err, res) {
+        var cb = function(err, res) {
           if (err) {
             deferred.reject(err);
           } else {
             deferred.resolve(res);
           }
-        });
+        };
+        console.log('got remote');
+        remote = r;
+        if (options.host === 'hsql:inmemory') {
+          remote.useInMemory(cb);
+        } else {
+          remote.connect(options, cb);
+        }
       });
       dConnection.on('error', function(err) {
         console.log('error', err);

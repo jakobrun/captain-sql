@@ -22,19 +22,21 @@ angular.module('gandalf', ['ngRoute'])
     $scope.login = function() {
       //Load schema
       tables = {};
-      $scope.conn.schema.forEach(function(schemaFile) {
-        fs.readFile(schemaFile, function(err, schema) {
-          if (err) {
-            console.log(err);
-          } else {
-            JSON.parse(schema).forEach(function(table) {
-              tables[table.table] = table.columns.map(function(column) {
-                return column.name;
+      if ($scope.conn.schema) {
+        $scope.conn.schema.forEach(function(schemaFile) {
+          fs.readFile(schemaFile, function(err, schema) {
+            if (err) {
+              console.log(err);
+            } else {
+              JSON.parse(schema).forEach(function(table) {
+                tables[table.table] = table.columns.map(function(column) {
+                  return column.name;
+                });
               });
-            });
-          }
+            }
+          });
         });
-      });
+      }
 
       //Connect
       connection.connect({
@@ -112,7 +114,7 @@ angular.module('gandalf', ['ngRoute'])
       sqlStream;
 
     $scope.showMore = function() {
-      if(!$scope.more) {
+      if (!$scope.more) {
         return;
       }
       sqlStream.next(function(err, dataBuffer, more) {
@@ -139,9 +141,9 @@ angular.module('gandalf', ['ngRoute'])
   .directive('gdScroll', function() {
     return {
       link: function(scope, element, attrs) {
-        element.on('scroll', function (e) {
-          if(element[0].scrollTop + element[0].clientHeight + 30 >= element[0].scrollHeight &&
-            element[0].clientHeight < element[0].scrollHeight){
+        element.on('scroll', function(e) {
+          if (element[0].scrollTop + element[0].clientHeight + 30 >= element[0].scrollHeight &&
+            element[0].clientHeight < element[0].scrollHeight) {
             scope.$eval(attrs.gdScroll);
           }
         });
