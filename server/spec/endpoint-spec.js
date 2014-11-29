@@ -25,4 +25,21 @@ describe('endpoint', function () {
 			done();
 		});
 	});
+
+	it('should export schema', function (done) {
+		var stream = instance.exportSchema({schema: 'PUBLIC'});
+		var data = '';
+		stream.on('data', function (d) {
+			data += d;
+		});
+		stream.on('end', function () {
+			var tables = JSON.parse(data);
+			expect(tables.length).toBe(2);
+			expect(tables[0].columns.length).toBe(5);
+			done();
+		});
+		stream.on('error', function (err) {
+			done(err);
+		});
+	});
 });

@@ -36,5 +36,7 @@ function createCompanies (db) {
 }
 
 module.exports = function(db) {
-  return q.all([createPersons(db), createCompanies(db)]);
+  return createPersons(db).then(function () {
+    return createCompanies(db);
+  });
 };

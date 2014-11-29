@@ -1,5 +1,6 @@
 'use strict';
-var jt400 = require('jt400');
+var jt400 = require('jt400'),
+  exportSchema = require('./export-schema');
 
 module.exports = function() {
   var callback, jt400Instance, stream;
@@ -18,11 +19,12 @@ module.exports = function() {
     },
 
     useInMemory: function(cb) {
+      console.log('use in memory db');
       jt400Instance = jt400.useInMemoryDb();
       require('./fakedata')(jt400Instance).then(function() {
         cb(null, true);
       }, function(err) {
-        console.log('error', err);
+        //console.log('error', err);
         cb(null, true);
       });
     },
@@ -88,6 +90,10 @@ module.exports = function() {
       console.log('resume');
       callback = cb;
       stream.resume();
+    },
+
+    exportSchema: function (opt) {
+      return exportSchema(jt400Instance, opt);
     }
   };
 };
