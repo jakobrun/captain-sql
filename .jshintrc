@@ -9,5 +9,8 @@
   "undef": true,
   "boss": true,
   "eqnull": true,
-  "node": true
+  "node": true,
+  "maxdepth": 2,
+  "maxstatements": 8,
+  "maxcomplexity": 4
 }
