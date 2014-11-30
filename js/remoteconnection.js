@@ -27,7 +27,7 @@ var q = require('q'),
         }
       });
       dConnection.on('error', function(err) {
-        console.log('error', err);
+        deferred.reject(err);
       });
       return deferred.promise;
     },

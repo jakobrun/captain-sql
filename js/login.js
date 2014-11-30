@@ -1,8 +1,8 @@
 'use strict';
-var settings = require(process.env.HOME + '/.gandalf/settings'),
-	connection = require('./remoteconnection');
+var settings = require(process.env.HOME + '/.gandalf/settings');
 
-module.exports = function(m) {
+module.exports = function(m, connection) {
+	var errorMsg = m.prop('');
 	var conn = {
 		host: m.prop(''),
 		username: m.prop(''),
@@ -18,6 +18,7 @@ module.exports = function(m) {
 	};
 
 	var login = function () {
+		m.startComputation();
 		//Connect
     connection.connect({
       host: conn.host(),
@@ -26,18 +27,15 @@ module.exports = function(m) {
     }).then(function() {
     	m.route('/sql');
     }).fail(function(err) {
-    	//@TODO show error message
-    	console.log(err);
-    });
+    	errorMsg(err.message);
+    }).then(m.endComputation);
 	};
 
   return {
     controller: function() {
     },
     view: function() {
-      return [m('div', {
-          'class': 'error'
-        }),
+      return [m('div', {'class': 'error'}, errorMsg()),
         m('div', [
           m('select', {autofocus: 'true', onchange: selectConn}, [
             m('option', {value: ''}, '-- choose conection --')
@@ -47,15 +45,15 @@ module.exports = function(m) {
         ]),
         m('div', [
           m('label', {'for': 'host'}, 'Host:'),
-          m('input', {'id': 'host', value: conn.host(), onchange: m.withAttr(conn.host)})
+          m('input', {'id': 'host', value: conn.host(), onchange: m.withAttr('value', conn.host)})
         ]),
         m('div', [
           m('label', {'for': 'username'}, 'Username:'),
-          m('input', {'id': 'username', value: conn.username(), onchange: m.withAttr(conn.username)})
+          m('input', {'id': 'username', value: conn.username(), onchange: m.withAttr('value', conn.username)})
         ]),
         m('div', [
           m('label', {'for': 'password'}, 'Password:'),
-          m('input', {'id': 'password', type: 'password', value: conn.password(), onchange: m.withAttr(conn.password)})
+          m('input', {'id': 'password', type: 'password', value: conn.password(), onchange: m.withAttr('value', conn.password)})
         ]),
         m('button', {onclick: login}, 'Login')
       ];
