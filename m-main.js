@@ -1,8 +1,8 @@
-/*global m, CodeMirror*/
+/*global m, CodeMirror, createLoginModule, createSqlClientModule*/
 'use strict';
 var connection = require('./js/remoteconnection'),
-  loginModule = require('./js/login')(m, connection),
-  sqlclient = require('./js/sqlclient')(m, CodeMirror, connection);
+  loginModule = createLoginModule(m, connection),
+  sqlclient = createSqlClientModule(m, CodeMirror, connection);
 
 m.route(document.getElementById('body'), '/login', {
   '/login': loginModule,

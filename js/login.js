@@ -1,7 +1,7 @@
-'use strict';
-var settings = require(process.env.HOME + '/.gandalf/settings');
 
-module.exports = function(m, connection) {
+var createLoginModule = function(m, connection) {
+  'use strict';
+  var settings = require(process.env.HOME + '/.gandalf/settings');
 	var errorMsg = m.prop('');
 	var conn = {
 		host: m.prop(''),

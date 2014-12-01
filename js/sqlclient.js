@@ -1,6 +1,6 @@
-'use strict';
 
-module.exports = function(m, codeMirror, connection) {
+var createSqlClientModule = function(m, codeMirror, connection) {
+  'use strict';
   var sqlEditor = function() {
       return function(element, isInitialized) {
         if (!isInitialized) {
@@ -87,7 +87,7 @@ module.exports = function(m, codeMirror, connection) {
     },
     metadata = m.prop([]),
     data = m.prop([]),
-    status = m.prop(''),
+    status = m.prop('connected!'),
     errorMsg = m.prop(''),
     isMore = false,
     sqlStream, cm;

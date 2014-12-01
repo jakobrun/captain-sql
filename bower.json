@@ -15,7 +15,6 @@
     "tests"
   ],
   "dependencies": {
-    "less": "~1.6.1",
     "codemirror": "~3.21.0",
     "angular-route": "~1.2.10",
     "angular": "~1.2.10",
