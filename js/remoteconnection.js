@@ -48,6 +48,11 @@ var q = require('q'),
         },
         close: remote.close
       };
+    },
+    exportSchemaToFile: function (opt) {
+      remote.exportSchemaToFile(opt, function () {
+        console.log('schema to file done');
+      });
     }
   };
 

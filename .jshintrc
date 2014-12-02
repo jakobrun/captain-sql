@@ -12,6 +12,6 @@
   "node": true,
   "browser": true,
   "maxdepth": 2,
-  "maxstatements": 8,
+  "maxstatements": 12,
   "maxcomplexity": 4
 }

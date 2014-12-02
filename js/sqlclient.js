@@ -1,4 +1,5 @@
-var createSqlClientModule = function(m, codeMirror, connection) {
+var fs = require('fs');
+var createSqlClientModule = function(m, codeMirror, connection, settings) {
   'use strict';
   var sqlEditor = function() {
       return function(element, isInitialized) {
@@ -83,7 +84,9 @@ var createSqlClientModule = function(m, codeMirror, connection) {
       });
     },
     assist = function() {
-
+      codeMirror.showHint(cm, null, {
+        tables: tables
+      });
     },
     actionModel = {
       searchValue: m.prop(''),
@@ -135,18 +138,43 @@ var createSqlClientModule = function(m, codeMirror, connection) {
         run: assist
       }, {
         name: 'Export schema',
-        run: assist
-      }, ]
+        run: function() {
+          connection.exportSchemaToFile({
+            schema: connSettings.schema[0].name,
+            file: connSettings.schema[0].file
+          });
+        }
+      }]
     },
     metadata = m.prop([]),
     data = m.prop([]),
     status = m.prop('connected!'),
     errorMsg = m.prop(''),
     isMore = false,
-    sqlStream, cm;
+    tables = {},
+    sqlStream, cm, connSettings;
 
   return {
-    controller: function() {},
+    controller: function() {
+      var connName = m.route.param('conn');
+      connSettings = settings.connections.filter(function (c) {
+        return c.name === connName;
+      })[0];
+      connSettings.schema.forEach(function (schema) {
+        fs.readFile(schema.file, function  (err, schemaContent) {
+          if(err) {
+            console.log(err);
+          } else {
+            JSON.parse(schemaContent).forEach(function (table) {
+              tables[table.table] = table.columns.map(function (column) {
+                return column.name;
+              });
+            });
+          }
+        });
+      });
+      status('connected to ' + connSettings.name + '!');
+    },
     view: function() {
       return [
         m('div', {

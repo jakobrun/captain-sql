@@ -1,9 +1,9 @@
 
-var createLoginModule = function(m, connection) {
+var createLoginModule = function(m, connection, settings) {
   'use strict';
-  var settings = require(process.env.HOME + '/.gandalf/settings');
 	var errorMsg = m.prop('');
 	var conn = {
+    name: m.prop(''),
 		host: m.prop(''),
 		username: m.prop(''),
 		password: m.prop('')
@@ -14,6 +14,7 @@ var createLoginModule = function(m, connection) {
 		if(i>-1) {
 		  conn.host(settings.connections[i].host);
 		  conn.username(settings.connections[i].user);
+      conn.name(settings.connections[i].name);
 		}
 	};
 
@@ -25,7 +26,7 @@ var createLoginModule = function(m, connection) {
       user: conn.user,
       password: conn.password()
     }).then(function() {
-    	m.route('/sql');
+    	m.route('/sql/' + conn.name());
     }).fail(function(err) {
     	errorMsg(err.message);
     }).then(m.endComputation);

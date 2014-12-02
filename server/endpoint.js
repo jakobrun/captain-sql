@@ -1,5 +1,6 @@
 'use strict';
 var jt400 = require('jt400'),
+  fs = require('fs'),
   exportSchema = require('./export-schema');
 
 module.exports = function() {
@@ -90,6 +91,12 @@ module.exports = function() {
       console.log('resume');
       callback = cb;
       stream.resume();
+    },
+
+    exportSchemaToFile: function(opt, cb) {
+      var stream = exportSchema(jt400Instance, opt);
+      stream.pipe(fs.createWriteStream(opt.file));
+      stream.on('end', cb);
     },
 
     exportSchema: function (opt) {
