@@ -1,7 +1,14 @@
-@color: #eee;
+@import "varibles.less";
+body{
+	background-color: @bg-color;
+	color: @color;
+}
+* {
+	box-sizing: border-box;
+}
 @import "table.less";
 @import "status.less";
-body{
-	background-color: #333;
-	color: @color;
+@import "p-menu.less";
+.hidden{
+	display: none;
 }
