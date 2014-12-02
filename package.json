@@ -2,7 +2,7 @@
   "name": "gandalf",
   "version": "0.0.0",
   "description": "sql client",
-  "main": "m-index.html",
+  "main": "index.html",
   "window": {
     "toolbar": false
   },
