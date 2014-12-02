@@ -16,8 +16,6 @@
   ],
   "dependencies": {
     "codemirror": "~3.21.0",
-    "angular-route": "~1.2.10",
-    "angular": "~1.2.10",
     "mithriljs": "~0.1.25"
   }
 }
