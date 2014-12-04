@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "dnode": "^1.2.0",
-    "jt400": "http://github.com/tryggingamidstodin/jt400/tarball/master",
+    "jt400": "http://github.com/jakobrun/jt400/tarball/master",
     "q": "~1.0.0"
   },
   "devDependencies": {

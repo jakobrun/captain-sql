@@ -1,5 +1,4 @@
-var fs = require('fs');
-var createSqlClientModule = function(m, codeMirror, connection, settings) {
+var createSqlClientModule = function(m, fs, codeMirror, connection, settings, bookmarkModule) {
   'use strict';
   var sqlEditor = function() {
       return function(element, isInitialized) {
@@ -84,6 +83,7 @@ var createSqlClientModule = function(m, codeMirror, connection, settings) {
       });
     },
     assist = function() {
+      cm.focus();
       codeMirror.showHint(cm, null, {
         tables: tables
       });
@@ -120,7 +120,7 @@ var createSqlClientModule = function(m, codeMirror, connection, settings) {
         if (e.keyCode === 13 && list.length) {
           list[actionModel.selectedIndex()].run();
           actionModel.toggleShow();
-          cm.focus();
+          //cm.focus();
         }
       },
       getList: function() {
@@ -132,10 +132,16 @@ var createSqlClientModule = function(m, codeMirror, connection, settings) {
         name: 'Run query (ctrl + Enter)',
         run: function() {
           runQuery(cm);
+          cm.focus();
         }
       }, {
         name: 'Content assist (ctrl + Space)',
         run: assist
+      }, {
+        name: 'Bookmark',
+        run: function () {
+          bookmarkModule.show(cm.getSelection() || cm.getValue());
+        }
       }, {
         name: 'Export schema',
         run: function() {
@@ -216,7 +222,7 @@ var createSqlClientModule = function(m, codeMirror, connection, settings) {
           'class': 'statusbar'
         }, status()),
         m('div', {
-          'class': 'p-menu' + (actionModel.show() ? '' : ' hidden')
+          'class': 'p-menu popup' + (actionModel.show() ? '' : ' hidden')
         }, [
           m('input', {
             'class': 'p-menu-search',
@@ -233,7 +239,8 @@ var createSqlClientModule = function(m, codeMirror, connection, settings) {
               'class': 'p-menu-item' + (index === actionModel.selectedIndex() ? ' p-menu-item-selected' : '')
             }, item.name);
           }))
-        ])
+        ]),
+        bookmarkModule.view()
       ];
     }
   };
