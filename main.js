@@ -1,6 +1,6 @@
 /*global m, CodeMirror, createLoginModule, createSqlClientModule, createBookmarkModel*/
 'use strict';
-var connection = require('./js/remoteconnection'),
+var connection = require('./js/connection'),
   fs = require('fs'),
   settings = require(process.env.HOME + '/.gandalf/settings'),
   loginModule = createLoginModule(m, connection, settings),
