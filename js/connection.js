@@ -1,22 +1,22 @@
-var masterJt400 = require('jt400'),
+var jt400 = require('jt400'),
   fs = require('fs'),
   exportSchema = require('../server/export-schema'),
   stream,
-  jt400,
+  db,
   connection = {
     connect: function(options) {
       console.log('connecting...');
       if (options.host === 'hsql:inmemory') {
-        jt400 = masterJt400.useInMemoryDb();
-        return require('../server/fakedata')(jt400).then(function() {
+        db = jt400.useInMemoryDb();
+        return require('../server/fakedata')(db).then(function() {
           console.log('connected to inmemory hsql!!');
           return true;
         }, function() {
           //ignore error
         });
       } else {
-        jt400.configure(options);
-        return jt400.query('SELECT * FROM SYSIBM.SYSDUMMY1').then(function(res) {
+        db = jt400.configure(options);
+        return db.query('SELECT * FROM SYSIBM.SYSDUMMY1').then(function(res) {
           console.log('connected!!');
           return true;
         });
@@ -43,7 +43,7 @@ var masterJt400 = require('jt400'),
           if (!stream && first) {
             // execute query
             try  {
-              stream = jt400.executeAsStream({
+              stream = db.executeAsStream({
                 sql: sqlStatement,
                 bufferSize: 130,
                 metadata: true,
@@ -82,7 +82,7 @@ var masterJt400 = require('jt400'),
       };
     },
     exportSchemaToFile: function(opt) {
-      var stream = exportSchema(jt400, opt);
+      var stream = exportSchema(db, opt);
       stream.pipe(fs.createWriteStream(opt.file));
       stream.on('end', function() {
         console.log('shema to file done');
