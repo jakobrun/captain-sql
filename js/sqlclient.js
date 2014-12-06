@@ -172,9 +172,7 @@ var createSqlClientModule = function(m, fs, codeMirror, connection, settings, bo
             console.log(err);
           } else {
             JSON.parse(schemaContent).forEach(function (table) {
-              tables[table.table] = table.columns.map(function (column) {
-                return column.name;
-              });
+              tables[table.table] = table;
             });
           }
         });

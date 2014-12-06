@@ -4,7 +4,8 @@
   "description": "sql client",
   "main": "index.html",
   "window": {
-    "toolbar": false
+    "toolbar": true,
+    "transparent": true
   },
   "dependencies": {
     "dnode": "^1.2.0",
