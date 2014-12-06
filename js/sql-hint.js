@@ -1,13 +1,18 @@
 /*global CodeMirror*/
-(function () {
-  "use strict";
+function createSqlHint(pubsub) {
+  'use strict';
 
   var tables,
     keywords,
+    bookmarks = [],
     CONS = {
       QUERY_DIV: ";",
       ALIAS_KEYWORD: "AS"
     };
+
+  pubsub.on('bookmarks', function (bookm) {
+    bookmarks = bookm;
+  });
 
   function getKeywords(editor) {
     var mode = editor.doc.modeOption;
@@ -159,12 +164,27 @@
         }
       };
     };
-    var tableMatcher = match(search, getTableName);
 
     return keys(keywords).filter(keyWordMatcher).map(function (w) {
       return {text: w.toUpperCase(), displayText: w.toUpperCase()};
-    }).concat(values(tables).filter(tableMatcher).map(tableToHint));
+    }).concat(values(tables).filter(match(search, getTableName)).map(tableToHint));
 
+  }
+
+  function bookmarkCompletion (search) {
+    var getName = function (obj) {
+      return obj.name;
+    };
+
+    return bookmarks.filter(match(search, getName)).map(function (bookmark) {
+      return {
+        text: bookmark.value,
+        render: function (el) {
+          el.innerHTML = '<div class="hint-bookmark">' + bookmark.name +
+            '</div><div class="hint-remarks">' + bookmark.description + '</div>';
+        }
+      };
+    });
   }
 
   function sqlHint(editor, options) {
@@ -177,7 +197,7 @@
     if(search.lastIndexOf('.') === 0) {
       result = columnCompletion(editor);
     } else {
-      result = tableAndKeywordCompletion(search);
+      result = tableAndKeywordCompletion(search).concat(bookmarkCompletion(search));
     }
 
     return {
@@ -188,4 +208,4 @@
   }
 
   CodeMirror.registerHelper("hint", "sql", sqlHint);
-})();
+}

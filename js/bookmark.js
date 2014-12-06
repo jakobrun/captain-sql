@@ -1,4 +1,4 @@
-var createBookmarkModel = function(m, fs) {
+var createBookmarkModel = function(m, fs, pubsub) {
   'use strict';
   var show = false,
     description = m.prop(''),
@@ -29,6 +29,7 @@ var createBookmarkModel = function(m, fs) {
 
   fs.readFile(fileName, function (err, data) {
     bookmarks = err ? [] : JSON.parse(data);
+    pubsub.emit('bookmarks', bookmarks);
   });
 
   document.addEventListener('keyup', function (e) {
