@@ -8,7 +8,7 @@ var createSqlClientModule = function(m, fs, codeMirror, connection, settings, bo
             mode: 'text/x-sql',
             lineNumbers: true,
             autofocus: true,
-            theme: 'base16-dark',
+            theme: 'gandalf',
             extraKeys: {
               'Ctrl-Enter': runQuery,
               'Ctrl-Space': assist,
