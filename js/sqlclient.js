@@ -177,7 +177,7 @@ var createSqlClientModule = function(m, fs, codeMirror, connection, settings, bo
           }
         });
       });
-      status('connected to ' + connSettings.name + '!');
+      status('Connected to ' + connSettings.name + '!');
     },
     view: function() {
       return [
@@ -185,6 +185,7 @@ var createSqlClientModule = function(m, fs, codeMirror, connection, settings, bo
           config: sqlEditor(),
           'class': 'editor'
         }),
+        m('div', {'class': 'result-gutter'}),
         m('div', {
           'class': 'result table'
         }, [
