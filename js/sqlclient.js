@@ -55,7 +55,7 @@ var createSqlClientModule = function(m, fs, codeMirror, connection, settings, bo
     },
     columnWidth = function function_name(index) {
       if (metadata()[index] && metadata()[index].precision) {
-        return Math.min(300, metadata()[index].precision * 9);
+        return Math.min(300, 12 + (metadata()[index].precision * 9));
       } else {
         return 300;
       }
@@ -167,7 +167,9 @@ var createSqlClientModule = function(m, fs, codeMirror, connection, settings, bo
         return c.name === connName;
       })[0];
       connSettings.schema.forEach(function (schema) {
+        var t = Date.now();
         fs.readFile(schema.file, function  (err, schemaContent) {
+          console.log('Load schema:', (Date.now() - t));
           if(err) {
             console.log(err);
           } else {

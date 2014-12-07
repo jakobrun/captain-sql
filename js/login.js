@@ -31,6 +31,16 @@ var createLoginModule = function(m, connection, settings) {
     }).then(m.endComputation);
   };
 
+  var loginOnEnter = function (prop) {
+    return function (e) {
+      if(e.keyCode === 13) {
+        login();
+      } else {
+        prop(e.target.value);
+      }
+    };
+  };
+
   return {
     controller: function() {},
     view: function() {
@@ -64,7 +74,7 @@ var createLoginModule = function(m, connection, settings) {
             'id': 'host',
             'class': 'h-fill',
             value: conn.host(),
-            onchange: m.withAttr('value', conn.host)
+            onkeyup: loginOnEnter(conn.host)
           })
         ]),
         m('div', {'class': 'form-element'}, [
@@ -75,7 +85,7 @@ var createLoginModule = function(m, connection, settings) {
             'id': 'username',
             'class': 'h-fill',
             value: conn.username(),
-            onchange: m.withAttr('value', conn.username)
+            onkeyup: loginOnEnter(conn.username)
           })
         ]),
         m('div', {'class': 'form-element'}, [
@@ -87,7 +97,7 @@ var createLoginModule = function(m, connection, settings) {
             'class': 'h-fill',
             type: 'password',
             value: conn.password(),
-            onchange: m.withAttr('value', conn.password)
+            onkeyup: loginOnEnter(conn.password)
           })
         ]),
         m('div', {'class': 'form-element form-btn-bar'}, [
