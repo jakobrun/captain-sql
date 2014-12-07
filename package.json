@@ -4,7 +4,7 @@
   "description": "sql client",
   "main": "index.html",
   "window": {
-    "toolbar": false,
+    "toolbar": true,
     "frame": true,
     "transparent": true
   },

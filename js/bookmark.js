@@ -50,13 +50,13 @@ var createBookmarkModel = function(m, fs, pubsub) {
     },
     view: function() {
       return m('div', {
-        'class': 'container popup' + (show ? '' : ' hidden')
+        'class': 'container popup form' + (show ? '' : ' hidden')
       }, [
         m('h2', {
           'class': 'popup-title'
         }, 'Add bookmark'),
         m('div', {
-          'class': ''
+          'class': 'form-element'
         }, [
           m('label', 'Name:'),
           m('input', {
@@ -70,7 +70,7 @@ var createBookmarkModel = function(m, fs, pubsub) {
           })
         ]),
         m('div', {
-          'class': ''
+          'class': 'form-element'
         }, [
           m('label', 'Description:'),
           m('textarea', {
