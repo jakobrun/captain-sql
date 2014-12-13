@@ -142,7 +142,7 @@ function createSqlHint(pubsub) {
             table = previousWord;
         }
         if( wordUpperCase !== CONS.ALIAS_KEYWORD ){
-          previousWord = word;
+          previousWord = wordUpperCase;
         }
       });
       return !table;
