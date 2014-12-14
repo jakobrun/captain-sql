@@ -1,4 +1,4 @@
-var createSqlClientModule = function(m, fs, codeMirror, connection, settings, bookmarkModule) {
+gandalf.createSqlClientModule = function(m, fs, codeMirror, connection, settings, bookmarkModule) {
   'use strict';
   var sqlEditor = function() {
       return function(element, isInitialized) {

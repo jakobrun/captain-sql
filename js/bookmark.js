@@ -1,4 +1,4 @@
-var createBookmarkModel = function(m, fs, pubsub) {
+gandalf.createBookmarkModel = function(m, fs, pubsub) {
   'use strict';
   var show = false,
     description = m.prop(''),

@@ -1,17 +1,19 @@
-/*global m, CodeMirror, createLoginModule, createSqlClientModule, createBookmarkModel, createSqlHint*/
-'use strict';
-var connection = require('./js/connection'),
-  fs = require('fs'),
-  events = require('events'),
-  pubsub = new events.EventEmitter(),
-  settings = require(process.env.HOME + '/.gandalf/settings'),
-  loginModule = createLoginModule(m, connection, settings),
-  bookmarkModule = createBookmarkModel(m, fs, pubsub),
-  sqlclient = createSqlClientModule(m, fs, CodeMirror, connection, settings, bookmarkModule);
+/*global CodeMirror*/
+(function() {
+    'use strict';
+    var connection = require('./js/connection'),
+        fs = require('fs'),
+        events = require('events'),
+        pubsub = new events.EventEmitter(),
+        settings = require(process.env.HOME + '/.gandalf/settings'),
+        loginModule = gandalf.createLoginModule(m, connection, settings),
+        bookmarkModule = gandalf.createBookmarkModel(m, fs, pubsub),
+        sqlclient = gandalf.createSqlClientModule(m, fs, CodeMirror, connection, settings, bookmarkModule);
 
-createSqlHint(pubsub);
+    gandalf.createSqlHint(pubsub);
 
-m.route(document.getElementById('body'), '/login', {
-  '/login': loginModule,
-  '/sql/:conn': sqlclient
-});
+    m.route(document.getElementById('body'), '/login', {
+        '/login': loginModule,
+        '/sql/:conn': sqlclient
+    });
+}());

@@ -1,4 +1,4 @@
-var createLoginModule = function(m, connection, settings) {
+gandalf.createLoginModule = function(m, connection, settings) {
   'use strict';
   var errorMsg = m.prop('');
   var conn = {

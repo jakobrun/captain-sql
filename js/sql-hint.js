@@ -1,5 +1,5 @@
 /*global CodeMirror*/
-function createSqlHint(pubsub) {
+gandalf.createSqlHint = function(pubsub) {
   'use strict';
 
   var tables,
@@ -208,4 +208,4 @@ function createSqlHint(pubsub) {
   }
 
   CodeMirror.registerHelper("hint", "sql", sqlHint);
-}
+};

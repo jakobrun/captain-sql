@@ -13,5 +13,9 @@
   "browser": true,
   "maxdepth": 2,
   "maxstatements": 12,
-  "maxcomplexity": 4
+  "maxcomplexity": 4,
+  "globals": {
+    "gandalf": true,
+    "m": false
+  }
 }
