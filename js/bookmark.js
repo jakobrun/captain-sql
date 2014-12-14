@@ -36,6 +36,7 @@ gandalf.createBookmarkModel = function(m, fs, pubsub) {
     if(e.keyCode === 27 && show) {
       m.startComputation();
       show = false;
+      pubsub.emit('bookmark-closed');
       m.endComputation();
     }
   });

@@ -9,7 +9,8 @@
         loginModule = gandalf.createLoginModule(m, connection, settings),
         actions = gandalf.createActions(m, pubsub),
         bookmarkModule = gandalf.createBookmarkModel(m, fs, pubsub),
-        sqlclient = gandalf.createSqlClientModule(m, pubsub, fs, CodeMirror, connection, settings, bookmarkModule, actions);
+        editor = gandalf.createEditor(m, pubsub, CodeMirror),
+        sqlclient = gandalf.createSqlClientModule(m, pubsub, fs, editor, connection, settings, bookmarkModule, actions);
 
     gandalf.createSqlHint(pubsub);
 

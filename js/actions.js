@@ -11,6 +11,8 @@ gandalf.createActions = function(m, pubsub) {
     toggleShow = function() {
       m.startComputation();
       show(!show());
+      searchValue('');
+      selectedIndex(0);
       m.endComputation();
       if (show() && searchElement) {
         searchElement.focus();

@@ -1,30 +1,6 @@
-gandalf.createSqlClientModule = function(m, pubsub, fs, codeMirror, connection, settings, bookmarkModule, actions) {
+gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, settings, bookmarkModule, actions) {
   'use strict';
-  var sqlEditor = function() {
-      return function(element, isInitialized) {
-        if (!isInitialized) {
-          cm = codeMirror(element, {
-            value: 'SELECT * FROM ',
-            mode: 'text/x-sql',
-            lineNumbers: true,
-            autofocus: true,
-            theme: 'gandalf',
-            extraKeys: {
-              'Ctrl-Enter': runQuery,
-              'Ctrl-Space': assist,
-              'Shift-Cmd-P': function () {
-                pubsub.emit('actions-toggle-show');
-              }
-            }
-          });
-          var focus = cm.focus.bind(cm);
-          pubsub.on('editor-focus', focus);
-          pubsub.on('run-query', focus);
-          pubsub.on('content-assist', assist);
-        }
-      };
-    },
-    runQuery = function() {
+  var runQuery = function() {
       var t = Date.now();
       errorMsg('');
       m.startComputation();
@@ -33,7 +9,7 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, codeMirror, connection, 
       status('executing...');
       m.endComputation();
 
-      sqlStream = connection.execute(cm.getValue(' '));
+      sqlStream = connection.execute(editor.getValue(' '));
 
       sqlStream.metadata(function(err, mData) {
         m.startComputation();
@@ -88,25 +64,19 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, codeMirror, connection, 
         m.endComputation();
       });
     },
-    assist = function() {
-      cm.focus();
-      codeMirror.showHint(cm, null, {
-        tables: tables
-      });
-    },
     metadata = m.prop([]),
     data = m.prop([]),
     status = m.prop('connected!'),
     errorMsg = m.prop(''),
     isMore = false,
     tables = {},
-    sqlStream, cm, connSettings;
+    sqlStream, connSettings;
 
   pubsub.on('run-query', runQuery);
-  pubsub.on('bookmark-add', function () {
-    bookmarkModule.show(cm.getSelection() || cm.getValue());
+  pubsub.on('bookmark-add', function() {
+    bookmarkModule.show(editor.getSelection() || editor.getValue());
   });
-  pubsub.on('schema-export', function () {
+  pubsub.on('schema-export', function() {
     connection.exportSchemaToFile({
       schema: connSettings.schema[0].name,
       file: connSettings.schema[0].file
@@ -116,19 +86,17 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, codeMirror, connection, 
   return {
     controller: function() {
       var connName = m.route.param('conn');
-      connSettings = settings.connections.filter(function (c) {
+      connSettings = settings.connections.filter(function(c) {
         return c.name === connName;
       })[0];
-      connSettings.schema.forEach(function (schema) {
+      connSettings.schema.forEach(function(schema) {
         var t = Date.now();
-        fs.readFile(schema.file, function  (err, schemaContent) {
+        fs.readFile(schema.file, function(err, schemaContent) {
           console.log('Load schema:', (Date.now() - t));
-          if(err) {
+          if (err) {
             console.log(err);
           } else {
-            JSON.parse(schemaContent).forEach(function (table) {
-              tables[table.table] = table;
-            });
+            pubsub.emit('schema-loaded', JSON.parse(schemaContent));
           }
         });
       });
@@ -136,11 +104,10 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, codeMirror, connection, 
     },
     view: function() {
       return [
+        editor.view(),
         m('div', {
-          config: sqlEditor(),
-          'class': 'editor'
+          'class': 'result-gutter'
         }),
-        m('div', {'class': 'result-gutter'}),
         m('div', {
           'class': 'result table'
         }, [
@@ -175,8 +142,8 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, codeMirror, connection, 
         m('div', {
           'class': 'statusbar'
         }, status()),
-      actions.view(),
-      bookmarkModule.view()
+        actions.view(),
+        bookmarkModule.view()
       ];
     }
   };
