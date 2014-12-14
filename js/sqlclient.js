@@ -1,10 +1,10 @@
-gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, settings, result, bookmarkModule, actions) {
+gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, settings, result, statusbar, bookmarkModule, actions) {
   'use strict';
   var datahandler = function(eventName) {
       return function(err, data, more) {
         m.startComputation();
         if (err) {
-          pubsub.emit('error', err);
+          pubsub.emit('data-error', err);
         } else {
           pubsub.emit(eventName, data);
           isMore = more;
@@ -14,9 +14,6 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, sett
     },
     runQuery = function() {
       time = Date.now();
-      m.startComputation();
-      status('executing...');
-      m.endComputation();
 
       sqlStream = connection.execute(editor.getValue(' '));
 
@@ -31,14 +28,9 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, sett
       }
       sqlStream.next(datahandler('data-more'));
     },
-    status = m.prop('connected!'),
     isMore = false,
     sqlStream, connSettings, time;
 
-  pubsub.on('data', function () {
-    var timeDiff = Date.now() - time;
-      status('done, time: (' + timeDiff + ')');
-  });
   pubsub.on('run-query', runQuery);
   pubsub.on('load-more', loadMore);
   pubsub.on('bookmark-add', function() {
@@ -68,7 +60,7 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, sett
           }
         });
       });
-      status('Connected to ' + connSettings.name + '!');
+      pubsub.emit('connected', connSettings);
     },
     view: function() {
       return [
@@ -77,9 +69,7 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, sett
           'class': 'result-gutter'
         }),
         result.view(),
-        m('div', {
-          'class': 'statusbar'
-        }, status()),
+        statusbar.view(),
         actions.view(),
         bookmarkModule.view()
       ];

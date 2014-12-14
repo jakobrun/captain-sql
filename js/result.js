@@ -30,7 +30,7 @@ gandalf.createResult = function(m, pubsub) {
   pubsub.on('data-more', function(moreData) {
     data(data().concat(moreData));
   });
-  pubsub.on('error', function(err) {
+  pubsub.on('data-error', function(err) {
     errorMsg(err.message);
   });
 
