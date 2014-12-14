@@ -1,4 +1,4 @@
-gandalf.createSqlClientModule = function(m, fs, codeMirror, connection, settings, bookmarkModule) {
+gandalf.createSqlClientModule = function(m, pubsub, fs, codeMirror, connection, settings, bookmarkModule, actions) {
   'use strict';
   var sqlEditor = function() {
       return function(element, isInitialized) {
@@ -12,13 +12,19 @@ gandalf.createSqlClientModule = function(m, fs, codeMirror, connection, settings
             extraKeys: {
               'Ctrl-Enter': runQuery,
               'Ctrl-Space': assist,
-              'Shift-Cmd-P': actionModel.toggleShow
+              'Shift-Cmd-P': function () {
+                pubsub.emit('actions-toggle-show');
+              }
             }
           });
+          var focus = cm.focus.bind(cm);
+          pubsub.on('editor-focus', focus);
+          pubsub.on('run-query', focus);
+          pubsub.on('content-assist', assist);
         }
       };
     },
-    runQuery = function(editor) {
+    runQuery = function() {
       var t = Date.now();
       errorMsg('');
       m.startComputation();
@@ -27,7 +33,7 @@ gandalf.createSqlClientModule = function(m, fs, codeMirror, connection, settings
       status('executing...');
       m.endComputation();
 
-      sqlStream = connection.execute(editor.getValue(' '));
+      sqlStream = connection.execute(cm.getValue(' '));
 
       sqlStream.metadata(function(err, mData) {
         m.startComputation();
@@ -88,70 +94,6 @@ gandalf.createSqlClientModule = function(m, fs, codeMirror, connection, settings
         tables: tables
       });
     },
-    actionModel = {
-      searchValue: m.prop(''),
-      selectedIndex: m.prop(0),
-      show: m.prop(false),
-      toggleShow: function() {
-        m.startComputation();
-        actionModel.show(!actionModel.show());
-        m.endComputation();
-        if (actionModel.show() && actionModel.searchElement) {
-          actionModel.searchElement.focus();
-        }
-      },
-      config: function(el) {
-        actionModel.searchElement = el;
-      },
-      keyDown: function(e) {
-        var l = actionModel.list.length,
-          i = actionModel.selectedIndex();
-        if (e.keyCode === 40) {
-          actionModel.selectedIndex((i + 1) % l);
-        } else if (e.keyCode === 38) {
-          actionModel.selectedIndex((i - 1 + l) % l);
-        } else if (e.keyCode === 27) {
-          actionModel.toggleShow();
-          cm.focus();
-        }
-      },
-      keyUp: function(e) {
-        var list = actionModel.getList();
-        if (e.keyCode === 13 && list.length) {
-          list[actionModel.selectedIndex()].run();
-          actionModel.toggleShow();
-          //cm.focus();
-        }
-      },
-      getList: function() {
-        return actionModel.list.filter(function(item) {
-          return item.name.toLowerCase().indexOf(actionModel.searchValue().toLowerCase()) !== -1;
-        });
-      },
-      list: [{
-        name: 'Run query (ctrl + Enter)',
-        run: function() {
-          runQuery(cm);
-          cm.focus();
-        }
-      }, {
-        name: 'Content assist (ctrl + Space)',
-        run: assist
-      }, {
-        name: 'Bookmark',
-        run: function () {
-          bookmarkModule.show(cm.getSelection() || cm.getValue());
-        }
-      }, {
-        name: 'Export schema',
-        run: function() {
-          connection.exportSchemaToFile({
-            schema: connSettings.schema[0].name,
-            file: connSettings.schema[0].file
-          });
-        }
-      }]
-    },
     metadata = m.prop([]),
     data = m.prop([]),
     status = m.prop('connected!'),
@@ -159,6 +101,17 @@ gandalf.createSqlClientModule = function(m, fs, codeMirror, connection, settings
     isMore = false,
     tables = {},
     sqlStream, cm, connSettings;
+
+  pubsub.on('run-query', runQuery);
+  pubsub.on('bookmark-add', function () {
+    bookmarkModule.show(cm.getSelection() || cm.getValue());
+  });
+  pubsub.on('schema-export', function () {
+    connection.exportSchemaToFile({
+      schema: connSettings.schema[0].name,
+      file: connSettings.schema[0].file
+    });
+  });
 
   return {
     controller: function() {
@@ -222,26 +175,8 @@ gandalf.createSqlClientModule = function(m, fs, codeMirror, connection, settings
         m('div', {
           'class': 'statusbar'
         }, status()),
-        m('div', {
-          'class': 'p-menu popup' + (actionModel.show() ? '' : ' hidden')
-        }, [
-          m('input', {
-            'class': 'p-menu-search',
-            config: actionModel.config,
-            value: actionModel.searchValue(),
-            oninput: m.withAttr('value', actionModel.searchValue),
-            onkeydown: actionModel.keyDown,
-            onkeyup: actionModel.keyUp
-          }),
-          m('ul', {
-            'class': 'p-menu-list'
-          }, actionModel.getList().map(function(item, index) {
-            return m('li', {
-              'class': 'p-menu-item' + (index === actionModel.selectedIndex() ? ' p-menu-item-selected' : '')
-            }, item.name);
-          }))
-        ]),
-        bookmarkModule.view()
+      actions.view(),
+      bookmarkModule.view()
       ];
     }
   };

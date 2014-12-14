@@ -7,8 +7,9 @@
         pubsub = new events.EventEmitter(),
         settings = require(process.env.HOME + '/.gandalf/settings'),
         loginModule = gandalf.createLoginModule(m, connection, settings),
+        actions = gandalf.createActions(m, pubsub),
         bookmarkModule = gandalf.createBookmarkModel(m, fs, pubsub),
-        sqlclient = gandalf.createSqlClientModule(m, fs, CodeMirror, connection, settings, bookmarkModule);
+        sqlclient = gandalf.createSqlClientModule(m, pubsub, fs, CodeMirror, connection, settings, bookmarkModule, actions);
 
     gandalf.createSqlHint(pubsub);
 
