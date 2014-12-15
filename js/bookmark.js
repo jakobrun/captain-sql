@@ -1,4 +1,4 @@
-gandalf.createBookmarkModel = function(m, fs, pubsub) {
+gandalf.createBookmarkModel = function(m, fs, pubsub, editor) {
   'use strict';
   var show = false,
     description = m.prop(''),
@@ -22,6 +22,14 @@ gandalf.createBookmarkModel = function(m, fs, pubsub) {
       });
       show = false;
     },
+    showAdd = function () {
+      m.startComputation();
+      content = editor.getSelection() || editor.getValue();
+      description(content);
+      show = true;
+      m.endComputation();
+      setTimeout(nameEl.focus.bind(nameEl), 0);
+    },
     fileName = process.env.HOME + '/.gandalf/bookmarks.json',
     bookmarks,
     nameEl,
@@ -32,6 +40,8 @@ gandalf.createBookmarkModel = function(m, fs, pubsub) {
     pubsub.emit('bookmarks', bookmarks);
   });
 
+  pubsub.on('bookmark-add', showAdd);
+
   document.addEventListener('keyup', function (e) {
     if(e.keyCode === 27 && show) {
       m.startComputation();
@@ -41,14 +51,6 @@ gandalf.createBookmarkModel = function(m, fs, pubsub) {
     }
   });
   return {
-    show: function (contentValue) {
-      m.startComputation();
-      content = contentValue;
-      description(contentValue);
-      show = true;
-      m.endComputation();
-      setTimeout(nameEl.focus.bind(nameEl), 0);
-    },
     view: function() {
       return m('div', {
         'class': 'container popup form' + (show ? '' : ' hidden')

@@ -8,10 +8,10 @@
         settings = require(process.env.HOME + '/.gandalf/settings'),
         loginModule = gandalf.createLoginModule(m, connection, settings),
         actions = gandalf.createActions(m, pubsub),
-        bookmarkModule = gandalf.createBookmarkModel(m, fs, pubsub),
         statusbar = gandalf.createStatusbar(m, pubsub),
         editor = gandalf.createEditor(m, pubsub, CodeMirror),
         result = gandalf.createResult(m, pubsub),
+        bookmarkModule = gandalf.createBookmarkModel(m, fs, pubsub, editor),
         sqlclient = gandalf.createSqlClientModule(m, pubsub, fs, editor, connection, settings, result, statusbar, bookmarkModule, actions);
 
     gandalf.createSqlHint(pubsub);

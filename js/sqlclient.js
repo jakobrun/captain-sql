@@ -33,9 +33,6 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, sett
 
   pubsub.on('run-query', runQuery);
   pubsub.on('load-more', loadMore);
-  pubsub.on('bookmark-add', function() {
-    bookmarkModule.show(editor.getSelection() || editor.getValue());
-  });
   pubsub.on('schema-export', function() {
     connection.exportSchemaToFile({
       schema: connSettings.schema[0].name,
