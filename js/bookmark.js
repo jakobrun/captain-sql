@@ -5,22 +5,23 @@ gandalf.createBookmarkModel = function(m, fs, pubsub, editor) {
     configName = function (el) {
       nameEl = el;
     },
-    save = function () {
-      var name = nameEl.value.trim();
-      var bookmark = bookmarks.filter(function (b) {
-        return b.name === name;
-      })[0];
-      if(!bookmark) {
-        bookmark = {name: name};
-        bookmarks.push(bookmark);
-      }
-      bookmark.value = content;
-      bookmark.description = description();
+    writeToFile = function () {
       fs.writeFile(fileName, JSON.stringify(bookmarks), function (err) {
         //TODO error handling
         console.log(err);
       });
+    },
+    save = function () {
+      var bookmark = {
+        name: nameEl.value.trim(),
+        value: content,
+        description: description()
+      };
+      nameEl.value = '';
+      bookmarks.push(bookmark);
+      writeToFile();
       show = false;
+      pubsub.emit('editor-focus', {});
     },
     showAdd = function () {
       m.startComputation();
@@ -30,6 +31,20 @@ gandalf.createBookmarkModel = function(m, fs, pubsub, editor) {
       m.endComputation();
       setTimeout(nameEl.focus.bind(nameEl), 0);
     },
+    listView = gandalf.createPopupmenu(pubsub, {
+      getList: function () {
+        return bookmarks || [];
+      },
+      renderItem: function (bookmark) {
+        return [m('div', bookmark.name), m('div', bookmark.value)]; 
+      },
+      itemSelected: function (bookmark) {
+        var i = bookmarks.indexOf(bookmark);
+        bookmarks.splice(i, 1);
+        writeToFile();
+        pubsub.emit('editor-focus', {});
+      }
+    }),
     fileName = process.env.HOME + '/.gandalf/bookmarks.json',
     bookmarks,
     nameEl,
@@ -41,6 +56,7 @@ gandalf.createBookmarkModel = function(m, fs, pubsub, editor) {
   });
 
   pubsub.on('bookmark-add', showAdd);
+  pubsub.on('bookmark-delete', listView.toggleShow);
 
   document.addEventListener('keyup', function (e) {
     if(e.keyCode === 27 && show) {
@@ -52,7 +68,7 @@ gandalf.createBookmarkModel = function(m, fs, pubsub, editor) {
   });
   return {
     view: function() {
-      return m('div', {
+      return m('div', [m('div', {
         'class': 'container popup form' + (show ? '' : ' hidden')
       }, [
         m('h2', {
@@ -83,7 +99,7 @@ gandalf.createBookmarkModel = function(m, fs, pubsub, editor) {
             onchange: m.withAttr('value', description)
           })
         ])
-      ]);
+      ]), listView.view()]);
     }
   };
 };

@@ -3,7 +3,7 @@ gandalf.createEditor = function (m, pubsub, codeMirror) {
       return function(element, isInitialized) {
         if (!isInitialized) {
           cm = codeMirror(element, {
-            value: 'SELECT * FROM ',
+            value: '',
             mode: 'text/x-sql',
             lineNumbers: true,
             autofocus: true,
