@@ -28,24 +28,7 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, sett
       }
       sqlStream.next(datahandler('data-more'));
     },
-    isMore = false,
-    sqlStream, connSettings, time;
-
-  pubsub.on('run-query', runQuery);
-  pubsub.on('load-more', loadMore);
-  pubsub.on('schema-export', function() {
-    connection.exportSchemaToFile({
-      schema: connSettings.schema[0].name,
-      file: connSettings.schema[0].file
-    });
-  });
-
-  return {
-    controller: function() {
-      var connName = m.route.param('conn');
-      connSettings = settings.connections.filter(function(c) {
-        return c.name === connName;
-      })[0];
+    loadSchema = function() {
       connSettings.schema.forEach(function(schema) {
         var t = Date.now();
         fs.readFile(schema.file, function(err, schemaContent) {
@@ -57,6 +40,26 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, sett
           }
         });
       });
+    },
+    isMore = false,
+    sqlStream, connSettings, time;
+
+  pubsub.on('run-query', runQuery);
+  pubsub.on('load-more', loadMore);
+  pubsub.on('schema-export', function() {
+    connection.exportSchemaToFile({
+      schema: connSettings.schema[0].name,
+      file: connSettings.schema[0].file
+    }).on('end', loadSchema);
+  });
+
+  return {
+    controller: function() {
+      var connName = m.route.param('conn');
+      connSettings = settings.connections.filter(function(c) {
+        return c.name === connName;
+      })[0];
+      loadSchema();
       pubsub.emit('connected', connSettings);
     },
     view: function() {

@@ -87,6 +87,7 @@ var jt400 = require('jt400'),
       stream.on('end', function() {
         console.log('shema to file done');
       });
+      return stream;
     }
   };
 

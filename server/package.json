@@ -11,6 +11,6 @@
     "dnode": "~1.2.0"
   },
   "devDependencies": {
-    "Faker": "~0.7.0"
+    "faker": "^2.1.1",
   }
 }

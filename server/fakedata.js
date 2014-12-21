@@ -1,42 +1,101 @@
-var Faker = require('Faker'),
-  q = require('q');
+var faker = require('faker'),
+  q = require('q'),
+  numberOfPersons = 200,
+  numberOfProducts = 100;
 
-function createPersons (db) {
-  var persons = [], i;
-  for (i = 0; i < 200; i++) {
-    persons.push([i,
-      Faker.Name.findName(),
-      Faker.Address.streetAddress(),
-      Faker.PhoneNumber.phoneNumber(),
-      Faker.Date.past()]);
-  }
-  return db.update('create table person (personid decimal(9), name varchar(400), address varchar(400), phone varchar(100), stamp TIMESTAMP, primary key(personid))')
-    .then(function() {
-      return q.all(persons.map(function(row) {
-        return db.update('insert into person values(?,?,?,?,?)', row);
-      }));
-    });
+function randomNumber(max, from) {
+  return Math.floor(Math.random() * max) + (from || 0);
 }
 
-function createCompanies (db) {
-  var companies = [], i;
-  for (i = 0; i < 50; i++) {
-    companies.push([i,
-      Faker.Company.companyName(),
-      Faker.Company.bs(),
-      Faker.PhoneNumber.phoneNumber(),
-      Faker.Date.past()]);
+function createArray(n, f) {
+  var a = [],
+    i;
+  for (i = 0; i < n; i++) {
+    a.push(f(i));
   }
-  return db.update('create table company (companyid decimal(9), name varchar(400), bs varchar(400), phone varchar(100), stamp TIMESTAMP, primary key(companyid))')
-    .then(function() {
-      return q.all(companies.map(function(row) {
-        return db.update('insert into company values(?,?,?,?,?)', row);
-      }));
-    });  
+  return a;
 }
+
 
 module.exports = function(db) {
-  return createPersons(db).then(function () {
-    return createCompanies(db);
-  });
+  function innsertArray(insertSt, array) {
+    return function() {
+      return q.all(array.map(function(row) {
+        return db.update(insertSt, row);
+      }));
+    };
+  }
+
+  function createPersons() {
+    var persons = createArray(numberOfPersons, function(i) {
+      return [i,
+        faker.name.findName(),
+        faker.address.streetAddress(),
+        faker.phone.phoneNumber(),
+        faker.date.past()
+      ];
+    });
+    return db.update('create table person (personid decimal(9), name varchar(400), address varchar(400), phone varchar(100), stamp TIMESTAMP, primary key(personid))')
+      .then(innsertArray('insert into person values(?,?,?,?,?)', persons));
+  }
+
+  function createCompanies() {
+    var companies = createArray(50, function(i) {
+      return [i,
+        faker.company.companyName(),
+        faker.company.bs(),
+        faker.phone.phoneNumber(),
+        faker.date.past()
+      ];
+    });
+    return db.update('create table company (companyid decimal(9), name varchar(400), bs varchar(400), phone varchar(100), stamp TIMESTAMP, primary key(companyid))')
+      .then(innsertArray('insert into company values(?,?,?,?,?)', companies));
+  }
+
+  function createProducts () {
+    var products = createArray(numberOfProducts, function (i) {
+      return [i,
+        faker.lorem.words()[0],
+        faker.finance.amount(),
+        faker.date.past()
+      ];
+    });
+    return db.update('create table product (productid decimal(9), name varchar(400), price decimal(17), stamp TIMESTAMP, primary key(productid))')
+      .then(innsertArray('insert into product values(?,?,?,?)', products));
+  }
+
+  function createOrders() {
+    var orders = createArray(1000, function(i) {
+      return [i,
+        randomNumber(numberOfPersons),
+        faker.date.past()
+      ];
+    });
+    return db.update('create table productorder (orderid decimal(9), personid decimal(9), dayOfOrder TIMESTAMP, primary key(orderid))')
+      .then(innsertArray('insert into productorder values(?,?,?)', orders))
+      .then(function () {
+        return createOrderItems(orders);
+      });
+  }
+
+  function createOrderItems (orders) {
+    var items = [], i = -1;
+    orders.forEach(function (order, orderIndex) {
+      items = items.concat(createArray(randomNumber(10, 1), function () {
+        i++;
+        return [i,
+          orderIndex,
+          randomNumber(numberOfProducts),
+          randomNumber(10, 1)
+        ];
+      }));
+    });
+    return db.update('create table orderitem (orderitemid decimal(9), orderid decimal(9), productid decimal(9), quantity decimal(9), primary key(orderitemid))')
+      .then(innsertArray('insert into orderitem values(?,?,?,?)', items));
+  }
+
+  return createPersons()
+    .then(createCompanies)
+    .then(createProducts)
+    .then(createOrders);
 };
