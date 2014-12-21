@@ -1,7 +1,16 @@
+gandalf.createIdGenerator = function () {
+  var i = 0;
+  return function () {
+    i++;
+    return 'e' + i;
+  };
+};
+gandalf.createId = gandalf.createIdGenerator();
 gandalf.createPopupmenu = function(pubsub, controller) {
   'use strict';
   var searchValue = m.prop(''),
     selectedIndex = m.prop(0),
+    menuId = gandalf.createId(),
     show = m.prop(false),
     toggleShow = function() {
       m.startComputation();
@@ -21,8 +30,10 @@ gandalf.createPopupmenu = function(pubsub, controller) {
         i = selectedIndex();
       if (e.keyCode === 40) {
         selectedIndex((i + 1) % l);
+        document.getElementById(menuId + '-i' + selectedIndex()).scrollIntoViewIfNeeded();
       } else if (e.keyCode === 38) {
         selectedIndex((i - 1 + l) % l);
+        document.getElementById(menuId + '-i' + selectedIndex()).scrollIntoViewIfNeeded();
       } else if (e.keyCode === 27) {
         toggleShow();
         pubsub.emit('editor-focus', {});
@@ -59,7 +70,8 @@ gandalf.createPopupmenu = function(pubsub, controller) {
           'class': 'p-menu-list'
         }, getList().map(function(item, index) {
           return m('li', {
-            'class': 'p-menu-item' + (index === selectedIndex() ? ' p-menu-item-selected' : '')
+            'class': 'p-menu-item' + (index === selectedIndex() ? ' p-menu-item-selected' : ''),
+            'id': menuId + '-i' + index
           }, controller.renderItem ? controller.renderItem(item) : item.name);
         }))
       ]);
