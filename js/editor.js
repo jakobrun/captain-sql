@@ -45,6 +45,30 @@ gandalf.createEditor = function (m, pubsub, codeMirror) {
     	getValue: function (sep) {
     		return cm.getValue(sep);
     	},
+      setValue: function (value) {
+        cm.setValue(value);
+      },
+      setCursor: function (pos) {
+        cm.setCursor(pos);
+      },
+      getCursorStatement: function (sep) {
+        var c = cm.getCursor();
+        var startLine = c.line;
+        while(startLine>0) {
+          if(!cm.getLine(startLine - 1)) {
+            break;
+          }
+          startLine -= 1;
+        }
+        var endLine = c.line;
+        while(endLine < cm.lineCount()) {
+          if(!cm.getLine(endLine + 1)) {
+            break;
+          }
+          endLine += 1;
+        }
+        return cm.getRange({line: startLine, ch: 0}, {line: endLine, ch: cm.getLine(endLine).length}, sep);
+      },
     	getSelection: function () {
     		return cm.getSelection();
     	},

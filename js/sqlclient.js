@@ -15,7 +15,7 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, sett
     runQuery = function() {
       time = Date.now();
 
-      sqlStream = connection.execute(editor.getValue(' '));
+      sqlStream = connection.execute(editor.getSelection() || editor.getCursorStatement(' '));
 
       sqlStream.metadata(datahandler('metadata'));
 

@@ -25,7 +25,7 @@ gandalf.createBookmarkModel = function(m, fs, pubsub, editor) {
     },
     showAdd = function () {
       m.startComputation();
-      content = editor.getSelection() || editor.getValue();
+      content = editor.getSelection() || editor.getCursorStatement();
       description(content);
       show = true;
       m.endComputation();

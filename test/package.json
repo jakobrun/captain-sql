@@ -1,0 +1,9 @@
+{
+  "name": "gandalf",
+  "version": "0.0.0",
+  "description": "sql client test",
+  "main": "test.html",
+  "window": {
+    "toolbar": true
+  }
+}
