@@ -12,7 +12,8 @@
     "JSONStream": "^0.10.0",
     "dnode": "^1.2.0",
     "jt400": "http://github.com/jakobrun/jt400/tarball/master",
-    "q": "~1.0.0"
+    "q": "~1.0.0",
+    "sql-parser": "^0.4.0"
   },
   "devDependencies": {
     "chai": "^1.10.0",
