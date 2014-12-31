@@ -35,10 +35,8 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
     tables = {},
     cm;
 
-  pubsub.on('schema-loaded', function(tableArray) {
-    tableArray.forEach(function(table) {
-      tables[table.table] = table;
-    });
+  pubsub.on('schema-loaded', function(tableIndex) {
+    tables = tableIndex;
   });
 
   return {
@@ -50,6 +48,9 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
     },
     setCursor: function(pos) {
       cm.setCursor(pos);
+    },
+    insertText: function (text) {
+      cm.replaceRange(text, cm.getCursor(), cm.getCursor());
     },
     getCursorStatement: function(sep) {
       var c = cm.getCursor(),

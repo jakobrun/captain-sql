@@ -1,4 +1,8 @@
-gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, settings, result, statusbar, bookmarkModule, actions) {
+gandalf.createSqlClientModule = function(m,
+  pubsub,
+  fs, editor,
+  connection, settings, result, statusbar,
+  bookmarkModule, actions, columnsPrompt) {
   'use strict';
   var datahandler = function(eventName) {
       return function(err, data, more) {
@@ -36,7 +40,10 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, sett
           if (err) {
             console.log(err);
           } else {
-            pubsub.emit('schema-loaded', JSON.parse(schemaContent));
+            pubsub.emit('schema-loaded', JSON.parse(schemaContent).reduce(function (obj, table) {
+              obj[table.table] = table;
+              return obj;
+            }, {}));
           }
         });
       });
@@ -71,7 +78,8 @@ gandalf.createSqlClientModule = function(m, pubsub, fs, editor, connection, sett
         result.view(),
         statusbar.view(),
         actions.view(),
-        bookmarkModule.view()
+        bookmarkModule.view(),
+        columnsPrompt.view()
       ];
     }
   };

@@ -36,7 +36,7 @@ gandalf.createBookmarkModel = function(m, fs, pubsub, editor) {
         return bookmarks || [];
       },
       renderItem: function (bookmark) {
-        return [m('div', bookmark.name), m('div', {'class': 'hint-remarks'}, bookmark.value)]; 
+        return [m('div', bookmark.name), m('div', {'class': 'hint-remarks'}, bookmark.value)];
       },
       itemSelected: function (bookmark) {
         var i = bookmarks.indexOf(bookmark);

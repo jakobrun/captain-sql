@@ -28,15 +28,18 @@ gandalf.createPopupmenu = function(pubsub, controller) {
     keyDown = function(e) {
       var l = getList().length,
         i = selectedIndex();
-      if (e.keyCode === 40) {
+      if (e.keyCode === 40 && l > 0) {
         selectedIndex((i + 1) % l);
         document.getElementById(menuId + '-i' + selectedIndex()).scrollIntoViewIfNeeded();
-      } else if (e.keyCode === 38) {
+      } else if (e.keyCode === 38 && l > 0) {
         selectedIndex((i - 1 + l) % l);
         document.getElementById(menuId + '-i' + selectedIndex()).scrollIntoViewIfNeeded();
       } else if (e.keyCode === 27) {
         toggleShow();
         pubsub.emit('editor-focus', {});
+      }
+      if(controller.keyDown) {
+        controller.keyDown(e, getList()[selectedIndex()]);
       }
     },
     getList = function() {
@@ -54,6 +57,8 @@ gandalf.createPopupmenu = function(pubsub, controller) {
     searchElement;
   return {
   	toggleShow: toggleShow,
+    keyDown: keyDown,
+    keyUp: keyUp,
     view: function() {
       return m('div', {
         'class': 'p-menu popup' + (show() ? '' : ' hidden')

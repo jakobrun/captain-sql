@@ -12,7 +12,8 @@
         editor = gandalf.createEditor(m, pubsub, CodeMirror),
         result = gandalf.createResult(m, pubsub),
         bookmarkModule = gandalf.createBookmarkModel(m, fs, pubsub, editor),
-        sqlclient = gandalf.createSqlClientModule(m, pubsub, fs, editor, connection, settings, result, statusbar, bookmarkModule, actions);
+        columnsPrompt = gandalf.createColumnsPrompt(m, editor, pubsub),
+        sqlclient = gandalf.createSqlClientModule(m, pubsub, fs, editor, connection, settings, result, statusbar, bookmarkModule, actions, columnsPrompt);
 
     gandalf.createSqlHint(pubsub);
 

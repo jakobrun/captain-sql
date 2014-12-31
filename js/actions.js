@@ -10,8 +10,11 @@ gandalf.createActions = function(m, pubsub) {
       name: 'Bookmark',
       eventName: 'bookmark-add'
     }, {
-      name: 'Bookmark-delete',
+      name: 'Bookmark delete',
       eventName: 'bookmark-delete'
+    }, {
+      name: 'Columns select',
+      eventName: 'columns-select'
     }, {
       name: 'Export schema',
       eventName: 'schema-export'
