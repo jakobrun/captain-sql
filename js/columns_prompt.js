@@ -29,7 +29,7 @@ gandalf.createColumnsPrompt = function(m, editor, pubsub) {
         ]);
       },
       itemSelected: function () {
-        editor.insertText(columnList.filter(function (c) {
+        editor.replaceSelection(columnList.filter(function (c) {
           return c.checked;
         }).map(function (c) {
           return (c.alias ? (c.alias + '.') : '') + c.name;
@@ -43,6 +43,7 @@ gandalf.createColumnsPrompt = function(m, editor, pubsub) {
   });
 
   pubsub.on('columns-select', function() {
+    editor.selectColumns();
     columnList = getTables(editor.getCursorStatement(' ') || editor.getValue(' ')).filter(function(t) {
       return tables[t[0].toUpperCase()];
     }).reduce(function(arr, t) {

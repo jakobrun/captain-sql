@@ -1,3 +1,4 @@
+@result-gutter: 28px;
 .editor {
 	position: absolute;
 	top: 0;
@@ -8,7 +9,7 @@
 .result-gutter {
 	position: absolute;
 	left: 0;
-	width: 20px;
+	width: @result-gutter;
 	right: 20px;
 	top: 300px;
 	bottom: 30px;
@@ -17,7 +18,7 @@
 }
 .result {
 	position: absolute;
-	left: 20px;
+	left: @result-gutter;
 	right: 0;
 	top: 300px;
 	bottom: 30px;

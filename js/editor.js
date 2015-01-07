@@ -8,6 +8,7 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
             lineNumbers: true,
             autofocus: true,
             theme: 'gandalf',
+            keyMap: 'sublime',
             extraKeys: {
               'Ctrl-Enter': function() {
                 pubsub.emit('run-query');
@@ -32,6 +33,20 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
         tables: tables
       });
     },
+    eachTokenUntil = function(f, start, direction) {
+      var l = start || 0,
+        tokens, i;
+      direction = direction || 1;
+      while (l < cm.lineCount()) {
+        tokens = cm.getLineTokens(l);
+        for (i = 0; i < tokens.length; i++) {
+          if (f(tokens[i], l, i, tokens)) {
+            return;
+          }
+        }
+        l += direction;
+      }
+    },
     tables = {},
     cm;
 
@@ -49,8 +64,11 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
     setCursor: function(pos) {
       cm.setCursor(pos);
     },
-    insertText: function (text) {
+    insertText: function(text) {
       cm.replaceRange(text, cm.getCursor(), cm.getCursor());
+    },
+    replaceSelection: function(text, sel) {
+      cm.replaceSelection(text, sel);
     },
     getCursorStatement: function(sep) {
       var c = cm.getCursor(),
@@ -72,6 +90,49 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
     },
     getSelection: function() {
       return cm.getSelection();
+    },
+    selectColumns: function() {
+      var pCount = 0, startLine,
+        start, end;
+
+      //Find start line
+      eachTokenUntil(function (token, l) {
+        if(token.string.toUpperCase() === 'SELECT') {
+          startLine = l;
+          return true;
+        }
+      }, cm.getCursor().line, -1);
+
+      //Find start and end of columns
+      eachTokenUntil(function(token, l, i, tokens) {
+        var tValue = token.string.toUpperCase();
+        if (start && tValue === '(') {
+          pCount += 1;
+        } else if (start && tValue === ')') {
+          pCount -= 1;
+        } else if (!start && tValue === 'SELECT') {
+          start = tokens[i + 1] ? {
+            line: l,
+            ch: tokens[i + 1].end
+          } : {
+            line: l + 1,
+            ch: 0
+          };
+        } else if (tValue === 'FROM' && pCount === 0) {
+          end = tokens[i - 1] ? {
+            line: l,
+            ch: tokens[i - 1].start
+          } : {
+            line: l - 1,
+            ch: cm.getLine(l - 1).length
+          };
+          return true;
+        }
+      }, startLine);
+
+      if (start && end) {
+        cm.setSelection(start, end);
+      }
     },
     view: function() {
       return m('div', {

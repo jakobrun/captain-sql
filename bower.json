@@ -15,7 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "codemirror": "~3.21.0",
-    "mithriljs": "~0.1.25"
+    "mithriljs": "~0.1.25",
+    "codemirror": "~4.10.0"
   }
 }

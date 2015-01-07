@@ -11,9 +11,10 @@
   "eqnull": true,
   "node": true,
   "browser": true,
-  "maxdepth": 2,
+  "unused": true,
+  "maxdepth": 4,
   "maxstatements": 12,
-  "maxcomplexity": 4,
+  "maxcomplexity": 8,
   "globals": {
     "gandalf": true,
     "m": false
