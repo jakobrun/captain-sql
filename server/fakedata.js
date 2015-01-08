@@ -26,6 +26,14 @@ module.exports = function(db) {
     };
   }
 
+  function commentColumns (tableName, comments) {
+    return function () {
+      return q.all(comments.map(function (c) {
+        return db.update("comment on column " + tableName + "." + c[0] + " IS '" + c[1] + "'");
+      }));
+    };
+  }
+
   function createPersons() {
     var persons = createArray(numberOfPersons, function(i) {
       return [i,
@@ -36,6 +44,13 @@ module.exports = function(db) {
       ];
     });
     return db.update('create table person (personid decimal(9), name varchar(400), address varchar(400), phone varchar(100), stamp TIMESTAMP, primary key(personid))')
+      .then(commentColumns('person', [
+          ['personid', 'Person id test'],
+          ['name', 'Full name'],
+          ['address', 'Home address'],
+          ['phone', 'Phonenumber'],
+          ['stamp', 'Timestamp']
+        ]))
       .then(innsertArray('insert into person values(?,?,?,?,?)', persons));
   }
 

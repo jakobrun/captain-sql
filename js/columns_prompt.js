@@ -8,8 +8,8 @@ gandalf.createColumnsPrompt = function(m, editor, pubsub) {
       getList: function() {
         return columnList;
       },
-      keyDown: function (e, item) {
-        if(e.keyCode === 32 && e.ctrlKey) {
+      keyDown: function(e, item) {
+        if (e.keyCode === 32 && e.ctrlKey) {
           item.checked = !item.checked;
         }
       },
@@ -17,21 +17,27 @@ gandalf.createColumnsPrompt = function(m, editor, pubsub) {
         var id = item.table + '_' + item.name,
           inpAttrs = {
             'type': 'checkbox',
+            'class': 'checklist-input',
             'id': id
           };
-        if(item.checked) {
+        if (item.checked) {
           inpAttrs.checked = 'checked';
         }
         return m('label', {
           'for': id
         }, [m('input', inpAttrs),
-          m('span', item.table + ' ' + item.name)
+          m('div', {
+            'class': 'checklist-text'
+          }, [
+            m('div', item.table + ' ' + item.name),
+            m('div', item.remarks)
+          ])
         ]);
       },
-      itemSelected: function () {
-        editor.replaceSelection(columnList.filter(function (c) {
+      itemSelected: function() {
+        editor.replaceSelection(columnList.filter(function(c) {
           return c.checked;
-        }).map(function (c) {
+        }).map(function(c) {
           return (c.alias ? (c.alias + '.') : '') + c.name;
         }).join(', '));
         pubsub.emit('editor-focus', {});
@@ -50,6 +56,7 @@ gandalf.createColumnsPrompt = function(m, editor, pubsub) {
       return arr.concat(tables[t[0].toUpperCase()].columns.map(function(col) {
         return {
           name: col.name,
+          remarks: col.remarks,
           table: t[0].toUpperCase(),
           alias: t[1]
         };
