@@ -1,7 +1,8 @@
-/*global CodeMirror, mocha, describe, it*/
+/*global CodeMirror, mocha*/
 mocha.setup('bdd');
-var expect = require('chai').expect;
-var events = require('events'),
+var expect = require('chai').expect,
+  getTables = require('../js/get_tables'),
+  events = require('events'),
   pubsub = new events.EventEmitter(),
   editor = gandalf.createEditor(m, pubsub, CodeMirror);
 
@@ -71,4 +72,42 @@ describe('editor', function() {
     expect(editor.getSelection()).to.equal(columns);
   });
 
+});
+
+describe('columns prompt', function () {
+  it('should check current columns', function() {
+    var prompt = gandalf.createColumnsPrompt(m, editor, getTables, pubsub),
+      tables = {
+        'FOO': {
+          columns: [{name: 'a'}, {name: 'b'}]
+        }
+      };
+    pubsub.emit('schema-loaded', tables);
+    editor.setValue('select a from foo');
+    pubsub.emit('columns-select');
+    var list = prompt.controller.getList();
+    expect(list.length).to.equal(2);
+    expect(list[0].name).to.equal('a');
+    expect(list[0].checked).to.equal(true);
+    expect(list[1].name).to.equal('b');
+    expect(list[1].checked).to.equal(false);
+  });
+
+  it('should check current columns and contain columns not found in any table', function() {
+    var prompt = gandalf.createColumnsPrompt(m, editor, getTables, pubsub),
+      tables = {
+        'FOO': {
+          columns: [{name: 'a'}, {name: 'b'}]
+        }
+      };
+    pubsub.emit('schema-loaded', tables);
+    editor.setValue('select a, foo(b) from foo');
+    pubsub.emit('columns-select');
+    var list = prompt.controller.getList();
+    expect(list.length).to.equal(3);
+    expect(list[0].checked).to.equal(true);
+    expect(list[1].name).to.equal('foo(b)');
+    expect(list[1].checked).to.equal(true);
+    expect(list[2].checked).to.equal(false);
+  });
 });

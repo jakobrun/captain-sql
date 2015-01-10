@@ -57,6 +57,7 @@ gandalf.createPopupmenu = function(pubsub, controller) {
     searchElement;
   return {
   	toggleShow: toggleShow,
+    controller: controller,
     keyDown: keyDown,
     keyUp: keyUp,
     view: function() {

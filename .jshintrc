@@ -11,6 +11,7 @@
   "eqnull": true,
   "node": true,
   "browser": true,
+  "mocha": true,
   "unused": true,
   "maxdepth": 4,
   "maxstatements": 12,

@@ -1,7 +1,5 @@
-gandalf.createColumnsPrompt = function(m, editor, pubsub) {
+gandalf.createColumnsPrompt = function(m, editor, getTables, pubsub) {
   'use strict';
-  var getTables = require('./js/get_tables');
-  console.log('createColumnsPrompt');
   var columnList = [],
     tables = [],
     listView = gandalf.createPopupmenu(pubsub, {
@@ -14,31 +12,24 @@ gandalf.createColumnsPrompt = function(m, editor, pubsub) {
         }
       },
       renderItem: function(item) {
-        var id = item.table + '_' + item.name,
-          inpAttrs = {
-            'type': 'checkbox',
-            'class': 'checklist-input',
-            'id': id
-          };
+        var inpAttrs = {
+          'type': 'checkbox',
+          'class': 'checklist-input',
+        };
         if (item.checked) {
           inpAttrs.checked = 'checked';
         }
-        return m('label', {
-          'for': id
-        }, [m('input', inpAttrs),
+        return m('label', [m('input', inpAttrs),
           m('div', {
             'class': 'checklist-text'
-          }, [
-            m('div', item.table + ' ' + item.name),
-            m('div', item.remarks)
-          ])
+          }, item.name)
         ]);
       },
       itemSelected: function() {
         editor.replaceSelection(columnList.filter(function(c) {
           return c.checked;
         }).map(function(c) {
-          return (c.alias ? (c.alias + '.') : '') + c.name;
+          return c.name;
         }).join(', '));
         pubsub.emit('editor-focus', {});
       }
@@ -49,19 +40,40 @@ gandalf.createColumnsPrompt = function(m, editor, pubsub) {
   });
 
   pubsub.on('columns-select', function() {
-    editor.selectColumns();
-    columnList = getTables(editor.getCursorStatement(' ') || editor.getValue(' ')).filter(function(t) {
+    var selectedColumns = editor.selectColumns(),
+      getColumnLabel = function(t, col) {
+        var name = t[1] ? t[1] + '.' + col.name : col.name;
+        if (col.remarks) {
+          name += ' "' + col.remarks + '"';
+        }
+        return name;
+      },
+      colIndex = selectedColumns.reduce(function(obj, col) {
+        obj[col.toUpperCase()] = true;
+        return obj;
+      }, {});
+    columnList = selectedColumns
+      .filter(function (col) {
+        return col !== '*';
+      })
+      .map(function(col) {
+      return {
+        name: col,
+        checked: true
+      };
+    }).concat(getTables(editor.getCursorStatement(' ') || editor.getValue(' ')).filter(function(t) {
       return tables[t[0].toUpperCase()];
     }).reduce(function(arr, t) {
-      return arr.concat(tables[t[0].toUpperCase()].columns.map(function(col) {
-        return {
-          name: col.name,
-          remarks: col.remarks,
-          table: t[0].toUpperCase(),
-          alias: t[1]
-        };
-      }));
-    }, []);
+      return arr.concat(tables[t[0].toUpperCase()].columns
+        .map(function(col) {
+          return {
+            name: getColumnLabel(t, col),
+            checked: false
+          };
+        }).filter(function(col) {
+          return !colIndex[col.name.toUpperCase()];
+        }));
+    }, []));
     listView.toggleShow();
   });
 

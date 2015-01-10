@@ -92,8 +92,10 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
       return cm.getSelection();
     },
     selectColumns: function() {
-      var pCount = 0, startLine,
-        start, end;
+      var pCount = 0,
+        column = '',
+        columns = [],
+        startLine, start, end;
 
       //Find start line
       eachTokenUntil(function (token, l) {
@@ -107,8 +109,10 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
       eachTokenUntil(function(token, l, i, tokens) {
         var tValue = token.string.toUpperCase();
         if (start && tValue === '(') {
+          column += token.string;
           pCount += 1;
         } else if (start && tValue === ')') {
+          column += token.string;
           pCount -= 1;
         } else if (!start && tValue === 'SELECT') {
           start = tokens[i + 1] ? {
@@ -127,12 +131,20 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
             ch: cm.getLine(l - 1).length
           };
           return true;
+        } else if(start && pCount === 0 && tValue === ',') {
+          columns.push(column.trim());
+          column = '';
+        } else if(start){
+          column += token.string;
         }
       }, startLine);
+
+      columns.push(column.trim());
 
       if (start && end) {
         cm.setSelection(start, end);
       }
+      return columns;
     },
     view: function() {
       return m('div', {
