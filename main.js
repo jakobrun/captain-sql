@@ -16,7 +16,7 @@
         columnsPrompt = gandalf.createColumnsPrompt(m, editor, getTables, pubsub),
         sqlclient = gandalf.createSqlClientModule(m, pubsub, fs, editor, connection, settings, result, statusbar, bookmarkModule, actions, columnsPrompt);
 
-    gandalf.createSqlHint(pubsub);
+    gandalf.createSqlHint(pubsub, editor, getTables);
 
     m.route(document.getElementById('body'), '/login', {
         '/login': loginModule,

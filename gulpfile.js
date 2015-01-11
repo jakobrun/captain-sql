@@ -1,13 +1,19 @@
-var gulp = require('gulp');
-var less = require('gulp-less');
-var path = require('path');
+var gulp = require('gulp'),
+  less = require('gulp-less'),
+  jshint = require('gulp-jshint');
 
-gulp.task('less', function () {
+gulp.task('lint', function() {
+  return gulp.src('./js/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'));
+});
+
+gulp.task('less', function() {
   gulp.src('./less/main.less')
     .pipe(less())
     .pipe(gulp.dest('./css'));
 });
 
-gulp.task('dev', function () {
-	gulp.watch(['./less/**/*.less'], ['less']);
+gulp.task('dev', function() {
+  gulp.watch(['./less/**/*.less'], ['less']);
 });

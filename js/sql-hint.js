@@ -1,21 +1,17 @@
 /*global CodeMirror*/
-gandalf.createSqlHint = function(pubsub) {
+gandalf.createSqlHint = function(pubsub, editor, getTables) {
   'use strict';
 
   var tables,
     keywords,
-    bookmarks = [],
-    CONS = {
-      QUERY_DIV: ";",
-      ALIAS_KEYWORD: "AS"
-    };
+    bookmarks = [];
 
   pubsub.on('bookmarks', function (bookm) {
     bookmarks = bookm;
   });
 
-  function getKeywords(editor) {
-    var mode = editor.doc.modeOption;
+  function getKeywords(cm) {
+    var mode = cm.doc.modeOption;
     if(mode === "sql"){
       mode = "text/x-sql";
     }
@@ -40,14 +36,6 @@ gandalf.createSqlHint = function(pubsub) {
     return array;
   }
 
-  function eachUntil (array, f) {
-    for(var i=0; i < array.length; i++) {
-      if(!f(array[i])){
-        break;
-      }
-    }
-  }
-
   function match(string, getter) {
     return function (obj) {
       var len = string.length;
@@ -56,14 +44,14 @@ gandalf.createSqlHint = function(pubsub) {
     };
   }
 
-  function columnCompletion(editor) {
-    var cur = editor.getCursor(),
-      token = editor.getTokenAt(cur),
+  function columnCompletion(cm) {
+    var cur = cm.getCursor(),
+      token = cm.getTokenAt(cur),
       string = token.string.substr(1),
       prevCur = CodeMirror.Pos(cur.line, token.start),
-      table = editor.getTokenAt(prevCur).string;
+      table = cm.getTokenAt(prevCur).string;
     if( !tables.hasOwnProperty( table ) ){
-      table = findTableByAlias(table, editor);
+      table = findTableByAlias(table);
     }
     if(!tables[table]) {
       return [];
@@ -81,73 +69,11 @@ gandalf.createSqlHint = function(pubsub) {
     });
   }
 
-  function eachWord(lineText, f) {
-    if( !lineText ){return;}
-    var excepted = /[,;]/g;
-    var words = lineText.split( " " );
-    for( var i = 0; i < words.length; i++ ){
-      f( words[i]?words[i].replace( excepted, '' ) : '' );
-    }
-  }
-
-  function convertCurToNumber( cur ){
-    // max characters of a line is 999,999.
-    return cur.line + cur.ch / Math.pow( 10, 6 );
-  }
-
-  function convertNumberToCur( num ){
-    return CodeMirror.Pos(Math.floor( num ), +num.toString().split( '.' ).pop());
-  }
-
-  function findTableByAlias(alias, editor) {
-    var doc = editor.doc,
-      fullQuery = doc.getValue(),
-      aliasUpperCase = alias.toUpperCase(),
-      previousWord = "",
-      table = "",
-      separator = [],
-      validRange = {
-        start: CodeMirror.Pos( 0, 0 ),
-        end: CodeMirror.Pos( editor.lastLine(), editor.getLineHandle( editor.lastLine() ).length )
-      };
-
-    //add separator
-    var indexOfSeparator = fullQuery.indexOf( CONS.QUERY_DIV );
-    while( indexOfSeparator !== -1 ){
-      separator.push( doc.posFromIndex(indexOfSeparator));
-      indexOfSeparator = fullQuery.indexOf( CONS.QUERY_DIV, indexOfSeparator+1);
-    }
-    separator.unshift( CodeMirror.Pos( 0, 0 ) );
-    separator.push( CodeMirror.Pos( editor.lastLine(), editor.getLineHandle( editor.lastLine() ).text.length ) );
-
-    //find valieRange
-    var prevItem = 0;
-    var current = convertCurToNumber( editor.getCursor() );
-    eachUntil(separator, function (sep) {
-      var _v = convertCurToNumber( sep );
-      if( current > prevItem && current <= _v ){
-        validRange = { start: convertNumberToCur( prevItem ), end: convertNumberToCur( _v ) };
-        return false;
-      }
-      prevItem = _v;
-      return true;
-    });
-
-    var query = doc.getRange(validRange.start, validRange.end, false);
-
-    eachUntil(query, function (lineText) {
-      eachWord( lineText, function( word ){
-        var wordUpperCase = word.toUpperCase();
-        if( wordUpperCase === aliasUpperCase && tables.hasOwnProperty( previousWord ) ){
-            table = previousWord;
-        }
-        if( wordUpperCase !== CONS.ALIAS_KEYWORD ){
-          previousWord = wordUpperCase;
-        }
-      });
-      return !table;
-    });
-    return table;
+  function findTableByAlias(alias) {
+    var tableTuble = getTables(editor.getCursorStatement(' ') || editor.getValue(' ')).filter(function (table) {
+      return alias === table[1];
+    })[0];
+    return tableTuble && tableTuble[0];
   }
 
   function tableAndKeywordCompletion(search) {
@@ -187,15 +113,15 @@ gandalf.createSqlHint = function(pubsub) {
     });
   }
 
-  function sqlHint(editor, options) {
+  function sqlHint(cm, options) {
     tables = (options && options.tables) || {};
-    keywords = keywords || getKeywords(editor);
-    var cur = editor.getCursor(),
-      token = editor.getTokenAt(cur),
+    keywords = keywords || getKeywords(cm);
+    var cur = cm.getCursor(),
+      token = cm.getTokenAt(cur),
       search = token.string.trim(),
       result;
     if(search.lastIndexOf('.') === 0) {
-      result = columnCompletion(editor);
+      result = columnCompletion(cm);
     } else {
       result = tableAndKeywordCompletion(search).concat(bookmarkCompletion(search));
     }

@@ -3,7 +3,6 @@ var q = require('q'),
   dnode = require('dnode'),
   dConnection,
   remote,
-  currentStream,
   connection = {
     connect: function(options) {
       console.log('connecting...');

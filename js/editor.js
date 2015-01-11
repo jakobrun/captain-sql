@@ -95,6 +95,13 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
       var pCount = 0,
         column = '',
         columns = [],
+        countParenthesisLevel = function (token) {
+          if (start && token === '(') {
+            pCount += 1;
+          } else if (start && token === ')') {
+            pCount -= 1;
+          }
+        },
         startLine, start, end;
 
       //Find start line
@@ -108,13 +115,8 @@ gandalf.createEditor = function(m, pubsub, codeMirror) {
       //Find start and end of columns
       eachTokenUntil(function(token, l, i, tokens) {
         var tValue = token.string.toUpperCase();
-        if (start && tValue === '(') {
-          column += token.string;
-          pCount += 1;
-        } else if (start && tValue === ')') {
-          column += token.string;
-          pCount -= 1;
-        } else if (!start && tValue === 'SELECT') {
+        countParenthesisLevel(tValue);
+        if (!start && tValue === 'SELECT') {
           start = tokens[i + 1] ? {
             line: l,
             ch: tokens[i + 1].end

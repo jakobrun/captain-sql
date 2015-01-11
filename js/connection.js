@@ -16,7 +16,7 @@ var jt400 = require('jt400'),
         });
       } else {
         db = jt400.configure(options);
-        return db.query('SELECT * FROM SYSIBM.SYSDUMMY1').then(function(res) {
+        return db.query('SELECT * FROM SYSIBM.SYSDUMMY1').then(function() {
           console.log('connected!!');
           return true;
         });
