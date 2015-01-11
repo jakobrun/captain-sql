@@ -4,7 +4,7 @@ var expect = require('chai').expect,
   getTables = require('../js/get_tables'),
   events = require('events'),
   pubsub = new events.EventEmitter(),
-  editor = gandalf.createEditor(m, pubsub, CodeMirror);
+  editor = exports.createEditor(m, pubsub, CodeMirror);
 
 m.render(document.getElementById('editor_container'), editor.view());
 
@@ -76,7 +76,7 @@ describe('editor', function() {
 
 describe('columns prompt', function () {
   it('should check current columns', function() {
-    var prompt = gandalf.createColumnsPrompt(m, editor, getTables, pubsub),
+    var prompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu),
       tables = {
         'FOO': {
           columns: [{name: 'a'}, {name: 'b'}]
@@ -94,7 +94,7 @@ describe('columns prompt', function () {
   });
 
   it('should check current columns and contain columns not found in any table', function() {
-    var prompt = gandalf.createColumnsPrompt(m, editor, getTables, pubsub),
+    var prompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu),
       tables = {
         'FOO': {
           columns: [{name: 'a'}, {name: 'b'}]

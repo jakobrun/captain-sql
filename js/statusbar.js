@@ -1,4 +1,4 @@
-gandalf.createStatusbar = function(m, pubsub) {
+exports.createStatusbar = function(m, pubsub) {
   'use strict';
   var status = m.prop('connected!'),
     endTime = function() {

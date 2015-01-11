@@ -7,17 +7,17 @@
     getTables = require('./js/get_tables'),
     pubsub = new events.EventEmitter(),
     settings = require(process.env.HOME + '/.gandalf/settings'),
-    loginModule = gandalf.createLoginModule(m, connection, settings),
-    actions = gandalf.createActions(m, pubsub),
-    statusbar = gandalf.createStatusbar(m, pubsub),
-    editor = gandalf.createEditor(m, pubsub, CodeMirror),
-    result = gandalf.createResult(m, pubsub),
-    bookmarkModule = gandalf.createBookmarkModel(m, fs, pubsub, editor),
-    columnsPrompt = gandalf.createColumnsPrompt(m, editor, getTables, pubsub);
+    loginModule = exports.createLoginModule(m, connection, settings),
+    actions = exports.createActions(m, pubsub, exports.createPopupmenu),
+    statusbar = exports.createStatusbar(m, pubsub),
+    editor = exports.createEditor(m, pubsub, CodeMirror),
+    result = exports.createResult(m, pubsub),
+    bookmarkModule = exports.createBookmarkModel(m, fs, pubsub, editor, exports.createPopupmenu),
+    columnsPrompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu);
 
-  gandalf.createExecuter(pubsub, editor, connection);
-  gandalf.createSchemaHandler(fs, pubsub, connection);
-  gandalf.createSqlHint(pubsub, editor, getTables);
+  exports.createExecuter(pubsub, editor, connection);
+  exports.createSchemaHandler(fs, pubsub, connection);
+  exports.createSqlHint(pubsub, editor, getTables);
 
   var sqlModule = {
     controller: function() {

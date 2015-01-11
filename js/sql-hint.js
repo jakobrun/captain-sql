@@ -1,5 +1,5 @@
 /*global CodeMirror*/
-gandalf.createSqlHint = function(pubsub, editor, getTables) {
+exports.createSqlHint = function(pubsub, editor, getTables) {
   'use strict';
 
   var tables,

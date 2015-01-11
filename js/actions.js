@@ -1,4 +1,4 @@
-gandalf.createActions = function(m, pubsub) {
+exports.createActions = function(m, pubsub, createPopupmenu) {
   'use strict';
   var list = [{
       name: 'Run query (ctrl + Enter)',
@@ -19,7 +19,7 @@ gandalf.createActions = function(m, pubsub) {
       name: 'Export schema',
       eventName: 'schema-export'
     }],
-    menu = gandalf.createPopupmenu(pubsub, {
+    menu = createPopupmenu(pubsub, {
       getList: function() {
         return list;
       },

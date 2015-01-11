@@ -1,8 +1,9 @@
-gandalf.createColumnsPrompt = function(m, editor, getTables, pubsub) {
+/*jshint maxparams: 10*/
+exports.createColumnsPrompt = function(m, editor, getTables, pubsub, createPopupmenu) {
   'use strict';
   var columnList = [],
     tables = [],
-    listView = gandalf.createPopupmenu(pubsub, {
+    listView = createPopupmenu(pubsub, {
       getList: function() {
         return columnList;
       },

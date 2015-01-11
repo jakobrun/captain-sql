@@ -1,4 +1,4 @@
-gandalf.createResult = function(m, pubsub) {
+exports.createResult = function(m, pubsub) {
   'use strict';
   var metadata = m.prop([]),
     data = m.prop([]),

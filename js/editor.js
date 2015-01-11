@@ -1,4 +1,4 @@
-gandalf.createEditor = function(m, pubsub, codeMirror) {
+exports.createEditor = function(m, pubsub, codeMirror) {
   var sqlEditor = function() {
       return function(element, isInitialized) {
         if (!isInitialized) {

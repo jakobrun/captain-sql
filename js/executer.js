@@ -1,4 +1,4 @@
-gandalf.createExecuter = function(pubsub, editor, connection) {
+exports.createExecuter = function(pubsub, editor, connection) {
   'use strict';
   var datahandler = function(eventName) {
       return function(err, data, more) {

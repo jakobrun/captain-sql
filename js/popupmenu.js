@@ -1,16 +1,16 @@
-gandalf.createIdGenerator = function () {
+exports.createIdGenerator = function () {
   var i = 0;
   return function () {
     i++;
     return 'e' + i;
   };
 };
-gandalf.createId = gandalf.createIdGenerator();
-gandalf.createPopupmenu = function(pubsub, controller) {
+exports.createId = exports.createIdGenerator();
+exports.createPopupmenu = function(pubsub, controller) {
   'use strict';
   var searchValue = m.prop(''),
     selectedIndex = m.prop(0),
-    menuId = gandalf.createId(),
+    menuId = exports.createId(),
     show = m.prop(false),
     toggleShow = function() {
       m.startComputation();

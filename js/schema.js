@@ -1,4 +1,4 @@
-gandalf.createSchemaHandler = function(fs, pubsub, connection) {
+exports.createSchemaHandler = function(fs, pubsub, connection) {
   'use strict';
   var loadSchema = function() {
     connSettings.schema.forEach(function(schema) {

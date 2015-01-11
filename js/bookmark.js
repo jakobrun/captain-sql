@@ -1,4 +1,5 @@
-gandalf.createBookmarkModel = function(m, fs, pubsub, editor) {
+/*jshint maxparams: 10*/
+exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
   'use strict';
   var show = false,
     description = m.prop(''),
@@ -31,7 +32,7 @@ gandalf.createBookmarkModel = function(m, fs, pubsub, editor) {
       m.endComputation();
       setTimeout(nameEl.focus.bind(nameEl), 0);
     },
-    listView = gandalf.createPopupmenu(pubsub, {
+    listView = createPopupmenu(pubsub, {
       getList: function () {
         return bookmarks || [];
       },
