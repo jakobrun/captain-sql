@@ -1,11 +1,13 @@
 (function() {
   'use strict';
-  var gulp = require('gulp');
+  var gulp = require('gulp'),
+    gui = require('nw.gui');
 
   gulp.task('js', function() {
     if (window.location) {
       console.log('reload location');
-      window.location.reload();
+      gui.App.clearCache();
+      gui.Window.get().reloadIgnoringCache();
     }
   });
 
