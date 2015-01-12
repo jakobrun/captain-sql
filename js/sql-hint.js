@@ -26,16 +26,6 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
     return array;
   }
 
-  function keys(obj) {
-    var array = [];
-    for(var key in obj){
-      if(obj.hasOwnProperty(key)){
-        array.push(key);
-      }
-    }
-    return array;
-  }
-
   function match(string, getter) {
     return function (obj) {
       var len = string.length;
@@ -91,7 +81,7 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
       };
     };
 
-    return keys(keywords).filter(keyWordMatcher).map(function (w) {
+    return Object.keys(keywords).filter(keyWordMatcher).map(function (w) {
       return {text: w.toUpperCase(), displayText: w.toUpperCase()};
     }).concat(values(tables).filter(match(search, getTableName)).map(tableToHint));
 
