@@ -1,6 +1,6 @@
 /*global describe, it*/
 'use strict';
-var getTables = require('../../js/get_tables'),
+var getTables = require('../js/get_tables'),
   expect = require('chai').expect;
 
 describe('get tables', function () {
