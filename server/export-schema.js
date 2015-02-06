@@ -1,6 +1,5 @@
 'use strict';
-var util = require('util'),
-	Transform = require('stream').Transform,
+var Transform = require('stream').Transform,
 	JSONStream = require('JSONStream');
 
 function exportSchema (db, opt) {
