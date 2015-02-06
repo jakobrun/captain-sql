@@ -10,7 +10,7 @@ module.exports = function() {
     connect: function(options, cb) {
       console.log('connecting...');
       jt400Instance = jt400.configure(options);
-      jt400Instance.query('SELECT * FROM SYSIBM.SYSDUMMY1').then(function(res) {
+      jt400Instance.query('SELECT * FROM SYSIBM.SYSDUMMY1').then(function() {
         console.log('connected!!');
         cb(null, true);
       }, function(err) {
@@ -24,7 +24,7 @@ module.exports = function() {
       jt400Instance = jt400.useInMemoryDb();
       require('./fakedata')(jt400Instance).then(function() {
         cb(null, true);
-      }, function(err) {
+      }, function() {
         //console.log('error', err);
         cb(null, true);
       });
