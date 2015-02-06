@@ -1,12 +1,5 @@
 var gulp = require('gulp'),
-  less = require('gulp-less'),
-  jshint = require('gulp-jshint');
-
-gulp.task('lint', function() {
-  return gulp.src('./js/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'));
-});
+  less = require('gulp-less');
 
 gulp.task('less', function() {
   gulp.src('./less/main.less')
