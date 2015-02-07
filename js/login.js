@@ -1,39 +1,39 @@
 exports.createLoginModule = function(m, connection, settings) {
   'use strict';
-  var errorMsg = m.prop('');
-  var conn = {
-    name: m.prop(''),
-    host: m.prop(''),
-    username: m.prop(''),
-    password: m.prop('')
-  };
+  var errorMsg = m.prop(''),
+    loginInfo = {
+      host: m.prop(''),
+      username: m.prop(''),
+      password: m.prop('')
+    },
+    conn;
 
   var selectConn = function(e) {
     var i = e.target.selectedIndex - 1;
     if (i > -1) {
-      conn.host(settings.connections[i].host);
-      conn.username(settings.connections[i].user);
-      conn.name(settings.connections[i].name);
+      conn = settings.connections[i];
+      loginInfo.host(conn.host);
+      loginInfo.username(conn.user);
     }
   };
 
   var login = function() {
     m.startComputation();
+    var config = Object.create(conn.properties || {});
+    config.host = loginInfo.host();
+    config.user = loginInfo.username();
+    config.password = loginInfo.password();
     //Connect
-    connection.connect({
-      host: conn.host(),
-      user: conn.user,
-      password: conn.password()
-    }).then(function() {
-      m.route('/sql/' + conn.name());
+    connection.connect(config).then(function() {
+      m.route('/sql/' + conn.name);
     }).fail(function(err) {
       errorMsg(err.message);
     }).then(m.endComputation);
   };
 
-  var loginOnEnter = function (prop) {
-    return function (e) {
-      if(e.keyCode === 13) {
+  var loginOnEnter = function(prop) {
+    return function(e) {
+      if (e.keyCode === 13) {
         login();
       } else {
         prop(e.target.value);
@@ -47,11 +47,15 @@ exports.createLoginModule = function(m, connection, settings) {
       return m('div', {
         'class': 'popup container form'
       }, [
-        m('h2', {'class': 'popup-title'}, 'Connect to database'),
+        m('h2', {
+          'class': 'popup-title'
+        }, 'Connect to database'),
         m('div', {
           'class': 'error'
         }, errorMsg()),
-        m('div', {'class': 'form-element'}, [
+        m('div', {
+          'class': 'form-element'
+        }, [
           m('select', {
             'class': 'h-fill',
             autofocus: 'true',
@@ -66,29 +70,35 @@ exports.createLoginModule = function(m, connection, settings) {
             }, c.name);
           })))
         ]),
-        m('div', {'class': 'form-element'}, [
+        m('div', {
+          'class': 'form-element'
+        }, [
           m('label', {
             'for': 'host'
           }, 'Host:'),
           m('input', {
             'id': 'host',
             'class': 'h-fill',
-            value: conn.host(),
-            onkeyup: loginOnEnter(conn.host)
+            value: loginInfo.host(),
+            onkeyup: loginOnEnter(loginInfo.host)
           })
         ]),
-        m('div', {'class': 'form-element'}, [
+        m('div', {
+          'class': 'form-element'
+        }, [
           m('label', {
             'for': 'username'
           }, 'Username:'),
           m('input', {
             'id': 'username',
             'class': 'h-fill',
-            value: conn.username(),
-            onkeyup: loginOnEnter(conn.username)
+            value: loginInfo.username(),
+            onkeyup: loginOnEnter(loginInfo.username)
           })
         ]),
-        m('div', {'class': 'form-element'}, [
+        m('div', {
+          'class': 'form-element'
+        }, [
           m('label', {
             'for': 'password'
           }, 'Password:'),
@@ -96,11 +106,13 @@ exports.createLoginModule = function(m, connection, settings) {
             'id': 'password',
             'class': 'h-fill',
             type: 'password',
-            value: conn.password(),
-            onkeyup: loginOnEnter(conn.password)
+            value: loginInfo.password(),
+            onkeyup: loginOnEnter(loginInfo.password)
           })
         ]),
-        m('div', {'class': 'form-element form-btn-bar'}, [
+        m('div', {
+          'class': 'form-element form-btn-bar'
+        }, [
           m('button', {
             onclick: login
           }, 'Connect')
