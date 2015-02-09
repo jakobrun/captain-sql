@@ -1,7 +1,9 @@
 var jt400 = require('jt400'),
+  q = require('q'),
   fs = require('fs'),
+  JSONStream = require('JSONStream'),
   exportSchema = require('../server/export-schema'),
-  stream,
+  statement,
   db,
   connection = {
     connect: function(options) {
@@ -23,63 +25,53 @@ var jt400 = require('jt400'),
       }
     },
     execute: function(sqlStatement) {
-      var buffer = [],
-        first = true,
-        callback,
-        metadatacb;
+      var buffer = [];
 
-      //close previous stream
-      if (stream) {
-        stream.close();
-        stream = undefined;
+      //close previous statement
+      if (statement) {
+        statement.close();
+        statement = undefined;
       }
 
-      return {
-        metadata: function(cb) {
-          metadatacb = cb;
-        },
-        next: function(cb) {
-          callback = cb;
-          if (!stream && first) {
-            // execute query
-            try  {
-              stream = db.executeAsStream({
-                sql: sqlStatement,
-                bufferSize: 130,
-                metadata: true,
-                objectMode: true
-              });
-            } catch (err) {
-              cb(err);
-              return;
-            }
+      return db.execute(sqlStatement).then(function (st) {
+        statement = st;
+        return {
+          isQuery: st.isQuery,
+          metadata: st.metadata,
+          updated: st.updated,
+          query: function () {
+            var deffered = q.defer();
+            var stream = st.asStream({bufferSize: 130}).pipe(JSONStream.parse([true]));
 
-            stream.on('data', function(data) {
-              if (first && metadatacb) {
-                metadatacb(null, data);
-              } else {
-                buffer.push(data);
-                if (buffer.length >= 131) {
-                  callback(null, buffer.splice(0, 131), true);
-                  stream.pause();
-                }
+            stream.on('data', function (data) {
+              buffer.push(data);
+              if (buffer.length >= 131) {
+                deffered.fulfill({
+                  data: buffer.splice(0, 131),
+                  more: function () {
+                    stream.resume();
+                    deffered = q.defer();
+                    return deffered.promise;
+                  }
+                });
+                stream.pause();
               }
-              first = false;
             });
 
             stream.on('end', function() {
-              callback(null, buffer, false);
-              stream = undefined;
+              statement = undefined;
+              deffered.fulfill({
+                data: buffer
+              });
             });
 
-            stream.on('error', function(err) {
-              callback(err);
+            stream.on('error', function (err) {
+              deffered.reject(err);
             });
-          } else if (stream) {
-            stream.resume();
+            return deffered.promise;
           }
-        }
-      };
+        };
+      });
     },
     exportSchemaToFile: function(opt) {
       var stream = exportSchema(db, opt);

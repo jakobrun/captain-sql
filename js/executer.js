@@ -1,30 +1,44 @@
 exports.createExecuter = function(pubsub, editor, connection) {
   'use strict';
-  var datahandler = function(eventName) {
-      return function(err, data, more) {
+  var compute = function (fun) {
+      return function () {
         m.startComputation();
-        if (err) {
-          pubsub.emit('data-error', err);
-        } else {
-          pubsub.emit(eventName, data);
-          isMore = more;
-        }
+        fun.apply(this, arguments);
         m.endComputation();
       };
     },
+    emit = function (eventName) {
+      return compute(function (res) {
+        console.log('emit', eventName);
+        pubsub.emit(eventName, res);
+      });
+    },
+    emitData = function (eventName) {
+      return compute(function (res) {
+        pubsub.emit(eventName, res.data);
+        more = res.more;
+      });
+    },
+    dataHandler = emitData('data'),
+    moredataHandler = emitData('data-more'),
+    errorHandler = emit('data-error'),
     runQuery = function() {
-      sqlStream = connection.execute(editor.getSelection() || editor.getCursorStatement(' '));
-      sqlStream.metadata(datahandler('metadata'));
-      sqlStream.next(datahandler('data'));
+      connection.execute(editor.getSelection() || editor.getCursorStatement(' ')).then(function (st) {
+        if(st.isQuery()){
+          st.metadata().then(emit('metadata')).fail(errorHandler);
+          st.query().then(dataHandler).fail(errorHandler);
+        } else {
+          st.updated().then(emit('data-updated')).fail(errorHandler);
+        }
+      }).fail(errorHandler);
     },
     loadMore = function() {
-      if (!isMore) {
+      if (!more) {
         return;
       }
-      sqlStream.next(datahandler('data-more'));
+      more().then(moredataHandler).fail(errorHandler);
     },
-    isMore = false,
-    sqlStream;
+    more;
 
   pubsub.on('run-query', runQuery);
   pubsub.on('load-more', loadMore);

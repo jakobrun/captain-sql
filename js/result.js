@@ -1,6 +1,7 @@
 exports.createResult = function(m, pubsub) {
   'use strict';
   var metadata = m.prop([]),
+    updated = m.prop(''),
     data = m.prop([]),
     errorMsg = m.prop(''),
     columnWidth = function function_name(index) {
@@ -21,6 +22,7 @@ exports.createResult = function(m, pubsub) {
   pubsub.on('run-query', function () {
       m.startComputation();
       errorMsg('');
+      updated('');
       metadata([]);
       data([]);
       m.endComputation();
@@ -29,6 +31,9 @@ exports.createResult = function(m, pubsub) {
   pubsub.on('data', data);
   pubsub.on('data-more', function(moreData) {
     data(data().concat(moreData));
+  });
+  pubsub.on('data-updated', function (n) {
+    updated(n + ' rows updated!');
   });
   pubsub.on('data-error', function(err) {
     errorMsg(err.message);
@@ -42,6 +47,7 @@ exports.createResult = function(m, pubsub) {
         m('div', {
           'class': 'error'
         }, errorMsg()),
+        m('div', updated()),
         m('table', {
           'class': 'table-head'
         }, [
