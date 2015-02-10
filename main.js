@@ -1,6 +1,12 @@
 /*global CodeMirror*/
 (function() {
   'use strict';
+  var gui = require('nw.gui'),
+    win = gui.Window.get(),
+    nativeMenuBar = new gui.Menu({ type: 'menubar' });
+  nativeMenuBar.createMacBuiltin('Gandalf');
+  win.menu = nativeMenuBar;
+
   require('./js/get_settings')(process.env.HOME).then(function(settings) {
     var connection = require('./js/connection'),
       fs = require('fs'),
