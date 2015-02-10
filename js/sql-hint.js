@@ -40,9 +40,10 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
       string = token.string.substr(1),
       prevCur = CodeMirror.Pos(cur.line, token.start),
       table = cm.getTokenAt(prevCur).string;
-    if( !tables.hasOwnProperty( table ) ){
+    if( !tables.hasOwnProperty( table.toUpperCase() ) ){
       table = findTableByAlias(table);
     }
+    table = table.toUpperCase();
     if(!tables[table]) {
       return [];
     }
