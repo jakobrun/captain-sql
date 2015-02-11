@@ -43,7 +43,7 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
     if( !tables.hasOwnProperty( table.toUpperCase() ) ){
       table = findTableByAlias(table);
     }
-    table = table.toUpperCase();
+    table = table && table.toUpperCase();
     if(!tables[table]) {
       return [];
     }
