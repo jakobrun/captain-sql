@@ -17,8 +17,8 @@ var jt400 = require('node-jt400'),
           //ignore error
         });
       } else {
-	return jt400.connect(options).then(function (conn) {
-	  db = conn;
+        return jt400.connect(options).then(function(conn) {
+          db = conn;
           console.log('connected!!');
           return true;
         });
@@ -33,22 +33,24 @@ var jt400 = require('node-jt400'),
         statement = undefined;
       }
 
-      return db.execute(sqlStatement).then(function (st) {
+      return db.execute(sqlStatement).then(function(st) {
         statement = st;
         return {
           isQuery: st.isQuery,
           metadata: st.metadata,
           updated: st.updated,
-          query: function () {
+          query: function() {
             var deffered = q.defer();
-            var stream = st.asStream({bufferSize: 130}).pipe(JSONStream.parse([true]));
+            var stream = st.asStream({
+              bufferSize: 130
+            }).pipe(JSONStream.parse([true]));
 
-            stream.on('data', function (data) {
+            stream.on('data', function(data) {
               buffer.push(data);
               if (buffer.length >= 131) {
                 deffered.fulfill({
                   data: buffer.splice(0, 131),
-                  more: function () {
+                  more: function() {
                     stream.resume();
                     deffered = q.defer();
                     return deffered.promise;
@@ -65,7 +67,7 @@ var jt400 = require('node-jt400'),
               });
             });
 
-            stream.on('error', function (err) {
+            stream.on('error', function(err) {
               deffered.reject(err);
             });
             return deffered.promise;
