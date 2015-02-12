@@ -1,4 +1,4 @@
-var jt400 = require('jt400'),
+var jt400 = require('node-jt400'),
   q = require('q'),
   fs = require('fs'),
   JSONStream = require('JSONStream'),
@@ -17,8 +17,8 @@ var jt400 = require('jt400'),
           //ignore error
         });
       } else {
-        db = jt400.configure(options);
-        return db.query('SELECT * FROM SYSIBM.SYSDUMMY1').then(function() {
+	return jt400.connect(options).then(function (conn) {
+	  db = conn;
           console.log('connected!!');
           return true;
         });
