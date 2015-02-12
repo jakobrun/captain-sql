@@ -31,6 +31,7 @@
           connSettings = settings.connections.filter(function(c) {
             return c.name === connName;
           })[0];
+        document.title = 'Gandalf - ' + connSettings.name;
         pubsub.emit('connected', connSettings);
       },
       view: function() {
