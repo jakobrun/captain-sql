@@ -1,4 +1,4 @@
-exports.createLoginModule = function(m, connection, settings) {
+exports.createLoginModule = function(m, pupsub, connect, settings) {
   'use strict';
   var errorMsg = m.prop(''),
     loginInfo = {
@@ -24,8 +24,8 @@ exports.createLoginModule = function(m, connection, settings) {
     config.user = loginInfo.username();
     config.password = loginInfo.password();
     //Connect
-    connection.connect(config).then(function() {
-      m.route('/sql/' + conn.name);
+    connect(config, conn).then(function(connection) {
+      pupsub.emit('connected', connection);
     }).fail(function(err) {
       errorMsg(err.message);
     }).then(m.endComputation);

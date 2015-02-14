@@ -1,4 +1,4 @@
-exports.createExecuter = function(pubsub, editor, connection) {
+exports.createExecuter = function(pubsub, editor) {
   'use strict';
   var compute = function (fun) {
       return function () {
@@ -38,8 +38,12 @@ exports.createExecuter = function(pubsub, editor, connection) {
       }
       more().then(moredataHandler).fail(errorHandler);
     },
+    connection,
     more;
 
+  pubsub.on('connected', function (c) {
+    connection = c;
+  });
   pubsub.on('run-query', runQuery);
   pubsub.on('load-more', loadMore);
 };

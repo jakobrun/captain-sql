@@ -1,7 +1,7 @@
-exports.createSchemaHandler = function(fs, pubsub, connection) {
+exports.createSchemaHandler = function(fs, pubsub) {
   'use strict';
   var loadSchema = function() {
-    connSettings.schema.forEach(function(schema) {
+    connection.settings().schema.forEach(function(schema) {
       var t = Date.now();
       fs.readFile(schema.file, function(err, schemaContent) {
         console.log('Load schema:', (Date.now() - t));
@@ -15,17 +15,18 @@ exports.createSchemaHandler = function(fs, pubsub, connection) {
         }
       });
     });
-  }, connSettings;
+  }, connection;
 
   pubsub.on('schema-export', function() {
+    var settings = connection.settings();
     connection.exportSchemaToFile({
-      schema: connSettings.schema[0].name,
-      file: connSettings.schema[0].file
+      schema: settings.schema[0].name,
+      file: settings.schema[0].file
     }).on('end', loadSchema);
   });
 
-  pubsub.on('connected', function (cSettings) {
-  	connSettings = cSettings;
+  pubsub.on('connected', function (c) {
+    connection = c;
   	loadSchema();
   });
 

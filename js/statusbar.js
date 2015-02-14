@@ -7,16 +7,20 @@ exports.createStatusbar = function(m, pubsub) {
     },
     time;
 
+  function setStatus (text) {
+    m.startComputation();
+    status(text);
+    m.endComputation();
+  }
+
   pubsub.on('run-query', function() {
     time = Date.now();
-    m.startComputation();
-    status('executing...');
-    m.endComputation();
+    setStatus('executing...');
   });
   pubsub.on('data', endTime);
   pubsub.on('data-error', endTime);
-  pubsub.on('connected', function (connSettings) {
-    status('Connected to ' + connSettings.name + '!');
+  pubsub.on('schema-loaded', function () {
+    setStatus('Schema loaded !');
   });
   return {
     view: function() {
