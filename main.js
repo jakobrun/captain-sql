@@ -3,12 +3,14 @@
   'use strict';
   var gui = require('nw.gui'),
     win = gui.Window.get(),
-    nativeMenuBar = new gui.Menu({ type: 'menubar' });
+    nativeMenuBar = new gui.Menu({
+      type: 'menubar'
+    });
   nativeMenuBar.createMacBuiltin('Gandalf');
   win.menu = nativeMenuBar;
 
   require('./js/get_settings')(process.env.HOME).then(function(settings) {
-    var connection = require('./js/connection'),
+    var connection = require('./js/connection')(),
       fs = require('fs'),
       events = require('events'),
       getTables = require('./js/get_tables'),
@@ -24,6 +26,21 @@
     exports.createExecuter(pubsub, editor, connection);
     exports.createSchemaHandler(fs, pubsub, connection);
     exports.createSqlHint(pubsub, editor, getTables);
+
+    pubsub.on('new-window', function() {
+      var path = window.location.href;
+      path = path.substring(0, path.indexOf('.html') + 5);
+      console.log(path);
+      gui.Window.open(path, {
+        focus: true,
+        transparent: true,
+        toolbar: false
+      });
+    });
+
+    win.on('focus', function() {
+      pubsub.emit('editor-focus');
+    });
 
     var sqlModule = {
       controller: function() {
@@ -53,7 +70,7 @@
       '/login': loginModule,
       '/sql/:conn': sqlModule
     });
-  }).fail(function (err) {
+  }).fail(function(err) {
     console.error('faild to load settings', err);
   });
 }());

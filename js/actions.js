@@ -7,6 +7,9 @@ exports.createActions = function(m, pubsub, createPopupmenu) {
       name: 'Content assist (ctrl + Space)',
       eventName: 'content-assist'
     }, {
+      name: 'New window',
+      eventName: 'new-window'
+    }, {
       name: 'Bookmark',
       eventName: 'bookmark-add'
     }, {
