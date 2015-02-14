@@ -21,6 +21,9 @@ exports.createActions = function(m, pubsub, createPopupmenu) {
     }, {
       name: 'Export schema',
       eventName: 'schema-export'
+    }, {
+      name: 'Disconnect',
+      eventName: 'disconnect'
     }],
     menu = createPopupmenu(pubsub, {
       getList: function() {

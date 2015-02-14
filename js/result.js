@@ -17,16 +17,18 @@ exports.createResult = function(m, pubsub) {
         element.clientHeight < element.scrollHeight) {
         pubsub.emit('load-more');
       }
-    };
-
-  pubsub.on('run-query', function () {
+    },
+    reset = function () {
       m.startComputation();
       errorMsg('');
       updated('');
       metadata([]);
       data([]);
       m.endComputation();
-  });
+    };
+
+  pubsub.on('run-query', reset);
+  pubsub.on('connected', reset);
   pubsub.on('metadata', metadata);
   pubsub.on('data', data);
   pubsub.on('data-more', function(moreData) {

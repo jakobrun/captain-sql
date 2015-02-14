@@ -61,6 +61,9 @@ function connection(db, settings) {
         };
       });
     },
+    close: function () {
+      db.close();
+    },
     exportSchemaToFile: function(opt) {
       var stream = exportSchema(db, opt);
       stream.pipe(fs.createWriteStream(opt.file));

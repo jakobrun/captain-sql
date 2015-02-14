@@ -44,9 +44,13 @@
     });
 
     pubsub.on('connected', function (connection) {
-        connected = true;
-        document.title = 'Gandalf - connected to ' + connection.settings().name;
+      connected = true;
+      document.title = 'Gandalf - connected to ' + connection.settings().name;
       m.route('/sql/' + connection.settings().name);
+      pubsub.once('disconnect', function () {
+        connection.close();
+        m.route('/login');
+      });
     });
 
     var sqlModule = {
