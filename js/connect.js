@@ -82,6 +82,7 @@ module.exports = function connect(options, settings) {
       return connection(db, settings);
     }, function() {
       //ignore error
+      return connection(db, settings);
     });
   } else {
     return jt400.connect(options).then(function(conn) {

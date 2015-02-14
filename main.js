@@ -21,7 +21,8 @@
       editor = exports.createEditor(m, pubsub, CodeMirror),
       result = exports.createResult(m, pubsub),
       bookmarkModule = exports.createBookmarkModel(m, fs, pubsub, editor, exports.createPopupmenu),
-      columnsPrompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu);
+      columnsPrompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu),
+      connected = false;
 
     exports.createExecuter(pubsub, editor);
     exports.createSchemaHandler(fs, pubsub);
@@ -43,17 +44,27 @@
     });
 
     pubsub.on('connected', function (connection) {
+        connected = true;
         document.title = 'Gandalf - connected to ' + connection.settings().name;
       m.route('/sql/' + connection.settings().name);
     });
 
     var sqlModule = {
       controller: function() {
-        /*var connName = m.route.param('conn'),
-          connSettings = settings.connections.filter(function(c) {
-            return c.name === connName;
-          })[0];
-        pubsub.emit('connected', connSettings);*/
+        if(!connected) {
+          var connName = m.route.param('conn'),
+            connSettings = settings.connections.filter(function(c) {
+              return c.name === connName;
+            })[0];
+          if (connSettings.host === 'hsql:inmemory') {
+            console.log('reconnect to hsql:inmemory!!');
+            connect({host: connSettings.host}, connSettings).then(function (connection) {
+              pubsub.emit('connected', connection);
+            });
+          } else {
+            m.route('/login');
+          }
+        }
       },
       view: function() {
         return [

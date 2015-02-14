@@ -1,6 +1,6 @@
 exports.createStatusbar = function(m, pubsub) {
   'use strict';
-  var status = m.prop('connected!'),
+  var status = m.prop(''),
     endTime = function() {
       var timeDiff = Date.now() - time;
       status('done, time: (' + timeDiff + ')');
