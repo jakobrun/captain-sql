@@ -46,7 +46,7 @@
     pubsub.on('connected', function (connection) {
       var settingsStyle = document.getElementById('settings-style'),
         primaryColor = connection.settings().primaryColor || '#e35f28';
-      settingsStyle.textContent = '#body .table-head th { color: ' +
+      settingsStyle.textContent = '.table-head th { color: ' +
         primaryColor +
         '} .cm-s-gandalf span.cm-keyword { color: ' +
         primaryColor +
