@@ -1,29 +1,32 @@
 
 .cm-s-gandalf.CodeMirror {
 	background-color: transparent;
-	color: #e0e0e0;
+	color: @color;
 	font-size: 15px;
 }
-.cm-s-gandalf div.CodeMirror-selected {background: lighten(@bg-color, 16%) !important;}
-.cm-s-gandalf .CodeMirror-gutters {background: #151515; border-right: 0px;}
-.cm-s-gandalf .CodeMirror-linenumber {color: #505050;}
-.cm-s-gandalf .CodeMirror-cursor {border-left: 1px solid #b0b0b0 !important;}
+.cm-s-gandalf {
+  div.CodeMirror-selected {background: lighten(@bg-color, 16%) !important;}
+  .CodeMirror-gutters {background: #151515; border-right: 0px;}
+  .CodeMirror-linenumber {color: #505050;}
+  .CodeMirror-cursor {border-left: 1px solid #b0b0b0 !important;}
 
-.cm-s-gandalf span.cm-comment {color: #8f5536;}
-.cm-s-gandalf span.cm-atom {color: #aa759f;}
-.cm-s-gandalf span.cm-number {color: #aa759f;}
+  span.cm-comment {color: #8f5536;}
+  span.cm-atom {color: #aa759f;}
+  span.cm-number {color: #aa759f;}
 
-.cm-s-gandalf span.cm-property, .cm-s-gandalf span.cm-attribute {color: #90a959;}
-.cm-s-gandalf span.cm-keyword {color: #e05b24;}
-.cm-s-gandalf span.cm-string {color: #f4bf75;}
+  span.cm-property, span.cm-attribute {color: #90a959;}
+  span.cm-keyword {color: @primary-color;}
+  span.cm-string {color: #f4bf75;}
 
-.cm-s-gandalf span.cm-variable {color: #90a959;}
-.cm-s-gandalf span.cm-variable-2 {color: #6a9fb5;}
-.cm-s-gandalf span.cm-def {color: #d28445;}
-.cm-s-gandalf span.cm-bracket {color: #e0e0e0;}
-.cm-s-gandalf span.cm-tag {color: #ac4142;}
-.cm-s-gandalf span.cm-link {color: #aa759f;}
-.cm-s-gandalf span.cm-error {background: #ac4142; color: #b0b0b0;}
+  span.cm-variable {color: #90a959;}
+  span.cm-variable-2 {color: #6a9fb5;}
+  span.cm-def {color: #d28445;}
+  span.cm-bracket {color: #e0e0e0;}
+  span.cm-tag {color: #ac4142;}
+  span.cm-link {color: #aa759f;}
+  span.cm-error {background: #ac4142; color: #b0b0b0;}
 
-.cm-s-gandalf .CodeMirror-activeline-background {background: #2F2F2F !important;}
-.cm-s-gandalf .CodeMirror-matchingbracket { text-decoration: underline; color: white !important;}
+  .CodeMirror-activeline-background {background: #2F2F2F !important;}
+  .CodeMirror-matchingbracket { text-decoration: underline; color: white !important;}
+}
+
