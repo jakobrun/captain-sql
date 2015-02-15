@@ -44,6 +44,18 @@
     });
 
     pubsub.on('connected', function (connection) {
+      var settingsStyle = document.getElementById('settings-style'),
+        primaryColor = connection.settings().primaryColor || '#e35f28';
+      settingsStyle.textContent = '#body .table-head th { color: ' +
+        primaryColor +
+        '} .cm-s-gandalf span.cm-keyword { color: ' +
+        primaryColor +
+        '} .p-menu-item-selected {background-color: ' +
+        primaryColor +
+        '} .CodeMirror-hint-active {background-color: ' +
+        primaryColor +
+        '}';
+
       connected = true;
       document.title = 'Gandalf - connected to ' + connection.settings().name;
       m.route('/sql/' + connection.settings().name);
