@@ -27,6 +27,8 @@
     "url": "gh:jakobrun/gandalf.git"
   },
   "scripts": {
+    "test": "mocha",
+    "test-w": "mocha -w",
     "lint": "jshint ./"
   },
   "author": "Jakob Már Rúnarsson",
