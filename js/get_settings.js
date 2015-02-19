@@ -8,7 +8,7 @@ var getDefaultSettings = function(baseDir) {
     "    name: 'My connection',\n" +
     "    host: 'myhost',\n" +
     "    user: '',\n" +
-    "    properties: {}\n" +
+    "    properties: {},\n" +
     "    schema: [{\n" +
     "      name: 'lib1',\n" +
     "      file: '" + baseDir + "/.gandalf/schema.json'\n" +
