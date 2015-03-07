@@ -1,27 +1,30 @@
 'use strict';
 var tokenize = require('sql-parser').lexer.tokenize;
 
-function last (array) {
+function last(array) {
   return array[array.length - 1];
 }
 
 module.exports = function(sql) {
-  return tokenize(sql).filter(function (t) {
+  return tokenize(sql).filter(function(t) {
     return t[0] !== 'AS';
-  }).reduce(function (array, token) {
-    if(token[0] === 'LITERAL' || token[0] === 'SEPARATOR') {
+  }).reduce(function(array, token) {
+    if (['LITERAL', 'SEPARATOR'].indexOf(token[0]) !== -1 && array.length) {
       last(array).tokens.push(token[1]);
     } else {
-      array.push({token: token, tokens: []});
+      array.push({
+        token: token,
+        tokens: []
+      });
     }
     return array;
-  }, []).filter(function (t) {
-    return t.token[0] === 'FROM' || t.token[0] === 'JOIN';
-  }).map(function (t) {
+  }, []).filter(function(t) {
+    return ['FROM', 'JOIN', 'UPDATE'].indexOf(t.token[0]) !== -1;
+  }).map(function(t) {
     return t.tokens.join(' ').split(',');
-  }).reduce(function (a, t) {
+  }).reduce(function(a, t) {
     return a.concat(t);
-  }, []).map(function (t) {
+  }, []).map(function(t) {
     return t.trim().split(' ');
   });
 };
