@@ -23,7 +23,7 @@ exports.createExecuter = function(pubsub, editor) {
     moredataHandler = emitData('data-more'),
     errorHandler = emit('data-error'),
     runQuery = function() {
-      connection.execute(editor.getSelection() || editor.getCursorStatement(' ')).then(function (st) {
+      connection.execute(editor.getSelection() || editor.getCursorStatement()).then(function (st) {
         if(st.isQuery()){
           st.metadata().then(emit('metadata')).fail(errorHandler);
           st.query().then(dataHandler).fail(errorHandler);
