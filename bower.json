@@ -16,6 +16,6 @@
   ],
   "dependencies": {
     "mithriljs": "~0.1.25",
-    "codemirror": "~4.10.0"
+    "codemirror": "~5.0.0"
   }
 }

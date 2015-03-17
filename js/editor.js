@@ -1,6 +1,7 @@
 exports.createEditor = function(m, pubsub, codeMirror) {
   var sqlEditor = function() {
       return function(element, isInitialized) {
+        var assistTimeoutId;
         if (!isInitialized) {
           cm = codeMirror(element, {
             value: '',
@@ -19,6 +20,12 @@ exports.createEditor = function(m, pubsub, codeMirror) {
               }
             }
           });
+          cm.on('change', function () {
+            if(assistTimeoutId) {
+              clearTimeout(assistTimeoutId);
+            }
+            assistTimeoutId = setTimeout(assist, 100);
+          });
           var focus = cm.focus.bind(cm);
           pubsub.on('editor-focus', focus);
           pubsub.on('run-query', focus);
@@ -30,6 +37,7 @@ exports.createEditor = function(m, pubsub, codeMirror) {
     assist = function() {
       cm.focus();
       codeMirror.showHint(cm, null, {
+        completeSingle: false,
         tables: tables
       });
     },

@@ -111,16 +111,23 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
       token = cm.getTokenAt(cur),
       search = token.string.trim(),
       result;
+    if(search === '') {
+      return;
+    }
     if(search.lastIndexOf('.') === 0) {
       result = columnCompletion(cm);
     } else {
       result = tableAndKeywordCompletion(search).concat(bookmarkCompletion(search));
     }
 
+    if(result.length===1 && result[0].text === search) {
+      return;
+    }
+
     return {
       list: result,
-        from: CodeMirror.Pos(cur.line, token.start),
-        to: CodeMirror.Pos(cur.line, token.end)
+      from: CodeMirror.Pos(cur.line, token.start),
+      to: CodeMirror.Pos(cur.line, token.end)
     };
   }
 
