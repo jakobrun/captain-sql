@@ -17,13 +17,13 @@ exports.createColumnsPrompt = function(m, editor, getTables, pubsub, createPopup
           'type': 'checkbox',
           'class': 'checklist-input',
         };
-        if (item.checked) {
+        if (item.original.checked) {
           inpAttrs.checked = 'checked';
         }
         return m('label', [m('input', inpAttrs),
           m('div', {
             'class': 'checklist-text'
-          }, item.name)
+          }, m.trust(item.string))
         ]);
       },
       itemSelected: function() {

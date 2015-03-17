@@ -37,7 +37,7 @@ exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
         return bookmarks || [];
       },
       renderItem: function (bookmark) {
-        return [m('div', bookmark.name), m('div', {'class': 'hint-remarks'}, bookmark.value)];
+        return [m('div', m.trust(bookmark.string)), m('div', {'class': 'hint-remarks'}, bookmark.original.value)];
       },
       itemSelected: function (bookmark) {
         var i = bookmarks.indexOf(bookmark);

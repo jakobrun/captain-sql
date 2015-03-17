@@ -9,6 +9,7 @@ exports.createId = exports.createIdGenerator();
 exports.createPopupmenu = function(pubsub, controller) {
   'use strict';
   var searchValue = m.prop(''),
+    fuzzy = require('fuzzy'),
     selectedIndex = m.prop(0),
     menuId = exports.createId(),
     show = m.prop(false),
@@ -26,7 +27,8 @@ exports.createPopupmenu = function(pubsub, controller) {
       searchElement = el;
     },
     keyDown = function(e) {
-      var l = getList().length,
+      var list = getList(),
+        l = list.length,
         i = selectedIndex();
       if (e.keyCode === 40 && l > 0) {
         selectedIndex((i + 1) % l);
@@ -38,19 +40,22 @@ exports.createPopupmenu = function(pubsub, controller) {
         toggleShow();
         pubsub.emit('editor-focus', {});
       }
-      if(controller.keyDown) {
-        controller.keyDown(e, getList()[selectedIndex()]);
+      if(controller.keyDown && l) {
+        controller.keyDown(e, list[selectedIndex()].original);
       }
     },
     getList = function() {
-      return controller.getList().filter(function(item) {
-        return item.name.toLowerCase().indexOf(searchValue().toLowerCase()) !== -1;
-      });
+      return fuzzy.filter(searchValue(), controller.getList(), {pre: '<span class="match">', post: '</span>', extract: function (item) {
+        return item.name;
+      }});
+      // return controller.getList().filter(function(item) {
+      //   return item.name.toLowerCase().indexOf(searchValue().toLowerCase()) !== -1;
+      // });
     },
     keyUp = function(e) {
       var list = getList();
       if (e.keyCode === 13 && list.length) {
-        controller.itemSelected(list[selectedIndex()]);
+        controller.itemSelected(list[selectedIndex()].original);
         toggleShow();
       }
     },
@@ -78,7 +83,7 @@ exports.createPopupmenu = function(pubsub, controller) {
           return m('li', {
             'class': 'p-menu-item' + (index === selectedIndex() ? ' p-menu-item-selected' : ''),
             'id': menuId + '-i' + index
-          }, controller.renderItem ? controller.renderItem(item) : item.name);
+          }, controller.renderItem ? controller.renderItem(item) : m.trust(item.string));
         }))
       ]);
     }

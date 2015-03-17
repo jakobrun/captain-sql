@@ -12,9 +12,10 @@
     border-bottom: 1px solid @bg-color;
     border-top: 1px solid lighten(@bg-color, 15%);
     padding: 4px 0;
+    color: darken(@color, 20%);
 }
 .p-menu-item-selected {
-    color: lighten(@color, 40%);
+    color: @color;
 }
 .hint-remarks {
   	overflow: hidden;
@@ -22,4 +23,7 @@
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+}
+.match {
+  color: lighten(@color, 30%);
 }
