@@ -15,6 +15,7 @@
       events = require('events'),
       getTables = require('./js/get_tables'),
       pubsub = new events.EventEmitter(),
+      errorHandler = exports.createErrorHandler(m),
       loginModule = exports.createLoginModule(m, pubsub, connect, settings),
       actions = exports.createActions(m, pubsub, exports.createPopupmenu),
       statusbar = exports.createStatusbar(m, pubsub),
@@ -92,7 +93,8 @@
           statusbar.view(),
           actions.view(),
           bookmarkModule.view(),
-          columnsPrompt.view()
+          columnsPrompt.view(),
+          errorHandler.view()
         ];
       }
     };
