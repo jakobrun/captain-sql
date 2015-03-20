@@ -16,7 +16,6 @@ exports.createErrorHandler = function (m) {
 
   return {
     view: function () {
-      console.log('render error', message);
       return m('div', {'class': 'container popup' + (message ? '' : ' hidden')}, [
         m('h2', {
           'class': 'popup-title'

@@ -19,11 +19,16 @@
       loginModule = exports.createLoginModule(m, pubsub, connect, settings),
       actions = exports.createActions(m, pubsub, exports.createPopupmenu),
       statusbar = exports.createStatusbar(m, pubsub),
-      editor = exports.createEditor(m, pubsub, CodeMirror),
+      editor = exports.createEditor(m, pubsub, CodeMirror, fs),
       result = exports.createResult(m, pubsub),
       bookmarkModule = exports.createBookmarkModel(m, fs, pubsub, editor, exports.createPopupmenu),
       columnsPrompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu),
       connected = false;
+
+    win.on('close', function () {
+      pubsub.emit('disconnect');
+      this.close(true);
+    });
 
     exports.createExecuter(pubsub, editor);
     exports.createSchemaHandler(fs, pubsub);

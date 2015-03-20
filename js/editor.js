@@ -1,4 +1,4 @@
-exports.createEditor = function(m, pubsub, codeMirror) {
+exports.createEditor = function(m, pubsub, codeMirror, fs) {
   var sqlEditor = function() {
       return function(element, isInitialized) {
         var assistTimeoutId;
@@ -62,6 +62,21 @@ exports.createEditor = function(m, pubsub, codeMirror) {
     tables = tableIndex;
   });
 
+  pubsub.on('connected', function (connection) {
+    var fileName = connection.settings().editorFile;
+    if(fileName) {
+      fs.readFile(fileName, function (err, data) {
+        if(err) {
+          return;
+        }
+        cm.setValue(data.toString());
+      });
+
+      pubsub.once('disconnect', function () {
+        fs.writeFile(fileName, cm.getValue());
+      });
+    }
+  });
   return {
     getValue: function(sep) {
       return cm.getValue(sep);
