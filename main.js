@@ -22,6 +22,7 @@
       editor = exports.createEditor(m, pubsub, CodeMirror, fs),
       result = exports.createResult(m, pubsub),
       bookmarkModule = exports.createBookmarkModel(m, fs, pubsub, editor, exports.createPopupmenu),
+      historyModule = exports.createHistory(m, pubsub, exports.createPopupmenu),
       columnsPrompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu),
       connected = false;
 
@@ -98,6 +99,7 @@
           statusbar.view(),
           actions.view(),
           bookmarkModule.view(),
+          historyModule.view(),
           columnsPrompt.view(),
           errorHandler.view()
         ];

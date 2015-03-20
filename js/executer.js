@@ -23,10 +23,17 @@ exports.createExecuter = function(pubsub, editor) {
     moredataHandler = emitData('data-more'),
     errorHandler = emit('data-error'),
     runQuery = function() {
-      connection.execute(editor.getSelection() || editor.getCursorStatement()).then(function (st) {
+      var sql = editor.getSelection() || editor.getCursorStatement();
+      connection.execute(sql).then(function (st) {
         if(st.isQuery()){
           st.metadata().then(emit('metadata')).fail(errorHandler);
-          st.query().then(dataHandler).fail(errorHandler);
+          st.query().then(function (res) {
+            pubsub.emit('succesfull-query', {
+              sql: sql,
+              data: res.data
+            });
+            dataHandler(res);
+          }).fail(errorHandler);
         } else {
           st.updated().then(emit('data-updated')).fail(errorHandler);
         }

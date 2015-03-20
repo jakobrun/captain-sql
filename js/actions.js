@@ -19,6 +19,9 @@ exports.createActions = function(m, pubsub, createPopupmenu) {
       name: 'Columns select',
       eventName: 'columns-select'
     }, {
+      name: 'History',
+      eventName: 'history-list'
+    }, {
       name: 'Export schema',
       eventName: 'schema-export'
     }, {

@@ -58,6 +58,9 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
     tables = {},
     cm;
 
+  pubsub.on('history-item-selected', function (historyItem) {
+    cm.replaceRange(historyItem.name, cm.getCursor(), cm.getCursor());
+  });
   pubsub.on('schema-loaded', function(tableIndex) {
     tables = tableIndex;
   });
