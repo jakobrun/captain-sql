@@ -8,6 +8,7 @@ var getDefaultSettings = function(baseDir) {
     "    name: 'My connection',\n" +
     "    host: 'myhost',\n" +
     "    user: '',\n" +
+    "    editorFile: '" + baseDir +"/.gandalf/myhost.sql',\n" +
     "    properties: {},\n" +
     "    schema: [{\n" +
     "      name: 'lib1',\n" +
