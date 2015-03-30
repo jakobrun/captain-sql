@@ -22,7 +22,7 @@
       editor = exports.createEditor(m, pubsub, CodeMirror, fs),
       result = exports.createResult(m, pubsub),
       bookmarkModule = exports.createBookmarkModel(m, fs, pubsub, editor, exports.createPopupmenu),
-      historyModule = exports.createHistory(m, pubsub, exports.createPopupmenu),
+      historyModule = exports.createHistory(m, pubsub, exports.createPopupmenu, fs),
       columnsPrompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu),
       connected = false;
 
