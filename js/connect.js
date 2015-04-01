@@ -2,7 +2,7 @@ var jt400 = require('node-jt400'),
   q = require('q'),
   fs = require('fs'),
   JSONStream = require('JSONStream'),
-  exportSchema = require('../server/export-schema');
+  exportSchema = require('./modules/export-schema');
 
 function connection(db, settings) {
   var statement;
@@ -80,7 +80,7 @@ module.exports = function connect(options, settings) {
   console.log('connecting...');
   if (options.host === 'hsql:inmemory') {
     var db = jt400.useInMemoryDb();
-    return require('../server/fakedata')(db).then(function() {
+    return require('./modules/fakedata')(db).then(function() {
       console.log('connected to inmemory hsql!!');
       return connection(db, settings);
     }, function() {
