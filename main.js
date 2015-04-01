@@ -9,11 +9,11 @@
   nativeMenuBar.createMacBuiltin('Gandalf');
   win.menu = nativeMenuBar;
 
-  require('./js/get_settings')(process.env.HOME).then(function(settings) {
-    var connect = require('./js/connect'),
+  require('./js/modules/get_settings')(process.env.HOME).then(function(settings) {
+    var connect = require('./js/modules/connect'),
       fs = require('fs'),
       events = require('events'),
-      getTables = require('./js/get_tables'),
+      getTables = require('./js/modules/get_tables'),
       pubsub = new events.EventEmitter(),
       errorHandler = exports.createErrorHandler(m),
       loginModule = exports.createLoginModule(m, pubsub, connect, settings),
@@ -111,6 +111,6 @@
       '/sql/:conn': sqlModule
     });
   }).fail(function(err) {
-    console.error('startup error', err.message);
+    console.error('startup error', err.message, err.stack);
   });
 }());

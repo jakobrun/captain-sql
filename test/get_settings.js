@@ -1,5 +1,5 @@
 'use strict';
-var getSettings = require('../js/get_settings'),
+var getSettings = require('../js/modules/get_settings'),
   fs = require('fs'),
   rimraf = require('rimraf'),
   q = require('q'),

@@ -1,7 +1,7 @@
 /*global CodeMirror, mocha*/
 mocha.setup('bdd');
 var expect = require('chai').expect,
-  getTables = require('../js/get_tables'),
+  getTables = require('../js/modules/get_tables'),
   events = require('events'),
   pubsub = new events.EventEmitter(),
   editor = exports.createEditor(m, pubsub, CodeMirror);
