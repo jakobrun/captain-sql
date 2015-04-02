@@ -9,7 +9,6 @@ describe('get settings', function () {
   var fileName = __dirname + '/.gandalf/settings.js';
 
   afterEach(function (done) {
-    console.log('remove dir');
     rimraf(__dirname + '/.gandalf', function () {
       done();
     });

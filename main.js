@@ -14,6 +14,7 @@
       fs = require('fs'),
       events = require('events'),
       getTables = require('./js/modules/get_tables'),
+      createHistory = require('./js/modules/history'),
       pubsub = new events.EventEmitter(),
       errorHandler = exports.createErrorHandler(m),
       loginModule = exports.createLoginModule(m, pubsub, connect, settings),
@@ -22,7 +23,7 @@
       editor = exports.createEditor(m, pubsub, CodeMirror, fs),
       result = exports.createResult(m, pubsub),
       bookmarkModule = exports.createBookmarkModel(m, fs, pubsub, editor, exports.createPopupmenu),
-      historyModule = exports.createHistory(m, pubsub, exports.createPopupmenu, fs),
+      historyModule = exports.createHistoryView(m, pubsub, exports.createPopupmenu, createHistory),
       columnsPrompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu),
       connected = false;
 
