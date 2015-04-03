@@ -2,10 +2,10 @@ exports.createHistoryView = function(m, pubsub, createPopupmenu, createHistory) 
   'use strict';
   var popup = createPopupmenu(pubsub, {
       getList: function() {
-	return history ? history.list() : [];
+        return history ? history.list() : [];
       },
       renderItem: function(historyItem) {
-	return [m('div', historyItem.original.name), m('div', {
+        return [m('div', historyItem.original.name), m('div', {
           'class': 'hint-remarks'
         }, historyItem.original.time)];
       },

@@ -66,7 +66,7 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
   });
 
   pubsub.on('connected', function (connection) {
-    var fileName = connection.settings().editorFile;
+    var fileName = process.env.HOME + '/.gandalf/' + connection.settings().editorFile;
     if(fileName) {
       fs.readFile(fileName, function (err, data) {
         if(err) {

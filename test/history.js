@@ -7,7 +7,7 @@ describe('history', function() {
   var options = {
       min: 2,
       max: 5,
-      file: __dirname + '/test.history'
+      file: 'unittest.history'
     },
     history;
 
@@ -18,7 +18,7 @@ describe('history', function() {
   });
 
   afterEach(function () {
-    fs.unlinkSync(options.file);
+    fs.unlinkSync(process.env.HOME + '/.gandalf/' + options.file);
   });
 
   it('should push to history up to max', function(done) {
