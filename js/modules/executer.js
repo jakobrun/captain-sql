@@ -7,6 +7,8 @@ exports.createExecuter = function(pubsub, editor) {
         m.endComputation();
       };
     },
+    more,
+    connection,
     emit = function (eventName) {
       return compute(function (res) {
         console.log('emit', eventName);
@@ -44,9 +46,7 @@ exports.createExecuter = function(pubsub, editor) {
         return;
       }
       more().then(moredataHandler).fail(errorHandler);
-    },
-    connection,
-    more;
+    };
 
   pubsub.on('connected', function (c) {
     connection = c;

@@ -3,13 +3,16 @@ var getSettings = require('../js/modules/get_settings'),
   fs = require('fs'),
   rimraf = require('rimraf'),
   q = require('q'),
+  path = require('path'),
   expect = require('chai').expect;
 
+var gandalfFolder = path.join(__dirname, '/.gandalf');
+
 describe('get settings', function () {
-  var fileName = __dirname + '/.gandalf/settings.js';
+  var fileName = path.join(__dirname, '/.gandalf/settings.js');
 
   afterEach(function (done) {
-    rimraf(__dirname + '/.gandalf', function () {
+    rimraf(gandalfFolder, function () {
       done();
     });
   });
@@ -24,7 +27,7 @@ describe('get settings', function () {
 
   it('should return settings file', function(done) {
     var expectedContent = 'module.exports = {connections: []}';
-    return q.nfcall(fs.mkdir, __dirname + '/.gandalf').then(function () {
+    return q.nfcall(fs.mkdir, gandalfFolder).then(function () {
       return q.nfcall(fs.writeFile, fileName, expectedContent);
     }).then(function () {
       return getSettings(__dirname);

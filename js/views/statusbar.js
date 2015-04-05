@@ -1,11 +1,11 @@
 exports.createStatusbar = function(m, pubsub) {
   'use strict';
   var status = m.prop(''),
+    time,
     endTime = function() {
       var timeDiff = Date.now() - time;
       status('done, time: (' + timeDiff + ')');
-    },
-    time;
+    };
 
   function setStatus (text) {
     m.startComputation();

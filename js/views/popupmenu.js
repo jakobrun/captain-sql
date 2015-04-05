@@ -1,4 +1,5 @@
 exports.createIdGenerator = function () {
+  'use strict';
   var i = 0;
   return function () {
     i++;
@@ -8,11 +9,13 @@ exports.createIdGenerator = function () {
 exports.createId = exports.createIdGenerator();
 exports.createPopupmenu = function(pubsub, controller) {
   'use strict';
+  var fuzzy = require('fuzzy');
+
   var searchValue = m.prop(''),
-    fuzzy = require('fuzzy'),
     selectedIndex = m.prop(0),
     menuId = exports.createId(),
     show = m.prop(false),
+    searchElement,
     toggleShow = function() {
       m.startComputation();
       show(!show());
@@ -20,11 +23,18 @@ exports.createPopupmenu = function(pubsub, controller) {
       selectedIndex(0);
       m.endComputation();
       if (show() && searchElement) {
-        setTimeout(function(){searchElement.focus();}, 1);
+        setTimeout(function(){
+          searchElement.focus();
+        }, 1);
       }
     },
     config = function(el) {
       searchElement = el;
+    },
+    getList = function() {
+      return fuzzy.filter(searchValue(), controller.getList(), {pre: '<span class="match">', post: '</span>', extract: function (item) {
+        return item.name;
+      }});
     },
     keyDown = function(e) {
       var list = getList(),
@@ -44,24 +54,15 @@ exports.createPopupmenu = function(pubsub, controller) {
         controller.keyDown(e, list[selectedIndex()].original);
       }
     },
-    getList = function() {
-      return fuzzy.filter(searchValue(), controller.getList(), {pre: '<span class="match">', post: '</span>', extract: function (item) {
-        return item.name;
-      }});
-      // return controller.getList().filter(function(item) {
-      //   return item.name.toLowerCase().indexOf(searchValue().toLowerCase()) !== -1;
-      // });
-    },
     keyUp = function(e) {
       var list = getList();
       if (e.keyCode === 13 && list.length) {
         controller.itemSelected(list[selectedIndex()].original);
         toggleShow();
       }
-    },
-    searchElement;
+    };
   return {
-  	toggleShow: toggleShow,
+    toggleShow: toggleShow,
     controller: controller,
     keyDown: keyDown,
     keyUp: keyUp,

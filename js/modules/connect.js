@@ -1,3 +1,4 @@
+'use strict';
 var jt400 = require('node-jt400'),
   q = require('q'),
   fs = require('fs'),

@@ -15,7 +15,7 @@ exports.createColumnsPrompt = function(m, editor, getTables, pubsub, createPopup
       renderItem: function(item) {
         var inpAttrs = {
           'type': 'checkbox',
-          'class': 'checklist-input',
+          'class': 'checklist-input'
         };
         if (item.original.checked) {
           inpAttrs.checked = 'checked';

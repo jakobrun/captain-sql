@@ -3,6 +3,10 @@ exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
   'use strict';
   var show = false,
     description = m.prop(''),
+    bookmarks,
+    nameEl,
+    content,
+    fileName = process.env.HOME + '/.gandalf/bookmarks.json',
     configName = function (el) {
       nameEl = el;
     },
@@ -45,11 +49,7 @@ exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
         writeToFile();
         pubsub.emit('editor-focus', {});
       }
-    }),
-    fileName = process.env.HOME + '/.gandalf/bookmarks.json',
-    bookmarks,
-    nameEl,
-    content;
+    });
 
   fs.readFile(fileName, function (err, data) {
     bookmarks = err ? [] : JSON.parse(data);

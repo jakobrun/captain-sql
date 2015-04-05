@@ -1,6 +1,7 @@
 exports.createHistoryView = function(m, pubsub, createPopupmenu, createHistory) {
   'use strict';
-  var popup = createPopupmenu(pubsub, {
+  var history,
+    popup = createPopupmenu(pubsub, {
       getList: function() {
         return history ? history.list() : [];
       },
@@ -12,7 +13,7 @@ exports.createHistoryView = function(m, pubsub, createPopupmenu, createHistory) 
       itemSelected: function(historyItem) {
         pubsub.emit('history-item-selected', historyItem);
       }
-    }), history;
+    });
 
   pubsub.on('history-list', popup.toggleShow);
   pubsub.on('succesfull-query', function(event) {

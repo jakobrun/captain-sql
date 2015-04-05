@@ -59,7 +59,7 @@ describe('history', function() {
       return createHistory(options);
     })
     .then(function (h3) {
-      expect(h3.list()).to.eql(['f','e']);
+      expect(h3.list()).to.eql(['f', 'e']);
     })
     .then(done, done);
   });

@@ -1,5 +1,15 @@
 exports.createEditor = function(m, pubsub, codeMirror, fs) {
-  var sqlEditor = function() {
+  'use strict';
+  var tables = {},
+    cm,
+    assist = function() {
+      cm.focus();
+      codeMirror.showHint(cm, null, {
+        completeSingle: false,
+        tables: tables
+      });
+    },
+    sqlEditor = function() {
       return function(element, isInitialized) {
         var assistTimeoutId;
         if (!isInitialized) {
@@ -34,13 +44,6 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
         }
       };
     },
-    assist = function() {
-      cm.focus();
-      codeMirror.showHint(cm, null, {
-        completeSingle: false,
-        tables: tables
-      });
-    },
     eachTokenUntil = function(f, start, direction) {
       var l = start || 0,
         tokens, i;
@@ -54,9 +57,7 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
         }
         l += direction;
       }
-    },
-    tables = {},
-    cm;
+    };
 
   pubsub.on('history-item-selected', function (historyItem) {
     cm.replaceRange(historyItem.name, cm.getCursor(), cm.getCursor());
@@ -121,6 +122,7 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
       var pCount = 0,
         column = '',
         columns = [],
+        start,
         countParenthesisLevel = function (token) {
           if (start && token === '(') {
             pCount += 1;
@@ -128,7 +130,7 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
             pCount -= 1;
           }
         },
-        startLine, start, end;
+        startLine, end;
 
       //Find start line
       eachTokenUntil(function (token, l) {

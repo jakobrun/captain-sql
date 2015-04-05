@@ -1,6 +1,7 @@
+'use strict';
 var faker = require('faker'),
-  q = require('q'),
-  numberOfPersons = 200,
+  q = require('q');
+var numberOfPersons = 200,
   numberOfProducts = 100;
 
 function randomNumber(max, from) {
@@ -29,7 +30,7 @@ module.exports = function(db) {
   function commentColumns (tableName, comments) {
     return function () {
       return q.all(comments.map(function (c) {
-        return db.update("comment on column " + tableName + "." + c[0] + " IS '" + c[1] + "'");
+        return db.update('comment on column ' + tableName + '.' + c[0] + " IS '" + c[1] + "'");
       }));
     };
   }
@@ -79,20 +80,6 @@ module.exports = function(db) {
       .then(innsertArray('insert into product values(?,?,?,?)', products));
   }
 
-  function createOrders() {
-    var orders = createArray(1000, function(i) {
-      return [i,
-        randomNumber(numberOfPersons),
-        faker.date.past()
-      ];
-    });
-    return db.update('create table productorder (orderid decimal(9), personid decimal(9), dayOfOrder TIMESTAMP, primary key(orderid))')
-      .then(innsertArray('insert into productorder values(?,?,?)', orders))
-      .then(function () {
-        return createOrderItems(orders);
-      });
-  }
-
   function createOrderItems (orders) {
     var items = [], i = -1;
     orders.forEach(function (order, orderIndex) {
@@ -107,6 +94,20 @@ module.exports = function(db) {
     });
     return db.update('create table orderitem (orderitemid decimal(9), orderid decimal(9), productid decimal(9), quantity decimal(9), primary key(orderitemid))')
       .then(innsertArray('insert into orderitem values(?,?,?,?)', items));
+  }
+
+  function createOrders() {
+    var orders = createArray(1000, function(i) {
+      return [i,
+        randomNumber(numberOfPersons),
+        faker.date.past()
+      ];
+    });
+    return db.update('create table productorder (orderid decimal(9), personid decimal(9), dayOfOrder TIMESTAMP, primary key(orderid))')
+      .then(innsertArray('insert into productorder values(?,?,?)', orders))
+      .then(function () {
+        return createOrderItems(orders);
+      });
   }
 
   return createPersons()

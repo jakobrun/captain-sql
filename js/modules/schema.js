@@ -1,6 +1,7 @@
 exports.createSchemaHandler = function(fs, pubsub) {
   'use strict';
   var baseDir = process.env.HOME + '/.gandalf/';
+  var connection;
   var loadSchema = function() {
     connection.settings().schema.forEach(function(schema) {
       var t = Date.now();
@@ -16,7 +17,7 @@ exports.createSchemaHandler = function(fs, pubsub) {
         }
       });
     });
-  }, connection;
+  };
 
   pubsub.on('schema-export', function() {
     var settings = connection.settings();
@@ -28,7 +29,7 @@ exports.createSchemaHandler = function(fs, pubsub) {
 
   pubsub.on('connected', function (c) {
     connection = c;
-  	loadSchema();
+    loadSchema();
   });
 
 };

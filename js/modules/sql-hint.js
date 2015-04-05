@@ -12,8 +12,8 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
 
   function getKeywords(cm) {
     var mode = cm.doc.modeOption;
-    if(mode === "sql"){
-      mode = "text/x-sql";
+    if(mode === 'sql'){
+      mode = 'text/x-sql';
     }
     return CodeMirror.resolveMode(mode).keywords;
   }
@@ -34,11 +34,18 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
     };
   }
 
+  function findTableByAlias(alias) {
+    var tableTuble = getTables(editor.getCursorStatement(' ') || editor.getValue(' ')).filter(function (table) {
+      return alias === table[1];
+    })[0];
+    return tableTuble && tableTuble[0];
+  }
+
   function columnCompletion(cm) {
     var cur = cm.getCursor(),
       token = cm.getTokenAt(cur),
       string = token.string.substr(1),
-      prevCur = CodeMirror.Pos(cur.line, token.start),
+      prevCur = CodeMirror.Pos(cur.line, token.start), //eslint-disable-line new-cap
       table = cm.getTokenAt(prevCur).string;
     if( !tables.hasOwnProperty( table.toUpperCase() ) ){
       table = findTableByAlias(table);
@@ -51,24 +58,19 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
       return col.name;
     })).map(function(col) {
       return {
-        text: "." + col.name,
+        text: '.' + col.name,
         render: function (el) {
-          el.innerHTML = '<div class="hint-column">'+col.name+'</div><div class="hint-remarks">' + col.remarks +'</div>';
+          el.innerHTML = '<div class="hint-column">' + col.name + '</div><div class="hint-remarks">' + col.remarks + '</div>';
         }
         //displayText: col.name + (col.remarks ? ' ' + col.remarks : '')
       };
     });
   }
 
-  function findTableByAlias(alias) {
-    var tableTuble = getTables(editor.getCursorStatement(' ') || editor.getValue(' ')).filter(function (table) {
-      return alias === table[1];
-    })[0];
-    return tableTuble && tableTuble[0];
-  }
-
   function tableAndKeywordCompletion(search) {
-    var keyWordMatcher = match(search, function(w){return w;});
+    var keyWordMatcher = match(search, function(w){
+      return w;
+    });
     var getTableName = function (table) {
       return table.table;
     };
@@ -120,16 +122,18 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
       result = tableAndKeywordCompletion(search).concat(bookmarkCompletion(search));
     }
 
-    if(result.length===1 && result[0].text === search) {
+    if(result.length === 1 && result[0].text === search) {
       return;
     }
 
     return {
       list: result,
+      /*eslint-disable new-cap*/
       from: CodeMirror.Pos(cur.line, token.start),
       to: CodeMirror.Pos(cur.line, token.end)
+      /*eslint-enable*/
     };
   }
 
-  CodeMirror.registerHelper("hint", "sql", sqlHint);
+  CodeMirror.registerHelper('hint', 'sql', sqlHint);
 };

@@ -4,7 +4,7 @@ exports.createResult = function(m, pubsub) {
     updated = m.prop(''),
     data = m.prop([]),
     errorMsg = m.prop(''),
-    columnWidth = function function_name(index) {
+    columnWidth = function (index) {
       if (metadata()[index] && metadata()[index].precision) {
         return Math.min(300, 12 + (metadata()[index].precision * 9));
       } else {

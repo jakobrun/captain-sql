@@ -1,8 +1,8 @@
 /*global CodeMirror*/
 (function() {
   'use strict';
-  var gui = require('nw.gui'),
-    win = gui.Window.get(),
+  var gui = require('nw.gui');
+  var win = gui.Window.get(),
     nativeMenuBar = new gui.Menu({
       type: 'menubar'
     });
@@ -14,8 +14,9 @@
       fs = require('fs'),
       events = require('events'),
       getTables = require('./js/modules/get_tables'),
-      createHistory = require('./js/modules/history'),
-      pubsub = new events.EventEmitter(),
+      createHistory = require('./js/modules/history');
+
+    var pubsub = new events.EventEmitter(),
       errorHandler = exports.createErrorHandler(m),
       loginModule = exports.createLoginModule(m, pubsub, connect, settings),
       actions = exports.createActions(m, pubsub, exports.createPopupmenu),
