@@ -22,12 +22,14 @@
     "gulp": "^3.8.10",
     "gulp-less": "^1.3.6",
     "mocha": "^2.0.1",
+    "precommit-hook": "^2.0.1",
     "rimraf": "^2.2.8"
   },
   "repository": {
     "type": "git",
     "url": "gh:jakobrun/gandalf.git"
   },
+  "pre-commit": ["lint", "test"],
   "scripts": {
     "test": "mocha",
     "test-w": "mocha -w",
