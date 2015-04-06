@@ -1,20 +1,18 @@
 'use strict';
-var getSettings = require('../js/modules/get_settings'),
-  fs = require('fs'),
-  rimraf = require('rimraf'),
-  q = require('q'),
-  path = require('path'),
-  expect = require('chai').expect;
+import getSettings from '../js/modules/get_settings';
+import {mkdir, writeFile, readFile} from 'fs';
+import rimraf from 'rimraf';
+import {nfcall} from 'q';
+import {join} from 'path';
+import {expect} from 'chai';
 
-var gandalfFolder = path.join(__dirname, '/.gandalf');
+const gandalfFolder = join(__dirname, '/.gandalf');
 
 describe('get settings', function () {
-  var fileName = path.join(__dirname, '/.gandalf/settings.js');
+  const fileName = join(__dirname, '/.gandalf/settings.js');
 
   afterEach(function (done) {
-    rimraf(gandalfFolder, function () {
-      done();
-    });
+    rimraf(gandalfFolder, () => done());
   });
 
   it('should create default settings', function(done) {
@@ -26,14 +24,12 @@ describe('get settings', function () {
   });
 
   it('should return settings file', function(done) {
-    var expectedContent = 'module.exports = {connections: []}';
-    return q.nfcall(fs.mkdir, gandalfFolder).then(function () {
-      return q.nfcall(fs.writeFile, fileName, expectedContent);
-    }).then(function () {
-      return getSettings(__dirname);
-    }).then(function () {
-      return q.nfcall(fs.readFile, fileName);
-    }).then(function (content) {
+    const expectedContent = 'module.exports = {connections: []}';
+    return nfcall(mkdir, gandalfFolder)
+    .then(() => nfcall(writeFile, fileName, expectedContent))
+    .then(() => getSettings(__dirname))
+    .then(() => nfcall(readFile, fileName))
+    .then((content) => {
       expect(content.toString()).to.equal(expectedContent);
     }).then(done, done);
   });

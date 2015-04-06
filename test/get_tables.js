@@ -1,7 +1,6 @@
-/*global describe, it*/
 'use strict';
-var getTables = require('../js/modules/get_tables'),
-  expect = require('chai').expect;
+import getTables from '../js/modules/get_tables';
+import {expect} from 'chai';
 
 describe('get tables', function () {
   it('should return empty array when no tables ', function () {

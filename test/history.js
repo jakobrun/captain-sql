@@ -1,24 +1,24 @@
 'use strict';
-var createHistory = require('../js/modules/history'),
-  expect = require('chai').expect,
-  fs = require('fs');
+import createHistory from '../js/modules/history';
+import {expect} from 'chai';
+import {unlinkSync} from 'fs';
 
 describe('history', function() {
-  var options = {
+  const options = {
       min: 2,
       max: 5,
       file: 'unittest.history'
-    },
-    history;
+    };
+  let history;
 
   beforeEach(function(done) {
-    createHistory(options).then(function (res) {
+    createHistory(options).then((res) => {
       history = res;
     }).then(done, done);
   });
 
   afterEach(function () {
-    fs.unlinkSync(process.env.HOME + '/.gandalf/' + options.file);
+    unlinkSync(process.env.HOME + '/.gandalf/' + options.file);
   });
 
   it('should push to history up to max', function(done) {
@@ -45,9 +45,9 @@ describe('history', function() {
   });
 
   it('should persist in file', function(done) {
-    history.push('a').then(function () {
-      return createHistory(options);
-    }).then(function (h2) {
+    history.push('a')
+    .then(() => createHistory(options))
+    .then(function (h2) {
       expect(h2.list()).to.eql(['a']);
       h2.push('b');
       h2.push('c');
@@ -55,9 +55,7 @@ describe('history', function() {
       h2.push('e');
       return h2.push('f');
     })
-    .then(function () {
-      return createHistory(options);
-    })
+    .then(() => createHistory(options))
     .then(function (h3) {
       expect(h3.list()).to.eql(['f', 'e']);
     })
