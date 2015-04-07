@@ -1,5 +1,5 @@
+'use strict';
 exports.createIdGenerator = function () {
-  'use strict';
   var i = 0;
   return function () {
     i++;
@@ -8,7 +8,6 @@ exports.createIdGenerator = function () {
 };
 exports.createId = exports.createIdGenerator();
 exports.createPopupmenu = function(pubsub, controller) {
-  'use strict';
   var fuzzy = require('fuzzy');
 
   var searchValue = m.prop(''),

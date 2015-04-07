@@ -1,6 +1,6 @@
 /*jshint maxparams: 10*/
+'use strict';
 exports.createColumnsPrompt = function(m, editor, getTables, pubsub, createPopupmenu) {
-  'use strict';
   var columnList = [],
     tables = [],
     listView = createPopupmenu(pubsub, {

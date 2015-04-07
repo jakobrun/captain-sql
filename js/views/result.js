@@ -1,5 +1,5 @@
+'use strict';
 exports.createResult = function(m, pubsub) {
-  'use strict';
   var metadata = m.prop([]),
     updated = m.prop(''),
     data = m.prop([]),

@@ -1,6 +1,6 @@
 /*jshint maxparams: 10*/
+'use strict';
 exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
-  'use strict';
   var show = false,
     description = m.prop(''),
     bookmarks,

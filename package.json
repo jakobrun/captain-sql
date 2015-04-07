@@ -28,10 +28,9 @@
     "type": "git",
     "url": "gh:jakobrun/gandalf.git"
   },
-  "pre-commit": ["lint", "test"],
+  "pre-commit": ["lint"],
   "scripts": {
-    "test": "mocha",
-    "test-w": "mocha -w",
+    "test": "mocha --compilers js:babel/register",
     "lint": "eslint ./"
   },
   "author": "Jakob Már Rúnarsson",

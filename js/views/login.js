@@ -1,5 +1,5 @@
+'use strict';
 exports.createLoginModule = function(m, pupsub, connect, settings) {
-  'use strict';
   var errorMsg = m.prop(''),
     loginInfo = {
       host: m.prop(''),

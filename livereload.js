@@ -1,5 +1,5 @@
+'use strict';
 (function() {
-  'use strict';
   var gulp = require('gulp'),
     gui = require('nw.gui');
 

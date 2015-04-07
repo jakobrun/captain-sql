@@ -1,6 +1,6 @@
 /*global mocha*/
+'use strict';
 (function() {
-  'use strict';
   var gulp = require('gulp');
 
   gulp.task('js', function() {

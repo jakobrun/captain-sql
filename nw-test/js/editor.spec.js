@@ -1,4 +1,5 @@
 /*global CodeMirror, mocha*/
+'use strict';
 mocha.setup('bdd');
 var expect = require('chai').expect,
   getTables = require('../js/modules/get_tables'),
@@ -10,7 +11,6 @@ var pubsub = new events.EventEmitter(),
 m.render(document.getElementById('editor_container'), editor.view());
 
 describe('editor', function() {
-  'use strict';
 
   it('should set value', function() {
     editor.setValue('testing\nline2');
@@ -77,7 +77,6 @@ describe('editor', function() {
 });
 
 describe('columns prompt', function () {
-  'use strict';
   it('should check current columns', function() {
     var prompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu),
       tables = {

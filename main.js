@@ -1,6 +1,6 @@
 /*global CodeMirror*/
+'use strict';
 (function() {
-  'use strict';
   var gui = require('nw.gui');
   var win = gui.Window.get(),
     nativeMenuBar = new gui.Menu({

@@ -1,5 +1,5 @@
+'use strict';
 exports.createSchemaHandler = function(fs, pubsub) {
-  'use strict';
   var baseDir = process.env.HOME + '/.gandalf/';
   var connection;
   var loadSchema = function() {

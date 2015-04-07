@@ -1,5 +1,5 @@
+'use strict';
 exports.createActions = function(m, pubsub, createPopupmenu) {
-  'use strict';
   var list = [{
       name: 'Run query (ctrl + Enter)',
       eventName: 'run-query'

@@ -1,5 +1,5 @@
+'use strict';
 exports.createStatusbar = function(m, pubsub) {
-  'use strict';
   var status = m.prop(''),
     time,
     endTime = function() {

@@ -1,5 +1,5 @@
+'use strict';
 exports.createExecuter = function(pubsub, editor) {
-  'use strict';
   var compute = function (fun) {
       return function () {
         m.startComputation();

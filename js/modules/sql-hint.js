@@ -1,6 +1,6 @@
 /*global CodeMirror*/
+'use strict';
 exports.createSqlHint = function(pubsub, editor, getTables) {
-  'use strict';
 
   var tables,
     keywords,
