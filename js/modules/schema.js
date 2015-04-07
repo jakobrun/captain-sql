@@ -1,10 +1,10 @@
 'use strict';
-exports.createSchemaHandler = function(fs, pubsub) {
-  var baseDir = process.env.HOME + '/.gandalf/';
-  var connection;
-  var loadSchema = function() {
+export const createSchemaHandler = function(fs, pubsub) {
+  const baseDir = process.env.HOME + '/.gandalf/';
+  let connection;
+  const loadSchema = function() {
     connection.settings().schema.forEach(function(schema) {
-      var t = Date.now();
+      const t = Date.now();
       fs.readFile(baseDir + schema.file, function(err, schemaContent) {
         console.log('Load schema:', (Date.now() - t));
         if (err) {
@@ -20,7 +20,7 @@ exports.createSchemaHandler = function(fs, pubsub) {
   };
 
   pubsub.on('schema-export', function() {
-    var settings = connection.settings();
+    const settings = connection.settings();
     connection.exportSchemaToFile({
       schema: settings.schema[0].name,
       file: baseDir + settings.schema[0].file

@@ -9,12 +9,12 @@
   nativeMenuBar.createMacBuiltin('Gandalf');
   win.menu = nativeMenuBar;
 
-  require('./js/modules/get_settings')(process.env.HOME).then(function(settings) {
-    var connect = require('./js/modules/connect'),
+  require('./dist/modules/get_settings')(process.env.HOME).then(function(settings) {
+    var connect = require('./dist/modules/connect'),
       fs = require('fs'),
       events = require('events'),
-      getTables = require('./js/modules/get_tables'),
-      createHistory = require('./js/modules/history');
+      getTables = require('./dist/modules/get_tables'),
+      createHistory = require('./dist/modules/history');
 
     var pubsub = new events.EventEmitter(),
       errorHandler = exports.createErrorHandler(m),
