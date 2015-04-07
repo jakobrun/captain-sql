@@ -2,7 +2,7 @@
 'use strict';
 mocha.setup('bdd');
 var expect = require('chai').expect,
-  getTables = require('../js/modules/get_tables'),
+  getTables = require('../dist/modules/get_tables'),
   events = require('events');
 
 var pubsub = new events.EventEmitter(),

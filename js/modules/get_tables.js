@@ -1,15 +1,15 @@
 'use strict';
-var tokenize = require('sql-parser').lexer.tokenize;
+import {lexer} from 'sql-parser';
 
 function last(array) {
   return array[array.length - 1];
 }
 
-module.exports = function(sql) {
+function getTables(sql) {
   try {
-    return tokenize(sql).filter(function(t) {
-      return t[0] !== 'AS';
-    }).reduce(function(array, token) {
+    return lexer.tokenize(sql)
+    .filter((t) => t[0] !== 'AS')
+    .reduce(function(array, token) {
       if (['LITERAL', 'SEPARATOR'].indexOf(token[0]) !== -1 && array.length) {
         last(array).tokens.push(token[1]);
       } else {
@@ -19,17 +19,14 @@ module.exports = function(sql) {
         });
       }
       return array;
-    }, []).filter(function(t) {
-      return ['FROM', 'JOIN', 'UPDATE'].indexOf(t.token[0]) !== -1;
-    }).map(function(t) {
-      return t.tokens.join(' ').split(',');
-    }).reduce(function(a, t) {
-      return a.concat(t);
-    }, []).map(function(t) {
-      return t.trim().split(' ');
-    });
+    }, [])
+    .filter((t) => ['FROM', 'JOIN', 'UPDATE'].indexOf(t.token[0]) !== -1)
+    .map((t) => t.tokens.join(' ').split(','))
+    .reduce((a, t) => a.concat(t), [])
+    .map((t) => t.trim().split(' '));
   } catch (e) {
     console.log(e.message, e.stack);
     return [];
   }
-};
+}
+export default getTables;

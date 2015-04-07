@@ -1,40 +1,49 @@
 'use strict';
-var q = require('q'),
-  fs = require('fs');
+import {defer} from 'q';
+import {readFile, mkdir, writeFile} from 'fs';
 
-var getDefaultSettings = function(baseDir) {
-  return 'module.exports = {\n' +
-    '  connections: [{\n' +
-    "    name: 'My connection',\n" +
-    "    host: 'myhost',\n" +
-    "    user: '',\n" +
-    "    editorFile: '" + baseDir + "/.gandalf/myhost.sql',\n" +
-    '    properties: {},\n' +
-    '    schema: [{\n' +
-    "      name: 'lib1',\n" +
-    "      file: '" + baseDir + "/.gandalf/schema.json'\n" +
-    '    }]\n' +
-    '  }]\n' +
-    '};\n';
+const getDefaultSettings = function() {
+  return `
+module.exports = {
+  connections: [{
+    name: 'My connection',
+    host: 'myhost',
+    user: '',
+    editorFile: myhost.sql',
+    history: {
+      file: 'myhost.history',
+      max: 300,
+      min: 100
+    },
+    properties: {},
+    schema: [{
+      name: 'lib1',
+      file: schema.json'
+    }]
+  }]
+};
+    `;
 };
 
-module.exports = function(baseDir) {
-  var deffered = q.defer(),
-    fileName = baseDir + '/.gandalf/settings.js';
-  fs.readFile(fileName, function (e, data) {
+function getSettings(baseDir) {
+  const {resolve, reject, promise} = defer();
+  const fileName = baseDir + '/.gandalf/settings.js';
+  readFile(fileName, function (e, data) {
     if(data) {
-      deffered.resolve(require(fileName));
+      resolve(require(fileName));
     } else {
-      fs.mkdir(baseDir + '/.gandalf', function () {
-        fs.writeFile(fileName, getDefaultSettings(), function (err) {
+      mkdir(baseDir + '/.gandalf', function () {
+        writeFile(fileName, getDefaultSettings(), function (err) {
           if(err) {
-            deffered.reject(err);
+            reject(err);
           } else {
-            deffered.resolve(require(fileName));
+            resolve(require(fileName));
           }
         });
       });
     }
   });
-  return deffered.promise;
-};
+  return promise;
+}
+
+export default getSettings;

@@ -19,5 +19,5 @@
   });
 
   gulp.watch(['./css/main.css'], ['css']);
-  gulp.watch(['**/*.js'], ['js']);
+  gulp.watch(['./dist/**/*.js'], ['js']);
 }());

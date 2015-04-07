@@ -1,24 +1,22 @@
 'use strict';
-var Transform = require('stream').Transform,
-	JSONStream = require('JSONStream');
+import {Transform} from 'stream';
+import JSONStream from 'JSONStream';
 
 function exportSchema (db, opt) {
-	var appendColumns = new Transform({objectMode: true});
+	const appendColumns = new Transform({objectMode: true});
 	appendColumns._transform = function (chunk, encoding, done) {
-		var that = this;
+		const that = this;
 		db.getColumns({schema: opt.schema, table: chunk.table})
 		.then(function (columns) {
 			chunk.columns = columns;
 			that.push(chunk);
-			done();
 		}).fail(function (err) {
 			that.emit('error', err);
-			done();
-		});
+		}).finally(done);
 	};
 	return db.getTablesAsStream(opt)
 		.pipe(appendColumns)
 		.pipe(JSONStream.stringify());
 }
 
-module.exports = exportSchema;
+export default exportSchema;

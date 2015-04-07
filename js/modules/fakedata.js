@@ -1,17 +1,17 @@
 'use strict';
-var faker = require('faker'),
-  q = require('q');
-var numberOfPersons = 200,
-  numberOfProducts = 100;
+import faker from 'faker';
+import q from 'q';
+
+const numberOfPersons = 200;
+const numberOfProducts = 100;
 
 function randomNumber(max, from) {
   return Math.floor(Math.random() * max) + (from || 0);
 }
 
 function createArray(n, f) {
-  var a = [],
-    i;
-  for (i = 0; i < n; i++) {
+  const a = [];
+  for (let i = 0; i < n; i++) {
     a.push(f(i));
   }
   return a;
@@ -36,7 +36,7 @@ module.exports = function(db) {
   }
 
   function createPersons() {
-    var persons = createArray(numberOfPersons, function(i) {
+    const persons = createArray(numberOfPersons, function(i) {
       return [i,
         faker.name.findName(),
         faker.address.streetAddress(),
@@ -56,7 +56,7 @@ module.exports = function(db) {
   }
 
   function createCompanies() {
-    var companies = createArray(50, function(i) {
+    const companies = createArray(50, function(i) {
       return [i,
         faker.company.companyName(),
         faker.company.bs(),
@@ -69,7 +69,7 @@ module.exports = function(db) {
   }
 
   function createProducts () {
-    var products = createArray(numberOfProducts, function (i) {
+    const products = createArray(numberOfProducts, function (i) {
       return [i,
         faker.lorem.words()[0],
         faker.finance.amount(),
@@ -81,7 +81,7 @@ module.exports = function(db) {
   }
 
   function createOrderItems (orders) {
-    var items = [], i = -1;
+    let items = [], i = -1;
     orders.forEach(function (order, orderIndex) {
       items = items.concat(createArray(randomNumber(10, 1), function () {
         i++;
@@ -97,7 +97,7 @@ module.exports = function(db) {
   }
 
   function createOrders() {
-    var orders = createArray(1000, function(i) {
+    const orders = createArray(1000, function(i) {
       return [i,
         randomNumber(numberOfPersons),
         faker.date.past()

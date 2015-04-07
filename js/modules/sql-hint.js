@@ -2,16 +2,14 @@
 'use strict';
 exports.createSqlHint = function(pubsub, editor, getTables) {
 
-  var tables,
-    keywords,
-    bookmarks = [];
+  let tables;
+  let keywords;
+  let bookmarks = [];
 
-  pubsub.on('bookmarks', function (bookm) {
-    bookmarks = bookm;
-  });
+  pubsub.on('bookmarks', (bookm) => bookmarks = bookm);
 
   function getKeywords(cm) {
-    var mode = cm.doc.modeOption;
+    let mode = cm.doc.modeOption;
     if(mode === 'sql'){
       mode = 'text/x-sql';
     }
@@ -19,8 +17,8 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
   }
 
   function values(obj) {
-    var array = [];
-    for(var key in obj){
+    const array = [];
+    for(let key in obj){
       array.push(obj[key]);
     }
     return array;
@@ -28,25 +26,25 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
 
   function match(string, getter) {
     return function (obj) {
-      var len = string.length;
-      var sub = getter(obj).substr(0, len);
+      const len = string.length;
+      const sub = getter(obj).substr(0, len);
       return string.toUpperCase() === sub.toUpperCase();
     };
   }
 
   function findTableByAlias(alias) {
-    var tableTuble = getTables(editor.getCursorStatement(' ') || editor.getValue(' ')).filter(function (table) {
+    const tableTuble = getTables(editor.getCursorStatement(' ') || editor.getValue(' ')).filter(function (table) {
       return alias === table[1];
     })[0];
     return tableTuble && tableTuble[0];
   }
 
   function columnCompletion(cm) {
-    var cur = cm.getCursor(),
-      token = cm.getTokenAt(cur),
-      string = token.string.substr(1),
-      prevCur = CodeMirror.Pos(cur.line, token.start), //eslint-disable-line new-cap
-      table = cm.getTokenAt(prevCur).string;
+    const cur = cm.getCursor();
+    const token = cm.getTokenAt(cur);
+    const string = token.string.substr(1);
+    const prevCur = CodeMirror.Pos(cur.line, token.start); //eslint-disable-line new-cap
+    let table = cm.getTokenAt(prevCur).string;
     if( !tables.hasOwnProperty( table.toUpperCase() ) ){
       table = findTableByAlias(table);
     }
@@ -68,13 +66,8 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
   }
 
   function tableAndKeywordCompletion(search) {
-    var keyWordMatcher = match(search, function(w){
-      return w;
-    });
-    var getTableName = function (table) {
-      return table.table;
-    };
-    var tableToHint = function (table) {
+    const keyWordMatcher = match(search, (w) => w);
+    const tableToHint = function (table) {
       return {
         text: table.table,
         render: function (el) {
@@ -86,16 +79,12 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
 
     return Object.keys(keywords).filter(keyWordMatcher).map(function (w) {
       return {text: w.toUpperCase(), displayText: w.toUpperCase()};
-    }).concat(values(tables).filter(match(search, getTableName)).map(tableToHint));
+    }).concat(values(tables).filter(match(search, (table) => table.table)).map(tableToHint));
 
   }
 
   function bookmarkCompletion (search) {
-    var getName = function (obj) {
-      return obj.name;
-    };
-
-    return bookmarks.filter(match(search, getName)).map(function (bookmark) {
+    return bookmarks.filter(match(search, (obj) => obj.name)).map(function (bookmark) {
       return {
         text: bookmark.value,
         render: function (el) {
@@ -109,10 +98,10 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
   function sqlHint(cm, options) {
     tables = (options && options.tables) || {};
     keywords = keywords || getKeywords(cm);
-    var cur = cm.getCursor(),
-      token = cm.getTokenAt(cur),
-      search = token.string.trim(),
-      result;
+    const cur = cm.getCursor();
+    const token = cm.getTokenAt(cur);
+    const search = token.string.trim();
+    let result;
     if(search === '') {
       return;
     }

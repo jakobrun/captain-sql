@@ -31,6 +31,7 @@
   "pre-commit": ["lint", "build"],
   "scripts": {
     "build": "babel js --out-dir dist",
+    "dev": "babel js --out-dir dist -w",
     "test": "mocha --compilers js:babel/register",
     "lint": "eslint ./"
   },

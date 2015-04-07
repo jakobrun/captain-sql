@@ -1,18 +1,18 @@
 'use strict';
-var jt400 = require('node-jt400'),
-  q = require('q'),
-  fs = require('fs'),
-  JSONStream = require('JSONStream'),
-  exportSchema = require('./export-schema');
+import jt400 from 'node-jt400';
+import {defer} from 'q';
+import {createWriteStream} from 'fs';
+import JSONStream from 'JSONStream';
+import exportSchema from './export-schema';
 
 function connection(db, settings) {
-  var statement;
+  let statement;
   return {
     settings: function() {
       return settings;
     },
     execute: function(sqlStatement) {
-      var buffer = [];
+      const buffer = [];
 
       //close previous statement
       if (statement) {
@@ -27,8 +27,8 @@ function connection(db, settings) {
           metadata: st.metadata,
           updated: st.updated,
           query: function() {
-            var deffered = q.defer();
-            var stream = st.asStream({
+            let deffered = defer();
+            const stream = st.asStream({
               bufferSize: 130
             }).pipe(JSONStream.parse([true]));
 
@@ -39,7 +39,7 @@ function connection(db, settings) {
                   data: buffer.splice(0, 131),
                   more: function() {
                     stream.resume();
-                    deffered = q.defer();
+                    deffered = defer();
                     return deffered.promise;
                   }
                 });
@@ -54,9 +54,7 @@ function connection(db, settings) {
               });
             });
 
-            stream.on('error', function(err) {
-              deffered.reject(err);
-            });
+            stream.on('error', (err) => deffered.reject(err));
             return deffered.promise;
           }
         };
@@ -66,21 +64,19 @@ function connection(db, settings) {
       db.close();
     },
     exportSchemaToFile: function(opt) {
-      var stream = exportSchema(db, opt);
-      stream.pipe(fs.createWriteStream(opt.file));
-      stream.on('end', function() {
-        console.log('shema to file done');
-      });
+      const stream = exportSchema(db, opt);
+      stream.pipe(createWriteStream(opt.file));
+      stream.on('end', () => console.log('shema to file done'));
       return stream;
     }
   };
 }
 
-module.exports = function connect(options, settings) {
+function connect(options, settings) {
 
   console.log('connecting...');
   if (options.host === 'hsql:inmemory') {
-    var db = jt400.useInMemoryDb();
+    const db = jt400.useInMemoryDb();
     return require('./fakedata')(db).then(function() {
       console.log('connected to inmemory hsql!!');
       return connection(db, settings);
@@ -94,4 +90,5 @@ module.exports = function connect(options, settings) {
       return connection(conn, settings);
     });
   }
-};
+}
+export default connect;
