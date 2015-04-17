@@ -17,9 +17,16 @@ exports.createLoginModule = function(m, pupsub, connect, settings) {
     }
   };
 
+  var clone = function (obj) {
+    return Object.keys(obj).reduce(function (newObj, key) {
+      newObj[key] = obj[key];
+      return newObj;
+    }, {});
+  };
+
   var login = function() {
     m.startComputation();
-    var config = Object.create(conn.properties || {});
+    var config = clone(conn.properties || {});
     config.host = loginInfo.host();
     config.user = loginInfo.username();
     config.password = loginInfo.password();
