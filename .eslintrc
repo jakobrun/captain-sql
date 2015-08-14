@@ -9,8 +9,8 @@
     "m": true
   },
   "rules": {
-    "no-underscore-dangle": false,
+    "no-underscore-dangle": 0,
     "quotes": [2, "single", "avoid-escape"],
-    "consistent-return": false
+    "consistent-return": 0
   }
 }

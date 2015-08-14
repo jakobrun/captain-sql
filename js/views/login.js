@@ -1,6 +1,7 @@
 'use strict';
 exports.createLoginModule = function(m, pupsub, connect, settings) {
-  var errorMsg = m.prop(''),
+  var connecting = m.prop(false),
+    errorMsg = m.prop(''),
     loginInfo = {
       host: m.prop(''),
       username: m.prop(''),
@@ -26,16 +27,27 @@ exports.createLoginModule = function(m, pupsub, connect, settings) {
 
   var login = function() {
     m.startComputation();
+    connecting(true);
+    m.endComputation();
     var config = clone(conn.properties || {});
     config.host = loginInfo.host();
     config.user = loginInfo.username();
     config.password = loginInfo.password();
     //Connect
     connect(config, conn).then(function(connection) {
+      m.startComputation();
       pupsub.emit('connected', connection);
+      m.endComputation();
     }).fail(function(err) {
+      console.log('connection failure');
+      m.startComputation();
       errorMsg(err.message);
-    }).then(m.endComputation);
+      m.endComputation();
+    }).then(function () {
+      m.startComputation();
+      connecting(false);
+      m.endComputation();
+    });
   };
 
   var loginOnEnter = function(prop) {
@@ -121,8 +133,10 @@ exports.createLoginModule = function(m, pupsub, connect, settings) {
           'class': 'form-element form-btn-bar'
         }, [
           m('button', {
-            onclick: login
-          }, 'Connect')
+            onclick: login,
+            'class': (connecting() ? 'hidden' : '')
+          }, 'Connect'),
+          m('div', {'class': 'spinner-loader' + (connecting() ? '' : ' hidden')}, 'Loading…')
         ])
       ]);
     }

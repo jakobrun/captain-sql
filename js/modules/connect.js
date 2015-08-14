@@ -66,7 +66,7 @@ function connection(db, settings) {
     exportSchemaToFile: function(opt) {
       const stream = exportSchema(db, opt);
       stream.pipe(createWriteStream(opt.file));
-      stream.on('end', () => console.log('shema to file done'));
+      stream.on('end', () => console.log('schema to file done'));
       return stream;
     }
   };
