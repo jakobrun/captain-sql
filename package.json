@@ -22,15 +22,20 @@
     "gulp-less": "^1.3.6",
     "mocha": "^2.0.1",
     "precommit-hook": "^2.0.1",
-    "rimraf": "^2.2.8"
+    "rimraf": "^2.2.8",
+    "eslint": "~1.4.3",
+    "babel-eslint": "~4.1.3"
   },
   "repository": {
     "type": "git",
     "url": "gh:jakobrun/gandalf.git"
   },
-  "pre-commit": ["lint", "build"],
+  "pre-commit": [
+    "lint",
+    "build"
+  ],
   "scripts": {
-    "build": "babel js --out-dir dist",
+    "build": "babel js --out-dir dist && gulp less",
     "dev": "babel js --out-dir dist -w",
     "test": "mocha --compilers js:babel/register",
     "lint": "eslint ./"
