@@ -6,7 +6,9 @@
     nativeMenuBar = new gui.Menu({
       type: 'menubar'
     });
-  nativeMenuBar.createMacBuiltin('Gandalf');
+  if(nativeMenuBar.createMacBuiltin) {
+      nativeMenuBar.createMacBuiltin('Gandalf');
+  }
   win.menu = nativeMenuBar;
 
   require('./dist/modules/get_settings')(process.env.HOME).then(function(settings) {
