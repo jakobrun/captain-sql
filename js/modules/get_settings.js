@@ -9,7 +9,7 @@ module.exports = {
     name: 'My connection',
     host: 'myhost',
     user: '',
-    editorFile: myhost.sql',
+    editorFile: 'myhost.sql',
     history: {
       file: 'myhost.history',
       max: 300,
@@ -18,7 +18,7 @@ module.exports = {
     properties: {},
     schema: [{
       name: 'lib1',
-      file: schema.json'
+      file: 'schema.json'
     }]
   }]
 };
