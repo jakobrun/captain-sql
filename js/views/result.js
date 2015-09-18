@@ -1,8 +1,9 @@
 'use strict';
 exports.createResult = function(m, pubsub) {
-  var metadata = m.prop([]),
+  const metadata = m.prop([]),
     updated = m.prop(''),
     data = m.prop([]),
+    running = m.prop(false),
     errorMsg = m.prop(''),
     columnWidth = function (index) {
       if (metadata()[index] && metadata()[index].precision) {
@@ -12,32 +13,40 @@ exports.createResult = function(m, pubsub) {
       }
     },
     scroll = function(e) {
-      var element = e.target;
+      const element = e.target;
       if (element.scrollTop + element.clientHeight + 30 >= element.scrollHeight &&
         element.clientHeight < element.scrollHeight) {
         pubsub.emit('load-more');
       }
     },
-    reset = function () {
-      m.startComputation();
-      errorMsg('');
-      updated('');
-      metadata([]);
-      data([]);
-      m.endComputation();
+    reset = function(run) {
+      return function() {
+        m.startComputation();
+        errorMsg('');
+        updated('');
+        metadata([]);
+        data([]);
+        running(run);
+        m.endComputation();
+      };
     };
 
-  pubsub.on('run-query', reset);
-  pubsub.on('connected', reset);
+  pubsub.on('run-query', reset(true));
+  pubsub.on('connected', reset(false));
   pubsub.on('metadata', metadata);
-  pubsub.on('data', data);
+  pubsub.on('data', function(res) {
+      running(false);
+      data(res);
+  });
   pubsub.on('data-more', function(moreData) {
     data(data().concat(moreData));
   });
   pubsub.on('data-updated', function (n) {
+    running(false);
     updated(n + ' rows updated!');
   });
   pubsub.on('data-error', function(err) {
+    running(false);
     errorMsg(err.message);
   });
 
@@ -73,7 +82,8 @@ exports.createResult = function(m, pubsub) {
               }, value);
             }));
           }))
-        ])
+        ]),
+        m('div', {'class': 'spinner-loader' + (running()? '' : ' hidden')}, '')
       ]);
     }
   };
