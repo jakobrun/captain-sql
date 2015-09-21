@@ -1,10 +1,18 @@
 'use strict';
 exports.createStatusbar = function(m, pubsub) {
-  var status = m.prop(''),
-    time,
-    endTime = function() {
-      var timeDiff = Date.now() - time;
-      status('done, time: (' + timeDiff + ')');
+  let rowCount = 0, time;
+  const status = m.prop(''),
+    getRowsText = function(res) {
+        if(res.data && res.data.length) {
+            rowCount += res.data.length;
+            return ', ' + (res.isMore ? 'more than ' : '') + rowCount + ' rows';
+        }
+        return '';
+    },
+    endTime = function(res) {
+      time = Date.now() - time;
+      rowCount = 0;
+      status('time: ' + time + 'ms' + getRowsText(res));
     };
 
   function setStatus (text) {
@@ -18,6 +26,9 @@ exports.createStatusbar = function(m, pubsub) {
     setStatus('executing...');
   });
   pubsub.on('data', endTime);
+  pubsub.on('data-more', function(res) {
+      status('time: ' + time + 'ms' + getRowsText(res));
+  });
   pubsub.on('data-error', endTime);
   pubsub.on('schema-loaded', function () {
     setStatus('Schema loaded !');

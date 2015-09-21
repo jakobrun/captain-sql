@@ -18,7 +18,10 @@ exports.createExecuter = function(pubsub, editor) {
   };
   const emitData = function(eventName) {
     return compute(function(res) {
-      pubsub.emit(eventName, res.data);
+      pubsub.emit(eventName, {
+          data: res.data,
+          isMore: !!res.more
+      });
       more = res.more;
     });
   };

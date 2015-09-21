@@ -36,10 +36,10 @@ exports.createResult = function(m, pubsub) {
   pubsub.on('metadata', metadata);
   pubsub.on('data', function(res) {
       running(false);
-      data(res);
+      data(res.data);
   });
-  pubsub.on('data-more', function(moreData) {
-    data(data().concat(moreData));
+  pubsub.on('data-more', function(res) {
+    data(data().concat(res.data));
   });
   pubsub.on('data-updated', function (n) {
     running(false);
