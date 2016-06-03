@@ -92,11 +92,9 @@ exports.createLoginModule = function(m, pupsub, connect, settings) {
         m('div', {
           'class': 'form-element'
         }, [
-          m('label', {
-            'for': 'host'
-          }, 'Host:'),
           m('input', {
             'id': 'host',
+            'placeholder': 'Hostname',
             'class': 'h-fill',
             value: loginInfo.host(),
             onkeyup: loginOnEnter(loginInfo.host)
@@ -105,11 +103,9 @@ exports.createLoginModule = function(m, pupsub, connect, settings) {
         m('div', {
           'class': 'form-element'
         }, [
-          m('label', {
-            'for': 'username'
-          }, 'Username:'),
           m('input', {
             'id': 'username',
+            'placeholder': 'Username',
             'class': 'h-fill',
             value: loginInfo.username(),
             onkeyup: loginOnEnter(loginInfo.username)
@@ -118,12 +114,10 @@ exports.createLoginModule = function(m, pupsub, connect, settings) {
         m('div', {
           'class': 'form-element'
         }, [
-          m('label', {
-            'for': 'password'
-          }, 'Password:'),
           m('input', {
             'id': 'password',
             'class': 'h-fill',
+            'placeholder': 'Password',
             type: 'password',
             value: loginInfo.password(),
             onkeyup: loginOnEnter(loginInfo.password)

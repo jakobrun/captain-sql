@@ -17,15 +17,20 @@ body .hidden{
 	display: none;
 }
 input, select, textarea{
-	background-color: @bg-color;
-	border: 1px solid @border-color;
+	background-color: lighten(@bg-color, 15%);
+	border: none;
 	color: lighten(@color, 10%);
 	font-size: @font-size;
-	padding: 5px;
+	padding: 4px 8px;
+	border-radius: @border-radius;
 }
 
 button{
-	border: 1px solid darken(@bg-color, 10%);
+	border: none;
 	background-color: darken(@bg-color, 1%);
 	color: lighten(@color, 10%);
+	text-transform: uppercase;
+	font-weight: bold;
+	padding: 8px;
+	border-radius: @border-radius;
 }

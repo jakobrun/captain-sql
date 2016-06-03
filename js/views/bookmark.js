@@ -78,9 +78,9 @@ exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
         m('div', {
           'class': 'form-element'
         }, [
-          m('label', 'Name:'),
           m('input', {
             'class': 'h-fill',
+            'placeholder': 'Name',
             config: configName,
             onkeyup: function (e) {
               if(e.keyCode === 13) {
@@ -92,9 +92,9 @@ exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
         m('div', {
           'class': 'form-element'
         }, [
-          m('label', 'Description:'),
           m('textarea', {
             'class': 'h-fill',
+            'placeholder': 'Content',
             'rows': '5',
             value: description(),
             onchange: m.withAttr('value', description)
