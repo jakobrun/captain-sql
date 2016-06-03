@@ -1,5 +1,5 @@
 'use strict';
-exports.createLoginModule = function(m, pupsub, connect, settings) {
+exports.createLoginModule = function(m, pubsub, connect, settings) {
   var connecting = m.prop(false),
     errorMsg = m.prop(''),
     loginInfo = {
@@ -36,7 +36,7 @@ exports.createLoginModule = function(m, pupsub, connect, settings) {
     //Connect
     connect(config, conn).then(function(connection) {
       m.startComputation();
-      pupsub.emit('connected', connection);
+      pubsub.emit('connected', connection);
       m.endComputation();
     }).fail(function(err) {
       console.log('connection failure');
@@ -49,6 +49,13 @@ exports.createLoginModule = function(m, pupsub, connect, settings) {
       m.endComputation();
     });
   };
+
+  pubsub.on('data-error', function(err) {
+      if(err.message.indexOf('The connection does not exist') > 0) {
+          pubsub.emit('reconnecting');
+          login();
+      }
+  });
 
   var loginOnEnter = function(prop) {
     return function(e) {

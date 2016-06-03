@@ -76,9 +76,10 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
         cm.setValue(data.toString());
       });
 
-      pubsub.once('disconnect', function () {
-        fs.writeFile(fileName, cm.getValue());
-      });
+      const saveFile = () => fs.writeFile(fileName, cm.getValue());
+
+      pubsub.once('disconnect', saveFile);
+      pubsub.once('reconnecting', saveFile);
     }
   });
   return {

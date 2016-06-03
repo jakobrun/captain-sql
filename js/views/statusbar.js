@@ -25,6 +25,7 @@ exports.createStatusbar = function(m, pubsub) {
     time = Date.now();
     setStatus('executing...');
   });
+  pubsub.on('reconnecting', () => setStatus('reconnecting...'));
   pubsub.on('data', endTime);
   pubsub.on('data-more', function(res) {
       status('time: ' + time + 'ms' + getRowsText(res));
