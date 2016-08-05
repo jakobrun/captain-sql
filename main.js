@@ -31,8 +31,11 @@
       connected = false;
 
     win.on('close', function () {
+      var that = this;
       pubsub.emit('disconnect');
-      this.close(true);
+      setTimeout(function() {
+          that.close(true);
+      }, 300);
     });
 
     exports.createExecuter(pubsub, editor);
