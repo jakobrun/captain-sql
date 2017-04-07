@@ -1,26 +1,26 @@
 'use strict';
-exports.createExecuter = function(pubsub, editor) {
+exports.createExecuter = function (pubsub, editor, m) {
   let more;
   let connection;
 
-  const compute = function(fun) {
-    return function() {
+  const compute = function (fun) {
+    return function () {
       m.startComputation();
       fun.apply(this, arguments);
       m.endComputation();
     };
   };
-  const emit = function(eventName) {
-    return compute(function(res) {
+  const emit = function (eventName) {
+    return compute(function (res) {
       console.log('emit', eventName);
       pubsub.emit(eventName, res);
     });
   };
-  const emitData = function(eventName) {
-    return compute(function(res) {
+  const emitData = function (eventName) {
+    return compute(function (res) {
       pubsub.emit(eventName, {
-          data: res.data,
-          isMore: !!res.more
+        data: res.data,
+        isMore: !!res.more
       });
       more = res.more;
     });
@@ -28,12 +28,12 @@ exports.createExecuter = function(pubsub, editor) {
   const dataHandler = emitData('data');
   const moredataHandler = emitData('data-more');
   const errorHandler = emit('data-error');
-  const runQuery = function() {
+  const runQuery = function () {
     const sql = editor.getSelection() || editor.getCursorStatement();
-    connection.execute(sql).then(function(st) {
+    connection.execute(sql).then(function (st) {
       if (st.isQuery()) {
         st.metadata().then(emit('metadata')).fail(errorHandler);
-        st.query().then(function(res) {
+        st.query().then(function (res) {
           pubsub.emit('succesfull-query', {
             sql: sql,
             data: res.data
@@ -45,7 +45,7 @@ exports.createExecuter = function(pubsub, editor) {
       }
     }).fail(errorHandler);
   };
-  const loadMore = function() {
+  const loadMore = function () {
     if (!more) {
       return;
     }

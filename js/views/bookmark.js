@@ -1,6 +1,6 @@
 /*jshint maxparams: 10*/
 'use strict';
-exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
+exports.createBookmarkModel = function (m, fs, pubsub, editor, createPopupmenu) {
   var show = false,
     description = m.prop(''),
     bookmarks,
@@ -41,7 +41,7 @@ exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
         return bookmarks || [];
       },
       renderItem: function (bookmark) {
-        return [m('div', m.trust(bookmark.string)), m('div', {'class': 'hint-remarks'}, bookmark.original.value)];
+        return [m('div', m.trust(bookmark.string)), m('div', { 'class': 'hint-remarks' }, bookmark.original.value)];
       },
       itemSelected: function (bookmark) {
         var i = bookmarks.indexOf(bookmark);
@@ -49,7 +49,7 @@ exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
         writeToFile();
         pubsub.emit('editor-focus', {});
       }
-    });
+    }, m);
 
   fs.readFile(fileName, function (err, data) {
     bookmarks = err ? [] : JSON.parse(data);
@@ -60,7 +60,7 @@ exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
   pubsub.on('bookmark-delete', listView.toggleShow);
 
   document.addEventListener('keyup', function (e) {
-    if(e.keyCode === 27 && show) {
+    if (e.keyCode === 27 && show) {
       m.startComputation();
       show = false;
       pubsub.emit('bookmark-closed');
@@ -68,39 +68,39 @@ exports.createBookmarkModel = function(m, fs, pubsub, editor, createPopupmenu) {
     }
   });
   return {
-    view: function() {
+    view: function () {
       return m('div', [m('div', {
         'class': 'container popup form' + (show ? '' : ' hidden')
       }, [
-        m('h2', {
-          'class': 'popup-title'
-        }, 'Add bookmark'),
-        m('div', {
-          'class': 'form-element'
-        }, [
-          m('input', {
-            'class': 'h-fill',
-            'placeholder': 'Name',
-            config: configName,
-            onkeyup: function (e) {
-              if(e.keyCode === 13) {
-                save();
-              }
-            }
-          })
-        ]),
-        m('div', {
-          'class': 'form-element'
-        }, [
-          m('textarea', {
-            'class': 'h-fill',
-            'placeholder': 'Content',
-            'rows': '5',
-            value: description(),
-            onchange: m.withAttr('value', description)
-          })
-        ])
-      ]), listView.view()]);
+          m('h2', {
+            'class': 'popup-title'
+          }, 'Add bookmark'),
+          m('div', {
+            'class': 'form-element'
+          }, [
+              m('input', {
+                'class': 'h-fill',
+                'placeholder': 'Name',
+                config: configName,
+                onkeyup: function (e) {
+                  if (e.keyCode === 13) {
+                    save();
+                  }
+                }
+              })
+            ]),
+          m('div', {
+            'class': 'form-element'
+          }, [
+              m('textarea', {
+                'class': 'h-fill',
+                'placeholder': 'Content',
+                'rows': '5',
+                value: description(),
+                onchange: m.withAttr('value', description)
+              })
+            ])
+        ]), listView.view()]);
     }
   };
 };

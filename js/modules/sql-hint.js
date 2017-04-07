@@ -1,6 +1,6 @@
 /*global CodeMirror*/
 'use strict';
-exports.createSqlHint = function(pubsub, editor, getTables) {
+exports.createSqlHint = function (pubsub, editor, getTables, CodeMirror) {
 
   let tables;
   let keywords;
@@ -10,7 +10,7 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
 
   function getKeywords(cm) {
     let mode = cm.doc.modeOption;
-    if(mode === 'sql'){
+    if (mode === 'sql') {
       mode = 'text/x-sql';
     }
     return CodeMirror.resolveMode(mode).keywords;
@@ -18,7 +18,7 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
 
   function values(obj) {
     const array = [];
-    for(let key in obj){
+    for (let key in obj) {
       array.push(obj[key]);
     }
     return array;
@@ -45,16 +45,16 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
     const string = token.string.substr(1);
     const prevCur = CodeMirror.Pos(cur.line, token.start); //eslint-disable-line new-cap
     let table = cm.getTokenAt(prevCur).string;
-    if( !tables.hasOwnProperty( table.toUpperCase() ) ){
+    if (!tables.hasOwnProperty(table.toUpperCase())) {
       table = findTableByAlias(table);
     }
     table = table && table.toUpperCase();
-    if(!tables[table]) {
+    if (!tables[table]) {
       return [];
     }
     return tables[table].columns.filter(match(string, function (col) {
       return col.name;
-    })).map(function(col) {
+    })).map(function (col) {
       return {
         text: '.' + col.name,
         render: function (el) {
@@ -78,12 +78,12 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
     };
 
     return Object.keys(keywords).filter(keyWordMatcher).map(function (w) {
-      return {text: w.toUpperCase(), displayText: w.toUpperCase()};
+      return { text: w.toUpperCase(), displayText: w.toUpperCase() };
     }).concat(values(tables).filter(match(search, (table) => table.table)).map(tableToHint));
 
   }
 
-  function bookmarkCompletion (search) {
+  function bookmarkCompletion(search) {
     return bookmarks.filter(match(search, (obj) => obj.name)).map(function (bookmark) {
       return {
         text: bookmark.value,
@@ -102,16 +102,16 @@ exports.createSqlHint = function(pubsub, editor, getTables) {
     const token = cm.getTokenAt(cur);
     const search = token.string.trim();
     let result;
-    if(search === '') {
+    if (search === '') {
       return;
     }
-    if(search.lastIndexOf('.') === 0) {
+    if (search.lastIndexOf('.') === 0) {
       result = columnCompletion(cm);
     } else {
       result = tableAndKeywordCompletion(search).concat(bookmarkCompletion(search));
     }
 
-    if(result.length === 1 && result[0].text === search) {
+    if (result.length === 1 && result[0].text === search) {
       return;
     }
 

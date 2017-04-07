@@ -1,123 +1,125 @@
 /*global CodeMirror*/
 'use strict';
-(function() {
-  var gui = require('nw.gui');
-  var win = gui.Window.get(),
-    nativeMenuBar = new gui.Menu({
-      type: 'menubar'
-    });
-  if(nativeMenuBar.createMacBuiltin) {
-      nativeMenuBar.createMacBuiltin('Gandalf');
-  }
-  win.menu = nativeMenuBar;
+const { ipcRenderer } = require('electron');
+const m = require('./bower_components/mithriljs/mithril.js');
+const CodeMirror = require('./bower_components/codemirror/lib/codemirror.js');
+require('./bower_components/codemirror/addon/hint/show-hint.js');
+require('./bower_components/codemirror/addon/search/searchcursor.js');
+require('./bower_components/codemirror/addon/dialog/dialog.js');
+require('./bower_components/codemirror/keymap/sublime.js');
+require('./bower_components/codemirror/mode/sql/sql.js');
+require('./dist/modules/sql-hint.js')
 
-  require('./dist/modules/get_settings')(process.env.HOME).then(function(settings) {
-    var connect = require('./dist/modules/connect'),
-      fs = require('fs'),
-      events = require('events'),
-      getTables = require('./dist/modules/get_tables'),
-      createHistory = require('./dist/modules/history');
+require('./dist/modules/get_settings')(process.env.HOME).then(function (settings) {
+  const connect = require('./dist/modules/connect'),
+    fs = require('fs'),
+    events = require('events'),
+    getTables = require('./dist/modules/get_tables'),
+    createHistory = require('./dist/modules/history'),
+    { createErrorHandler } = require('./dist/views/errorhandler'),
+    { createLoginModule } = require('./dist/views/login'),
+    { createActions } = require('./dist/views/actions'),
+    { createPopupmenu } = require('./dist/views/popupmenu'),
+    { createStatusbar } = require('./dist/views/statusbar'),
+    { createEditor } = require('./dist/views/editor'),
+    { createResult } = require('./dist/views/result'),
+    { createBookmarkModel } = require('./dist/views/bookmark'),
+    { createHistoryView } = require('./dist/views/history'),
+    { createColumnsPrompt } = require('./dist/views/columns_prompt'),
+    { createExecuter } = require('./dist/modules/executer'),
+    { createSchemaHandler } = require('./dist/modules/schema'),
+    { createSqlHint } = require('./dist/modules/sql-hint');
 
-    var pubsub = new events.EventEmitter(),
-      errorHandler = exports.createErrorHandler(m),
-      loginModule = exports.createLoginModule(m, pubsub, connect, settings),
-      actions = exports.createActions(m, pubsub, exports.createPopupmenu),
-      statusbar = exports.createStatusbar(m, pubsub),
-      editor = exports.createEditor(m, pubsub, CodeMirror, fs),
-      result = exports.createResult(m, pubsub),
-      bookmarkModule = exports.createBookmarkModel(m, fs, pubsub, editor, exports.createPopupmenu),
-      historyModule = exports.createHistoryView(m, pubsub, exports.createPopupmenu, createHistory),
-      columnsPrompt = exports.createColumnsPrompt(m, editor, getTables, pubsub, exports.createPopupmenu),
-      connected = false;
+  var pubsub = new events.EventEmitter(),
+    errorHandler = createErrorHandler(m),
+    loginModule = createLoginModule(m, pubsub, connect, settings),
+    actions = createActions(m, pubsub, createPopupmenu),
+    statusbar = createStatusbar(m, pubsub),
+    editor = createEditor(m, pubsub, CodeMirror, fs),
+    result = createResult(m, pubsub),
+    bookmarkModule = createBookmarkModel(m, fs, pubsub, editor, createPopupmenu),
+    historyModule = createHistoryView(m, pubsub, createPopupmenu, createHistory),
+    columnsPrompt = createColumnsPrompt(m, editor, getTables, pubsub, createPopupmenu),
+    connected = false;
 
-    win.on('close', function () {
-      var that = this;
-      pubsub.emit('disconnect');
-      setTimeout(function() {
-          that.close(true);
-      }, 300);
-    });
 
-    exports.createExecuter(pubsub, editor);
-    exports.createSchemaHandler(fs, pubsub);
-    exports.createSqlHint(pubsub, editor, getTables);
+  window.addEventListener('beforeunload', function (e) {
+    pubsub.emit('disconnect');
+  }, false);
 
-    pubsub.on('new-window', function() {
-      var path = window.location.href;
-      path = path.substring(0, path.indexOf('.html') + 5);
-      console.log(path);
-      gui.Window.open(path, {
-        focus: true,
-        transparent: true,
-        toolbar: false
-      });
-    });
+  createExecuter(pubsub, editor, m);
+  createSchemaHandler(fs, pubsub);
+  createSqlHint(pubsub, editor, getTables, CodeMirror);
 
-    win.on('focus', function() {
-      pubsub.emit('editor-focus');
-    });
-
-    pubsub.on('connected', function (connection) {
-      var settingsStyle = document.getElementById('settings-style'),
-        primaryColor = connection.settings().primaryColor || '#e35f28';
-      settingsStyle.textContent = '.table-head th { color: ' +
-        primaryColor +
-        '} .cm-s-gandalf span.cm-keyword { color: ' +
-        primaryColor +
-        '} .p-menu-item-selected {background-color: ' +
-        primaryColor +
-        '} .CodeMirror-hint-active {background-color: ' +
-        primaryColor +
-        '}';
-
-      connected = true;
-      document.title = 'Gandalf - connected to ' + connection.settings().name;
-      m.route('/sql/' + connection.settings().name);
-      pubsub.once('disconnect', function () {
-        connection.close();
-        m.route('/login');
-      });
-    });
-
-    var sqlModule = {
-      controller: function() {
-        if(!connected) {
-          var connName = m.route.param('conn'),
-            connSettings = settings.connections.filter(function(c) {
-              return c.name === connName;
-            })[0];
-          if (connSettings.host === 'hsql:inmemory') {
-            console.log('reconnect to hsql:inmemory!!');
-            connect({host: connSettings.host}, connSettings).then(function (connection) {
-              pubsub.emit('connected', connection);
-            });
-          } else {
-            m.route('/login');
-          }
-        }
-      },
-      view: function() {
-        return [
-          editor.view(),
-          m('div', {
-            'class': 'result-gutter'
-          }),
-          result.view(),
-          statusbar.view(),
-          actions.view(),
-          bookmarkModule.view(),
-          historyModule.view(),
-          columnsPrompt.view(),
-          errorHandler.view()
-        ];
-      }
-    };
-
-    m.route(document.getElementById('body'), '/login', {
-      '/login': loginModule,
-      '/sql/:conn': sqlModule
-    });
-  }).fail(function(err) {
-    console.error('startup error', err.message, err.stack);
+  pubsub.on('new-window', () => {
+    console.log('emit new-window');
+    ipcRenderer.send('new-window');
   });
-}());
+
+  // win.on('focus', function() {
+  //   pubsub.emit('editor-focus');
+  // });
+
+  pubsub.on('connected', function (connection) {
+    var settingsStyle = document.getElementById('settings-style'),
+      primaryColor = connection.settings().primaryColor || '#e35f28';
+    settingsStyle.textContent = '.table-head th { color: ' +
+      primaryColor +
+      '} .cm-s-gandalf span.cm-keyword { color: ' +
+      primaryColor +
+      '} .p-menu-item-selected {background-color: ' +
+      primaryColor +
+      '} .CodeMirror-hint-active {background-color: ' +
+      primaryColor +
+      '}';
+
+    connected = true;
+    document.title = 'Gandalf - connected to ' + connection.settings().name;
+    m.route('/sql/' + connection.settings().name);
+    pubsub.once('disconnect', function () {
+      connection.close();
+      m.route('/login');
+    });
+  });
+
+  var sqlModule = {
+    controller: function () {
+      if (!connected) {
+        var connName = m.route.param('conn'),
+          connSettings = settings.connections.filter(function (c) {
+            return c.name === connName;
+          })[0];
+        if (connSettings.host === 'hsql:inmemory') {
+          console.log('reconnect to hsql:inmemory!!');
+          connect({ host: connSettings.host }, connSettings).then(function (connection) {
+            pubsub.emit('connected', connection);
+          });
+        } else {
+          m.route('/login');
+        }
+      }
+    },
+    view: function () {
+      return [
+        editor.view(),
+        m('div', {
+          'class': 'result-gutter'
+        }),
+        result.view(),
+        statusbar.view(),
+        actions.view(),
+        bookmarkModule.view(),
+        historyModule.view(),
+        columnsPrompt.view(),
+        errorHandler.view()
+      ];
+    }
+  };
+
+  m.route(document.getElementById('body'), '/login', {
+    '/login': loginModule,
+    '/sql/:conn': sqlModule
+  });
+}).catch(function (err) {
+  console.error('startup error', err.message, err.stack);
+});

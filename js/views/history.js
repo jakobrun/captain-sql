@@ -1,22 +1,22 @@
 'use strict';
-exports.createHistoryView = function(m, pubsub, createPopupmenu, createHistory) {
+exports.createHistoryView = function (m, pubsub, createPopupmenu, createHistory) {
   var history,
     popup = createPopupmenu(pubsub, {
-      getList: function() {
+      getList: function () {
         return history ? history.list() : [];
       },
-      renderItem: function(historyItem) {
+      renderItem: function (historyItem) {
         return [m('div', historyItem.original.name), m('div', {
           'class': 'hint-remarks'
         }, historyItem.original.time)];
       },
-      itemSelected: function(historyItem) {
+      itemSelected: function (historyItem) {
         pubsub.emit('history-item-selected', historyItem);
       }
-    });
+    }, m);
 
   pubsub.on('history-list', popup.toggleShow);
-  pubsub.on('succesfull-query', function(event) {
+  pubsub.on('succesfull-query', function (event) {
     var first = history.list()[0];
     if (!first || first.name !== event.sql) {
       var historyItem = {
@@ -26,7 +26,7 @@ exports.createHistoryView = function(m, pubsub, createPopupmenu, createHistory) 
       history.push(historyItem);
     }
   });
-  pubsub.on('connected', function(connection) {
+  pubsub.on('connected', function (connection) {
     createHistory(connection.settings().history).then(function (res) {
       history = res;
     });

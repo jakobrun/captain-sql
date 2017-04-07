@@ -1,4 +1,4 @@
 gandalf
 =======
 
-sql client build with node-webkit
+sql client build with electron
