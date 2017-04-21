@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, Menu } = require('electron')
 
 const path = require('path')
 const url = require('url')
@@ -32,10 +32,37 @@ function createWindow() {
     windows.push(win);
 }
 
+function createMenu() {
+
+    const template = [{
+        label: 'Application',
+        submenu: [
+            { label: 'About Application', selector: 'orderFrontStandardAboutPanel:' },
+            { type: 'separator' },
+            { label: 'Quit', accelerator: 'Command+Q', click: function() { app.quit(); }}
+        ]}, {
+        label: 'Edit',
+        submenu: [
+            { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+            { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
+            { type: 'separator' },
+            { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
+            { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+            { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
+            { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
+        ]}
+    ];
+
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', () => {
+    createWindow();
+    createMenu();
+});
 
 ipcMain.on('new-window', createWindow);
 
