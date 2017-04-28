@@ -1,10 +1,10 @@
 'use strict';
-import q from 'q';
+import * as q from 'q';
 import { writeFile, readFile }
   from 'fs';
 
-export default function getHistoryModel(options) {
-  let buffer = [];
+export function getHistoryModel(options) {
+  let buffer: any[] = [];
   let promise = q();
   const fileName = process.env.HOME + '/.gandalf/' + options.file;
   const history = {
@@ -14,7 +14,7 @@ export default function getHistoryModel(options) {
         if (buffer.length > options.max) {
           buffer = buffer.slice(0, options.min);
         }
-        return q.nfcall(writeFile, fileName, buffer.map(JSON.stringify).join(','));
+        return q.nfcall(writeFile, fileName, buffer.map(obj => JSON.stringify(obj)).join(','));
       });
       return promise;
     },

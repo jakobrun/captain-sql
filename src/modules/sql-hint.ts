@@ -4,7 +4,7 @@ exports.createSqlHint = function (pubsub, editor, getTables, CodeMirror) {
 
   let tables;
   let keywords;
-  let bookmarks = [];
+  let bookmarks: any[] = [];
 
   pubsub.on('bookmarks', (bookm) => bookmarks = bookm);
 
@@ -17,7 +17,7 @@ exports.createSqlHint = function (pubsub, editor, getTables, CodeMirror) {
   }
 
   function values(obj) {
-    const array = [];
+    const array: any[] = [];
     for (let key in obj) {
       array.push(obj[key]);
     }
@@ -77,9 +77,10 @@ exports.createSqlHint = function (pubsub, editor, getTables, CodeMirror) {
       };
     };
 
-    return Object.keys(keywords).filter(keyWordMatcher).map(function (w) {
+    const res: any[] = Object.keys(keywords).filter(keyWordMatcher).map(function (w) {
       return { text: w.toUpperCase(), displayText: w.toUpperCase() };
-    }).concat(values(tables).filter(match(search, (table) => table.table)).map(tableToHint));
+    })
+    return res.concat(values(tables).filter(match(search, (table) => table.table)).map(tableToHint))
 
   }
 

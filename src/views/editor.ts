@@ -1,16 +1,16 @@
 'use strict';
-exports.createEditor = function(m, pubsub, codeMirror, fs) {
+exports.createEditor = function (m, pubsub, codeMirror, fs) {
   var tables = {},
     cm,
-    assist = function() {
+    assist = function () {
       cm.focus();
       codeMirror.showHint(cm, null, {
         completeSingle: false,
         tables: tables
       });
     },
-    sqlEditor = function() {
-      return function(element, isInitialized) {
+    sqlEditor = function () {
+      return function (element, isInitialized) {
         var assistTimeoutId;
         if (!isInitialized) {
           cm = codeMirror(element, {
@@ -21,17 +21,17 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
             theme: 'gandalf',
             keyMap: 'sublime',
             extraKeys: {
-              'Ctrl-Enter': function() {
+              'Ctrl-Enter': function () {
                 pubsub.emit('run-query');
               },
               'Ctrl-Space': assist,
-              'Shift-Cmd-P': function() {
+              'Shift-Cmd-P': function () {
                 pubsub.emit('actions-toggle-show');
               }
             }
           });
           cm.on('change', function () {
-            if(assistTimeoutId) {
+            if (assistTimeoutId) {
               clearTimeout(assistTimeoutId);
             }
             assistTimeoutId = setTimeout(assist, 100);
@@ -44,7 +44,7 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
         }
       };
     },
-    eachTokenUntil = function(f, start, direction) {
+    eachTokenUntil = function (f, start?, direction?) {
       var l = start || 0,
         tokens, i;
       direction = direction || 1;
@@ -62,15 +62,15 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
   pubsub.on('history-item-selected', function (historyItem) {
     cm.replaceRange(historyItem.name, cm.getCursor(), cm.getCursor());
   });
-  pubsub.on('schema-loaded', function(tableIndex) {
+  pubsub.on('schema-loaded', function (tableIndex) {
     tables = tableIndex;
   });
 
   pubsub.on('connected', function (connection) {
     var fileName = process.env.HOME + '/.gandalf/' + connection.settings().editorFile;
-    if(fileName) {
+    if (fileName) {
       fs.readFile(fileName, function (err, data) {
-        if(err) {
+        if (err) {
           return;
         }
         cm.setValue(data.toString());
@@ -83,22 +83,22 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
     }
   });
   return {
-    getValue: function(sep) {
+    getValue: function (sep) {
       return cm.getValue(sep);
     },
-    setValue: function(value) {
+    setValue: function (value) {
       cm.setValue(value);
     },
-    setCursor: function(pos) {
+    setCursor: function (pos) {
       cm.setCursor(pos);
     },
-    insertText: function(text) {
+    insertText: function (text) {
       cm.replaceRange(text, cm.getCursor(), cm.getCursor());
     },
-    replaceSelection: function(text, sel) {
+    replaceSelection: function (text, sel) {
       cm.replaceSelection(text, sel);
     },
-    getCursorStatement: function(sep) {
+    getCursorStatement: function (sep) {
       var c = cm.getCursor(),
         startLine = c.line,
         endLine = c.line;
@@ -112,17 +112,17 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
         line: startLine,
         ch: 0
       }, {
-        line: endLine,
-        ch: cm.getLine(endLine).length
-      }, sep);
+          line: endLine,
+          ch: cm.getLine(endLine).length
+        }, sep);
     },
-    getSelection: function() {
+    getSelection: function () {
       return cm.getSelection();
     },
-    selectColumns: function() {
+    selectColumns: function () {
       var pCount = 0,
         column = '',
-        columns = [],
+        columns: string[] = [],
         start,
         countParenthesisLevel = function (token) {
           if (start && token === '(') {
@@ -135,14 +135,14 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
 
       //Find start line
       eachTokenUntil(function (token, l) {
-        if(token.string.toUpperCase() === 'SELECT') {
+        if (token.string.toUpperCase() === 'SELECT') {
           startLine = l;
           return true;
         }
       }, cm.getCursor().line, -1);
 
       //Find start and end of columns
-      eachTokenUntil(function(token, l, i, tokens) {
+      eachTokenUntil(function (token, l, i, tokens) {
         var tValue = token.string.toUpperCase();
         countParenthesisLevel(tValue);
         if (!start && tValue === 'SELECT') {
@@ -150,22 +150,22 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
             line: l,
             ch: tokens[i + 1].end
           } : {
-            line: l + 1,
-            ch: 0
-          };
+              line: l + 1,
+              ch: 0
+            };
         } else if (tValue === 'FROM' && pCount === 0) {
           end = tokens[i - 1] ? {
             line: l,
             ch: tokens[i - 1].start
           } : {
-            line: l - 1,
-            ch: cm.getLine(l - 1).length
-          };
+              line: l - 1,
+              ch: cm.getLine(l - 1).length
+            };
           return true;
-        } else if(start && pCount === 0 && tValue === ',') {
+        } else if (start && pCount === 0 && tValue === ',') {
           columns.push(column.trim());
           column = '';
-        } else if(start){
+        } else if (start) {
           column += token.string;
         }
       }, startLine);
@@ -177,7 +177,7 @@ exports.createEditor = function(m, pubsub, codeMirror, fs) {
       }
       return columns;
     },
-    view: function() {
+    view: function () {
       return m('div', {
         config: sqlEditor(),
         'class': 'editor'

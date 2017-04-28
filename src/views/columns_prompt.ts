@@ -1,8 +1,6 @@
-/*jshint maxparams: 10*/
-'use strict';
 exports.createColumnsPrompt = function (m, editor, getTables, pubsub, createPopupmenu) {
-  var columnList = [],
-    tables = [],
+  var columnList: any[] = [],
+    tables: any[] = [],
     listView = createPopupmenu(pubsub, {
       getList: function () {
         return columnList;
@@ -15,11 +13,9 @@ exports.createColumnsPrompt = function (m, editor, getTables, pubsub, createPopu
       renderItem: function (item) {
         var inpAttrs = {
           'type': 'checkbox',
-          'class': 'checklist-input'
+          'class': 'checklist-input',
+          'checked': item.original.checked ? 'checked' : undefined
         };
-        if (item.original.checked) {
-          inpAttrs.checked = 'checked';
-        }
         return m('label', [m('input', inpAttrs),
         m('div', {
           'class': 'checklist-text'
@@ -41,7 +37,7 @@ exports.createColumnsPrompt = function (m, editor, getTables, pubsub, createPopu
   });
 
   pubsub.on('columns-select', function () {
-    var selectedColumns = editor.selectColumns(),
+    var selectedColumns: any[] = editor.selectColumns(),
       getColumnLabel = function (t, col) {
         var name = t[1] ? t[1] + '.' + col.name : col.name;
         if (col.remarks) {

@@ -1,5 +1,7 @@
-/*global CodeMirror*/
-'use strict';
+import { getSettings } from './modules/get_settings'
+import { connect } from './modules/connect'
+import { getTables } from './modules/get_tables'
+import { getHistoryModel } from './modules/history'
 const { ipcRenderer } = require('electron');
 const m = require('mithril');
 const CodeMirror = require('codemirror');
@@ -8,27 +10,24 @@ require('codemirror/addon/search/searchcursor.js');
 require('codemirror/addon/dialog/dialog.js');
 require('codemirror/keymap/sublime.js');
 require('codemirror/mode/sql/sql.js');
-require('./dist/modules/sql-hint.js')
+require('./modules/sql-hint.js')
 
-require('./dist/modules/get_settings')(process.env.HOME).then(function (settings) {
-  const connect = require('./dist/modules/connect'),
-    fs = require('fs'),
+getSettings(process.env.HOME).then(function (settings) {
+  const fs = require('fs'),
     events = require('events'),
-    getTables = require('./dist/modules/get_tables'),
-    createHistory = require('./dist/modules/history'),
-    { createErrorHandler } = require('./dist/views/errorhandler'),
-    { createLoginModule } = require('./dist/views/login'),
-    { createActions } = require('./dist/views/actions'),
-    { createPopupmenu } = require('./dist/views/popupmenu'),
-    { createStatusbar } = require('./dist/views/statusbar'),
-    { createEditor } = require('./dist/views/editor'),
-    { createResult } = require('./dist/views/result'),
-    { createBookmarkModel } = require('./dist/views/bookmark'),
-    { createHistoryView } = require('./dist/views/history'),
-    { createColumnsPrompt } = require('./dist/views/columns_prompt'),
-    { createExecuter } = require('./dist/modules/executer'),
-    { createSchemaHandler } = require('./dist/modules/schema'),
-    { createSqlHint } = require('./dist/modules/sql-hint');
+    { createErrorHandler } = require('./views/errorhandler'),
+    { createLoginModule } = require('./views/login'),
+    { createActions } = require('./views/actions'),
+    { createPopupmenu } = require('./views/popupmenu'),
+    { createStatusbar } = require('./views/statusbar'),
+    { createEditor } = require('./views/editor'),
+    { createResult } = require('./views/result'),
+    { createBookmarkModel } = require('./views/bookmark'),
+    { createHistoryView } = require('./views/history'),
+    { createColumnsPrompt } = require('./views/columns_prompt'),
+    { createExecuter } = require('./modules/executer'),
+    { createSchemaHandler } = require('./modules/schema'),
+    { createSqlHint } = require('./modules/sql-hint');
 
   var pubsub = new events.EventEmitter(),
     errorHandler = createErrorHandler(m),
@@ -38,12 +37,12 @@ require('./dist/modules/get_settings')(process.env.HOME).then(function (settings
     editor = createEditor(m, pubsub, CodeMirror, fs),
     result = createResult(m, pubsub),
     bookmarkModule = createBookmarkModel(m, fs, pubsub, editor, createPopupmenu),
-    historyModule = createHistoryView(m, pubsub, createPopupmenu, createHistory),
+    historyModule = createHistoryView(m, pubsub, createPopupmenu, getHistoryModel),
     columnsPrompt = createColumnsPrompt(m, editor, getTables, pubsub, createPopupmenu),
     connected = false;
 
 
-  window.addEventListener('beforeunload', function (e) {
+  window.addEventListener('beforeunload', function () {
     pubsub.emit('disconnect');
   }, false);
 
@@ -61,17 +60,20 @@ require('./dist/modules/get_settings')(process.env.HOME).then(function (settings
   // });
 
   pubsub.on('connected', function (connection) {
-    var settingsStyle = document.getElementById('settings-style'),
-      primaryColor = connection.settings().primaryColor || '#e35f28';
-    settingsStyle.textContent = '.table-head th { color: ' +
-      primaryColor +
-      '} .cm-s-gandalf span.cm-keyword { color: ' +
-      primaryColor +
-      '} .p-menu-item-selected {background-color: ' +
-      primaryColor +
-      '} .CodeMirror-hint-active {background-color: ' +
-      primaryColor +
-      '}';
+    const settingsStyle = document.getElementById('settings-style');
+    const primaryColor = connection.settings().primaryColor || '#e35f28';
+    if (settingsStyle) {
+      settingsStyle.textContent = '.table-head th { color: ' +
+        primaryColor +
+        '} .cm-s-gandalf span.cm-keyword { color: ' +
+        primaryColor +
+        '} .p-menu-item-selected {background-color: ' +
+        primaryColor +
+        '} .CodeMirror-hint-active {background-color: ' +
+        primaryColor +
+        '}';
+
+    }
 
     connected = true;
     document.title = 'Gandalf - connected to ' + connection.settings().name;

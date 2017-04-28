@@ -38,8 +38,8 @@ exports.createExecuter = function (pubsub, editor, m) {
             sql: sql,
             data: res.data
           });
-          dataHandler(res);
-        }).fail(errorHandler);
+          return res;
+        }).then(dataHandler).fail(errorHandler);
       } else {
         st.updated().then(emit('data-updated')).fail(errorHandler);
       }

@@ -43,10 +43,12 @@ exports.createPopupmenu = function (pubsub, controller, m) {
         i = selectedIndex();
       if (e.keyCode === 40 && l > 0) {
         selectedIndex((i + 1) % l);
-        document.getElementById(menuId + '-i' + selectedIndex()).scrollIntoViewIfNeeded();
+        const elem: any = document.getElementById(menuId + '-i' + selectedIndex());
+        elem.scrollIntoViewIfNeeded();
       } else if (e.keyCode === 38 && l > 0) {
         selectedIndex((i - 1 + l) % l);
-        document.getElementById(menuId + '-i' + selectedIndex()).scrollIntoViewIfNeeded();
+        const elem: any = document.getElementById(menuId + '-i' + selectedIndex());
+        elem.scrollIntoViewIfNeeded();
       } else if (e.keyCode === 27) {
         toggleShow();
         pubsub.emit('editor-focus', {});

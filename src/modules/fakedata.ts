@@ -1,16 +1,16 @@
 'use strict';
 import faker from 'faker';
-import q from 'q';
+import * as q from 'q';
 
 const numberOfPersons = 200;
 const numberOfProducts = 100;
 
-function randomNumber(max, from) {
+function randomNumber(max, from?) {
   return Math.floor(Math.random() * max) + (from || 0);
 }
 
 function createArray(n, f) {
-  const a = [];
+  const a: any[] = [];
   for (let i = 0; i < n; i++) {
     a.push(f(i));
   }
@@ -18,16 +18,16 @@ function createArray(n, f) {
 }
 
 
-module.exports = function(db) {
+module.exports = function (db) {
   function innsertArray(insertSt, array) {
-    return function() {
-      return q.all(array.map(function(row) {
+    return function () {
+      return q.all(array.map(function (row) {
         return db.update(insertSt, row);
       }));
     };
   }
 
-  function commentColumns (tableName, comments) {
+  function commentColumns(tableName, comments) {
     return function () {
       return q.all(comments.map(function (c) {
         return db.update('comment on column ' + tableName + '.' + c[0] + " IS '" + c[1] + "'");
@@ -36,7 +36,7 @@ module.exports = function(db) {
   }
 
   function createPersons() {
-    const persons = createArray(numberOfPersons, function(i) {
+    const persons = createArray(numberOfPersons, function (i) {
       return [i,
         faker.name.findName(),
         faker.address.streetAddress(),
@@ -46,17 +46,17 @@ module.exports = function(db) {
     });
     return db.update('create table person (personid decimal(9), name varchar(400), address varchar(400), phone varchar(100), stamp TIMESTAMP, primary key(personid))')
       .then(commentColumns('person', [
-          ['personid', 'Person id test'],
-          ['name', 'Full name'],
-          ['address', 'Home address'],
-          ['phone', 'Phonenumber'],
-          ['stamp', 'Timestamp']
-        ]))
+        ['personid', 'Person id test'],
+        ['name', 'Full name'],
+        ['address', 'Home address'],
+        ['phone', 'Phonenumber'],
+        ['stamp', 'Timestamp']
+      ]))
       .then(innsertArray('insert into person values(?,?,?,?,?)', persons));
   }
 
   function createCompanies() {
-    const companies = createArray(50, function(i) {
+    const companies = createArray(50, function (i) {
       return [i,
         faker.company.companyName(),
         faker.company.bs(),
@@ -68,7 +68,7 @@ module.exports = function(db) {
       .then(innsertArray('insert into company values(?,?,?,?,?)', companies));
   }
 
-  function createProducts () {
+  function createProducts() {
     const products = createArray(numberOfProducts, function (i) {
       return [i,
         faker.lorem.words()[0],
@@ -80,9 +80,9 @@ module.exports = function(db) {
       .then(innsertArray('insert into product values(?,?,?,?)', products));
   }
 
-  function createOrderItems (orders) {
-    let items = [], i = -1;
-    orders.forEach(function (order, orderIndex) {
+  function createOrderItems(orders) {
+    let items: any[] = [], i = -1;
+    orders.forEach(function (_, orderIndex) {
       items = items.concat(createArray(randomNumber(10, 1), function () {
         i++;
         return [i,
@@ -97,7 +97,7 @@ module.exports = function(db) {
   }
 
   function createOrders() {
-    const orders = createArray(1000, function(i) {
+    const orders = createArray(1000, function (i) {
       return [i,
         randomNumber(numberOfPersons),
         faker.date.past()

@@ -1,8 +1,8 @@
 'use strict';
-import {defer} from 'q';
-import {readFile, mkdir, writeFile} from 'fs';
+import { defer } from 'q';
+import { readFile, mkdir, writeFile } from 'fs';
 
-const getDefaultSettings = function() {
+const getDefaultSettings = function () {
   return `
 module.exports = {
   connections: [{
@@ -25,16 +25,16 @@ module.exports = {
     `;
 };
 
-function getSettings(baseDir) {
-  const {resolve, reject, promise} = defer();
+export function getSettings(baseDir) {
+  const { resolve, reject, promise } = defer();
   const fileName = baseDir + '/.gandalf/settings.js';
-  readFile(fileName, function (e, data) {
-    if(data) {
+  readFile(fileName, function (_, data) {
+    if (data) {
       resolve(require(fileName));
     } else {
       mkdir(baseDir + '/.gandalf', function () {
         writeFile(fileName, getDefaultSettings(), function (err) {
-          if(err) {
+          if (err) {
             reject(err);
           } else {
             resolve(require(fileName));
@@ -45,5 +45,3 @@ function getSettings(baseDir) {
   });
   return promise;
 }
-
-export default getSettings;
