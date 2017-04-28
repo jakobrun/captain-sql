@@ -1,13 +1,13 @@
 /*global CodeMirror*/
 'use strict';
 const { ipcRenderer } = require('electron');
-const m = require('./bower_components/mithriljs/mithril.js');
-const CodeMirror = require('./bower_components/codemirror/lib/codemirror.js');
-require('./bower_components/codemirror/addon/hint/show-hint.js');
-require('./bower_components/codemirror/addon/search/searchcursor.js');
-require('./bower_components/codemirror/addon/dialog/dialog.js');
-require('./bower_components/codemirror/keymap/sublime.js');
-require('./bower_components/codemirror/mode/sql/sql.js');
+const m = require('mithril');
+const CodeMirror = require('codemirror');
+require('codemirror/addon/hint/show-hint.js');
+require('codemirror/addon/search/searchcursor.js');
+require('codemirror/addon/dialog/dialog.js');
+require('codemirror/keymap/sublime.js');
+require('codemirror/mode/sql/sql.js');
 require('./dist/modules/sql-hint.js')
 
 require('./dist/modules/get_settings')(process.env.HOME).then(function (settings) {
