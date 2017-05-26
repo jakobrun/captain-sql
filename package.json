@@ -17,6 +17,7 @@
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.14",
     "chai": "^1.10.0",
+    "electron-connect": "^0.6.1",
     "electron-mocha": "^3.4.0",
     "electron-packager": "^8.6.0",
     "electron-rebuild": "^1.5.7",
@@ -39,6 +40,7 @@
     "build": "tsc && gulp less",
     "package-mac": "electron-packager . Gandalf --platform=darwin --arch=x64",
     "dev": "tsc -w",
+    "serve": "gulp serve",
     "test": "mocha dist/modules/tests",
     "ui-test": "electron-mocha --renderer ./dist/views/tests/",
     "start": "electron ."

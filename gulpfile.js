@@ -1,5 +1,6 @@
 'use strict';
-var gulp = require('gulp'),
+const gulp = require('gulp'),
+  electron = require('electron-connect').server.create(),
   less = require('gulp-less');
 
 gulp.task('less', function() {
@@ -8,6 +9,14 @@ gulp.task('less', function() {
     .pipe(gulp.dest('./css'));
 });
 
-gulp.task('dev', ['less'], function() {
-  gulp.watch(['./less/**/*.less'], ['less']);
+gulp.task('serve', function () {
+
+  // Start browser process
+  electron.start();
+
+  // Restart browser process
+  gulp.watch('app.js', electron.restart);
+
+  // Reload renderer process
+  gulp.watch(['./dist/**/*.js', 'index.html'], electron.reload);
 });

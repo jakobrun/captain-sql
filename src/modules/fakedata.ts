@@ -1,4 +1,4 @@
-import faker from 'faker';
+import * as faker from 'faker';
 import * as q from 'q';
 
 const numberOfPersons = 200;
