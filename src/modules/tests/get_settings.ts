@@ -1,4 +1,4 @@
-import { getSettings } from '../modules/get_settings';
+import { getSettings } from '../get_settings';
 import { mkdir, writeFile, readFile } from 'fs';
 import * as rimraf from 'rimraf';
 import { nfcall } from 'q';

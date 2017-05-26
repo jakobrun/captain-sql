@@ -1,4 +1,4 @@
-import { getHistoryModel } from '../modules/history';
+import { getHistoryModel } from '../history';
 import { expect } from 'chai';
 import { unlinkSync } from 'fs';
 

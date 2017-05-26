@@ -17,6 +17,7 @@
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.14",
     "chai": "^1.10.0",
+    "electron-mocha": "^3.4.0",
     "electron-packager": "^8.6.0",
     "electron-rebuild": "^1.5.7",
     "faker": "^2.1.1",
@@ -32,13 +33,14 @@
     "url": "gh:jakobrun/gandalf.git"
   },
   "scripts": {
-    "precommit": "npm run build && npm t",
+    "precommit": "npm run build && npm t && npm run ui-test",
     "build-deps": "electron-rebuild && node node_modules/java/postInstall.js",
     "postinstall": "npm run build-deps",
     "build": "tsc && gulp less",
     "package-mac": "electron-packager . Gandalf --platform=darwin --arch=x64",
     "dev": "tsc -w",
-    "test": "mocha dist/test",
+    "test": "mocha dist/modules/tests",
+    "ui-test": "electron-mocha --renderer ./dist/views/tests/",
     "start": "electron ."
   },
   "author": "Jakob Már Rúnarsson",

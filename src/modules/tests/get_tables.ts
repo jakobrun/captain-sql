@@ -1,4 +1,4 @@
-import { getTables } from '../modules/get_tables';
+import { getTables } from '../get_tables';
 import { expect } from 'chai';
 
 describe('get tables', function () {
