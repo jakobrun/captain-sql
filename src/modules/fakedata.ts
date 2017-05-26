@@ -1,4 +1,3 @@
-'use strict';
 import faker from 'faker';
 import * as q from 'q';
 
@@ -18,7 +17,7 @@ function createArray(n, f) {
 }
 
 
-module.exports = function (db) {
+export const createFakedata = function (db) {
   function innsertArray(insertSt, array) {
     return function () {
       return q.all(array.map(function (row) {

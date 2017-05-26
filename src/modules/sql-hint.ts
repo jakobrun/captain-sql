@@ -1,6 +1,4 @@
-/*global CodeMirror*/
-'use strict';
-exports.createSqlHint = function (pubsub, editor, getTables, CodeMirror) {
+export const createSqlHint = function (pubsub, editor, getTables, CodeMirror) {
 
   let tables;
   let keywords;

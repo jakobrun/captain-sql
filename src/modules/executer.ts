@@ -1,5 +1,4 @@
-'use strict';
-exports.createExecuter = function (pubsub, editor, m) {
+export const createExecuter = function (pubsub, editor, m) {
   let more;
   let connection;
 

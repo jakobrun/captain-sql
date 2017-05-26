@@ -1,5 +1,4 @@
-'use strict';
-exports.createLoginModule = function (m, pubsub, connect, settings) {
+export const createLoginModule = function (m, pubsub, connect, settings) {
   var connecting = m.prop(false),
     errorMsg = m.prop(''),
     loginInfo = {

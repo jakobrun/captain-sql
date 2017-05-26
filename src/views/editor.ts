@@ -1,5 +1,4 @@
-'use strict';
-exports.createEditor = function (m, pubsub, codeMirror, fs) {
+export const createEditor = function (m, pubsub, codeMirror, fs) {
   var tables = {},
     cm,
     assist = function () {

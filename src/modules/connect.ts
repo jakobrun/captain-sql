@@ -1,7 +1,7 @@
-'use strict';
 import { useInMemoryDb, connect as connectToDb } from 'node-jt400';
 import { defer } from 'q';
 import { createWriteStream } from 'fs';
+import { createFakedata } from './fakedata'
 import * as JSONStream from 'JSONStream';
 import { exportSchema } from './export-schema';
 
@@ -77,7 +77,7 @@ export function connect(options, settings) {
   console.log('connecting...');
   if (options.host === 'hsql:inmemory') {
     const db = useInMemoryDb();
-    return require('./fakedata')(db).then(function () {
+    return createFakedata(db).then(function () {
       console.log('connected to inmemory hsql!!');
       return connection(db, settings);
     }, function () {

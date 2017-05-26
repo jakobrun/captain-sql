@@ -1,5 +1,4 @@
-'use strict';
-exports.createSchemaHandler = function({readFile}, pubsub) {
+export const createSchemaHandler = function({readFile}, pubsub) {
   const baseDir = process.env.HOME + '/.gandalf/';
   let connection;
   const loadSchema = function() {

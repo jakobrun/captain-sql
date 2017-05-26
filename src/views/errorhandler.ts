@@ -1,5 +1,4 @@
-'use strict';
-exports.createErrorHandler = function (m) {
+export const createErrorHandler = function (m) {
   var message;
   process.on('uncaughtException', function(err) {
     console.log('Caught exception: ', err.message, err.stack);

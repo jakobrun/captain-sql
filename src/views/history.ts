@@ -1,5 +1,4 @@
-'use strict';
-exports.createHistoryView = function (m, pubsub, createPopupmenu, createHistory) {
+export const createHistoryView = function (m, pubsub, createPopupmenu, createHistory) {
   var history,
     popup = createPopupmenu(pubsub, {
       getList: function () {

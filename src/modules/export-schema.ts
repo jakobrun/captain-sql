@@ -1,4 +1,3 @@
-'use strict';
 import { Transform } from 'stream';
 import * as JSONStream from 'JSONStream';
 

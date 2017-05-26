@@ -1,4 +1,3 @@
-'use strict';
 import { lexer } from 'sql-parser';
 
 function last(array) {

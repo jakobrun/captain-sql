@@ -1,5 +1,4 @@
-'use strict';
-exports.createActions = function (m, pubsub, createPopupmenu) {
+export const createActions = function (m, pubsub, createPopupmenu) {
   var list = [{
     name: 'Run query (ctrl + Enter)',
     eventName: 'run-query'

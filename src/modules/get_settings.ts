@@ -1,4 +1,3 @@
-'use strict';
 import { defer } from 'q';
 import { readFile, mkdir, writeFile } from 'fs';
 

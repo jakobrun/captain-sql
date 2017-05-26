@@ -1,4 +1,3 @@
-'use strict';
 import { getHistoryModel } from '../modules/history';
 import { expect } from 'chai';
 import { unlinkSync } from 'fs';

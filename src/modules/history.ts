@@ -1,4 +1,3 @@
-'use strict';
 import * as q from 'q';
 import { writeFile, readFile }
   from 'fs';

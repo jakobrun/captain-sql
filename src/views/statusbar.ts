@@ -1,5 +1,4 @@
-'use strict';
-exports.createStatusbar = function(m, pubsub) {
+export const createStatusbar = function(m, pubsub) {
   let rowCount = 0, time;
   const status = m.prop(''),
     getRowsText = function(res) {

@@ -1,18 +1,17 @@
-'use strict';
-exports.createIdGenerator = function () {
+export const createIdGenerator = function () {
   var i = 0;
   return function () {
     i++;
     return 'e' + i;
   };
 };
-exports.createId = exports.createIdGenerator();
-exports.createPopupmenu = function (pubsub, controller, m) {
+export const createId = createIdGenerator();
+export const createPopupmenu = function (pubsub, controller, m) {
   var fuzzy = require('fuzzy');
 
   var searchValue = m.prop(''),
     selectedIndex = m.prop(0),
-    menuId = exports.createId(),
+    menuId = createId(),
     show = m.prop(false),
     searchElement,
     toggleShow = function () {

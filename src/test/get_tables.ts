@@ -1,4 +1,3 @@
-'use strict';
 import { getTables } from '../modules/get_tables';
 import { expect } from 'chai';
 

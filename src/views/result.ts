@@ -1,5 +1,4 @@
-'use strict';
-exports.createResult = function (m, pubsub) {
+export const createResult = function (m, pubsub) {
   const metadata = m.prop([]),
     updated = m.prop(''),
     data = m.prop([]),

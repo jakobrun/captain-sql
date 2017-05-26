@@ -1,4 +1,4 @@
-exports.createColumnsPrompt = function (m, editor, getTables, pubsub, createPopupmenu) {
+export const createColumnsPrompt = function (m, editor, getTables, pubsub, createPopupmenu) {
   var columnList: any[] = [],
     tables: any[] = [],
     listView = createPopupmenu(pubsub, {
