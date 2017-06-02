@@ -16,7 +16,6 @@ export const createEditor = function (m, pubsub, codeMirror, fs) {
             value: '',
             mode: 'text/x-sql',
             lineNumbers: true,
-            autofocus: true,
             theme: 'gandalf',
             keyMap: 'sublime',
             extraKeys: {

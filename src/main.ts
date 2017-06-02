@@ -78,26 +78,20 @@ getSettings(process.env.HOME).then(function (settings) {
     connected = true;
     document.title = 'Gandalf - connected to ' + connection.settings().name;
     m.route('/sql/' + connection.settings().name);
-    pubsub.once('disconnect', function () {
-      connection.close();
-      m.route('/login');
-    });
   });
 
   var sqlModule = {
     controller: function () {
-      if (!connected) {
-        var connName = m.route.param('conn'),
-          connSettings = settings.connections.filter(function (c) {
-            return c.name === connName;
-          })[0];
+      var connName = m.route.param('conn')
+      if (!connected && connName) {
+        const connSettings = settings.connections.find((c) => c.name === connName)
         if (connSettings.host === 'hsql:inmemory') {
           console.log('reconnect to hsql:inmemory!!');
           connect({ host: connSettings.host }, connSettings).then(function (connection) {
             pubsub.emit('connected', connection);
           });
         } else {
-          m.route('/login');
+          pubsub.emit('login');
         }
       }
     },
@@ -107,6 +101,7 @@ getSettings(process.env.HOME).then(function (settings) {
         m('div', {
           'class': 'result-gutter'
         }),
+        loginModule.view(),
         result.view(),
         statusbar.view(),
         actions.view(),
@@ -118,8 +113,8 @@ getSettings(process.env.HOME).then(function (settings) {
     }
   };
 
-  m.route(document.getElementById('body'), '/login', {
-    '/login': loginModule,
+  m.route(document.getElementById('body'), '/sql/', {
+    '/sql': sqlModule,
     '/sql/:conn': sqlModule
   });
 }).catch(function (err) {

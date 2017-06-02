@@ -29,6 +29,9 @@ export const createExecuter = function (pubsub, editor, m) {
   const errorHandler = emit('data-error');
   const runQuery = function () {
     const sql = editor.getSelection() || editor.getCursorStatement();
+    if(!connection) {
+      return
+    }
     connection.execute(sql).then(function (st) {
       if (st.isQuery()) {
         st.metadata().then(emit('metadata')).fail(errorHandler);
