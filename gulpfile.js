@@ -13,7 +13,7 @@ gulp.task('less', compileLess);
 gulp.task('serve', function () {
   compileLess()
   // Start browser process
-  electron.start();
+  electron.start(['.', 'dev=true']);
 
   // Restart browser process
   gulp.watch('app.js', electron.restart);

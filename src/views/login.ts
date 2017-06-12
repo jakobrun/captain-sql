@@ -33,6 +33,7 @@ export const createLoginModule = function(m, pubsub, connect, settings) {
     config.host = loginInfo.host();
     config.user = loginInfo.username();
     config.password = loginInfo.password();
+    
     //Connect
     connect(config, conn).then(function(connection) {
       m.startComputation();
@@ -63,6 +64,8 @@ export const createLoginModule = function(m, pubsub, connect, settings) {
   });
 
   pubsub.on('login', () => show(true))
+
+  pubsub.on('connected', () => show(false))
 
 
   var loginOnEnter = function(prop) {

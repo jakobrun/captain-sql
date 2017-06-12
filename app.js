@@ -7,6 +7,9 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let windows = [];
 
+global.sharedObject = {
+  dev: process.argv.find( arg => arg === 'dev=true')
+};
 function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({ width: 800, height: 600 })

@@ -2,7 +2,7 @@ import { getSettings } from './modules/get_settings'
 import { connect } from './modules/connect'
 import { getTables } from './modules/get_tables'
 import { getHistoryModel } from './modules/history'
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, remote } = require('electron');
 const m = require('mithril');
 const CodeMirror = require('codemirror');
 require('codemirror/addon/hint/show-hint.js');
@@ -113,7 +113,7 @@ getSettings(process.env.HOME).then(function (settings) {
     }
   };
 
-  m.route(document.getElementById('body'), '/sql/', {
+  m.route(document.getElementById('body'), '/sql/' + (remote.getGlobal('sharedObject').dev ? 'hsql inmemory dev' : ''), {
     '/sql': sqlModule,
     '/sql/:conn': sqlModule
   });
