@@ -5,11 +5,8 @@ export const createResult = function (m, pubsub) {
     running = m.prop(false),
     errorMsg = m.prop(''),
     columnWidth = function (index) {
-      if (metadata()[index] && metadata()[index].precision) {
-        return Math.min(300, 12 + (metadata()[index].precision * 9));
-      } else {
-        return 300;
-      }
+      const col = metadata()[index]
+      return col && col.colWidth || 300
     },
     scroll = function (e) {
       const element = e.target;
@@ -30,9 +27,22 @@ export const createResult = function (m, pubsub) {
       };
     };
 
+  const columnClick = (index) => {
+    const col = metadata()[index]
+    const size = Math.min(3200, 12 + (col.precision * 9))
+    col.colWidth = col.colWidth > 300 ? 300 : size
+  }
   pubsub.on('run-query', reset(true));
   pubsub.on('connected', reset(false));
-  pubsub.on('metadata', data => !errorMsg() && metadata(data));
+  pubsub.on('metadata', data => {
+    if(errorMsg()) {
+      return
+    }
+    data.map(col => {
+      col.colWidth = Math.min(300, 12 + (col.precision * 9));
+    })
+    !errorMsg() && metadata(data)
+  });
   pubsub.on('data', function (res) {
     running(false);
     data(res.data);
@@ -64,7 +74,8 @@ export const createResult = function (m, pubsub) {
               m('tr', metadata().map(function (col, index) {
                 return m('th', {
                   style: 'width: ' + columnWidth(index) + 'px',
-                  title: col.name
+                  title: col.name,
+                  onclick: () => columnClick(index)
                 }, col.name);
               }))
             ]),
