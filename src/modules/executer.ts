@@ -34,24 +34,24 @@ export const createExecuter = function (pubsub, editor, m) {
     }
     connection.execute(sql).then(function (st) {
       if (st.isQuery()) {
-        st.metadata().then(emit('metadata')).fail(errorHandler);
+        st.metadata().then(emit('metadata')).catch(errorHandler);
         st.query().then(function (res) {
           pubsub.emit('succesfull-query', {
             sql: sql,
             data: res.data
           });
           return res;
-        }).then(dataHandler).fail(errorHandler);
+        }).then(dataHandler).catch(errorHandler);
       } else {
-        st.updated().then(emit('data-updated')).fail(errorHandler);
+        st.updated().then(emit('data-updated')).catch(errorHandler);
       }
-    }).fail(errorHandler);
+    }).catch(errorHandler);
   };
   const loadMore = function () {
     if (!more) {
       return;
     }
-    more().then(moredataHandler).fail(errorHandler);
+    more().then(moredataHandler).catch(errorHandler);
   };
 
   pubsub.on('connected', (c) => connection = c);

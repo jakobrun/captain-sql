@@ -1,5 +1,4 @@
 import { useInMemoryDb, connect as connectToDb } from 'node-jt400';
-import { defer } from 'q';
 import { createWriteStream } from 'fs';
 import { createFakedata } from './fakedata'
 import * as JSONStream from 'JSONStream';
@@ -27,35 +26,42 @@ function connection(db, settings) {
           metadata: st.metadata,
           updated: st.updated,
           query: function () {
-            let deffered = defer();
-            const stream = st.asStream({
-              bufferSize: 130
-            }).pipe(JSONStream.parse([true]));
-
-            stream.on('data', function (data) {
-              buffer.push(data);
-              if (buffer.length >= 131) {
-                deffered.fulfill({
-                  data: buffer.splice(0, 131),
-                  more: function () {
-                    stream.resume();
-                    deffered = defer();
-                    return deffered.promise;
-                  }
-                });
-                stream.pause();
-              }
-            });
-
-            stream.on('end', function () {
-              statement = undefined;
-              deffered.fulfill({
-                data: buffer
+            return new Promise((resolve, reject) => {
+              let currentResolve = resolve
+              let currentReject = reject
+              const handleError = (err) => currentReject(err)
+              const stream = st.asStream({
+                bufferSize: 130
+              })
+              .on('error', handleError)
+              .pipe(JSONStream.parse([true]))
+              .on('error', handleError);
+  
+              stream.on('data', function (data) {
+                buffer.push(data);
+                if (buffer.length >= 131) {
+                  stream.pause();
+                  currentResolve({
+                    data: buffer.splice(0, 131),
+                    more: function () {
+                      stream.resume();
+                      return new Promise((resolve, reject) => {
+                        currentResolve = resolve
+                        currentReject = reject
+                      })
+                    }
+                  });
+                }
               });
-            });
-
-            stream.on('error', (err) => deffered.reject(err));
-            return deffered.promise;
+  
+              stream.on('end', function () {
+                statement = undefined;
+                currentResolve({
+                  data: buffer
+                });
+              });
+  
+            })
           }
         };
       });

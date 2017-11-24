@@ -32,9 +32,8 @@ export const createResult = function (m, pubsub) {
 
   pubsub.on('run-query', reset(true));
   pubsub.on('connected', reset(false));
-  pubsub.on('metadata', metadata);
+  pubsub.on('metadata', data => !errorMsg() && metadata(data));
   pubsub.on('data', function (res) {
-    console.log('got data', res)
     running(false);
     data(res.data);
   });
