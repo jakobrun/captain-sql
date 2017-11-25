@@ -1,8 +1,8 @@
-import { defer } from 'q';
-import { readFile, mkdir, writeFile } from 'fs';
+import { mkdir, readFile, writeFile } from 'fs'
+import { defer } from 'q'
 
-const getDefaultSettings = function () {
-  return `
+const getDefaultSettings = () => {
+    return `
 module.exports = {
   connections: [{
     name: 'My connection',
@@ -21,26 +21,26 @@ module.exports = {
     }]
   }]
 };
-    `;
-};
+    `
+}
 
 export function getSettings(baseDir) {
-  const { resolve, reject, promise } = defer();
-  const fileName = baseDir + '/.gandalf/settings.js';
-  readFile(fileName, function (_, data) {
-    if (data) {
-      resolve(require(fileName));
-    } else {
-      mkdir(baseDir + '/.gandalf', function () {
-        writeFile(fileName, getDefaultSettings(), function (err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(require(fileName));
-          }
-        });
-      });
-    }
-  });
-  return promise;
+    const { resolve, reject, promise } = defer()
+    const fileName = baseDir + '/.gandalf/settings.js'
+    readFile(fileName, (_, data) => {
+        if (data) {
+            resolve(require(fileName))
+        } else {
+            mkdir(baseDir + '/.gandalf', () => {
+                writeFile(fileName, getDefaultSettings(), err => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(require(fileName))
+                    }
+                })
+            })
+        }
+    })
+    return promise
 }

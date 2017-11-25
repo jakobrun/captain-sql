@@ -1,11 +1,11 @@
 import { expect } from 'chai'
-import { getTables } from '../../modules/get_tables'
-import { EventEmitter } from 'events'
 import * as CodeMirror from 'codemirror'
-import * as m from 'mithril'
+import { EventEmitter } from 'events'
 import * as fs from 'fs'
-import { createEditor } from '../editor'
+import * as m from 'mithril'
+import { getTables } from '../../modules/get_tables'
 import { createColumnsPrompt } from '../columns_prompt'
+import { createEditor } from '../editor'
 import { createPopupmenu } from '../popupmenu'
 
 require('codemirror/addon/hint/show-hint.js')
@@ -18,110 +18,120 @@ require('../../modules/sql-hint')
 const pubsub = new EventEmitter()
 const editor = createEditor(m, pubsub, CodeMirror, fs)
 
-const editorContainer = document.createElement('div');
+const editorContainer = document.createElement('div')
 document.body.appendChild(editorContainer)
-m.render(editorContainer, editor.view());
+m.render(editorContainer, editor.view())
 
-describe('editor', function() {
+describe('editor', () => {
+    it('should set value', () => {
+        editor.setValue('testing\nline2')
+        expect(editor.getValue(' ')).to.equal('testing line2')
+    })
 
-    it('should set value', function() {
-        editor.setValue('testing\nline2');
-        expect(editor.getValue(' ')).to.equal('testing line2');
-    });
-
-    it('should get the selected statement', function() {
-        editor.setValue('line1\nline2');
+    it('should get the selected statement', () => {
+        editor.setValue('line1\nline2')
         editor.setCursor({
             line: 1,
-            ch: 0
-        });
-        expect(editor.getCursorStatement(' ')).to.equal('line1 line2');
-        editor.setValue('line1\n\nline2');
+            ch: 0,
+        })
+        expect(editor.getCursorStatement(' ')).to.equal('line1 line2')
+        editor.setValue('line1\n\nline2')
         editor.setCursor({
             line: 2,
-            ch: 0
-        });
-        expect(editor.getCursorStatement(' ')).to.equal('line2');
-        editor.setValue('line1\n\nline3\nline4\n\nline6 with stuff');
+            ch: 0,
+        })
+        expect(editor.getCursorStatement(' ')).to.equal('line2')
+        editor.setValue('line1\n\nline3\nline4\n\nline6 with stuff')
         editor.setCursor({
             line: 3,
-            ch: 0
-        });
-        expect(editor.getCursorStatement(' ')).to.equal('line3 line4');
-    });
+            ch: 0,
+        })
+        expect(editor.getCursorStatement(' ')).to.equal('line3 line4')
+    })
 
-    it('should select columns', function() {
-        editor.setValue('select a, b\nfrom foo');
-        editor.selectColumns();
-        expect(editor.getSelection()).to.equal('a, b');
-    });
+    it('should select columns', () => {
+        editor.setValue('select a, b\nfrom foo')
+        editor.selectColumns()
+        expect(editor.getSelection()).to.equal('a, b')
+    })
 
-    it('should select columns in selected statement', function() {
-        editor.setValue('select * from bar\n\nselect a, b from foo');
+    it('should select columns in selected statement', () => {
+        editor.setValue('select * from bar\n\nselect a, b from foo')
         editor.setCursor({
             line: 2,
-            ch: 10
-        });
-        editor.selectColumns();
-        expect(editor.getSelection()).to.equal('a, b');
-    });
+            ch: 10,
+        })
+        editor.selectColumns()
+        expect(editor.getSelection()).to.equal('a, b')
+    })
 
-    it('should select columns in multible lines', function() {
-        editor.setValue('select a, b,\nc from foo');
-        editor.selectColumns();
-        expect(editor.getSelection()).to.equal('a, b,\nc');
-    });
+    it('should select columns in multible lines', () => {
+        editor.setValue('select a, b,\nc from foo')
+        editor.selectColumns()
+        expect(editor.getSelection()).to.equal('a, b,\nc')
+    })
 
-    it('should select columns in multible lines no matter where the cursor is', function() {
-        editor.setValue('select a, b,\nc from foo');
-        editor.setCursor({ line: 1, ch: 0 });
-        editor.selectColumns();
-        expect(editor.getSelection()).to.equal('a, b,\nc');
-    });
+    it('should select columns in multible lines no matter where the cursor is', () => {
+        editor.setValue('select a, b,\nc from foo')
+        editor.setCursor({ line: 1, ch: 0 })
+        editor.selectColumns()
+        expect(editor.getSelection()).to.equal('a, b,\nc')
+    })
 
-    it('should select columns with subqueries', function() {
-        var columns = 'a, b, (select c from bar where d=a)';
-        editor.setValue('select ' + columns + ' from foo');
-        editor.selectColumns();
-        expect(editor.getSelection()).to.equal(columns);
-    });
+    it('should select columns with subqueries', () => {
+        const columns = 'a, b, (select c from bar where d=a)'
+        editor.setValue('select ' + columns + ' from foo')
+        editor.selectColumns()
+        expect(editor.getSelection()).to.equal(columns)
+    })
+})
 
-});
+describe('columns prompt', () => {
+    it('should check current columns', () => {
+        const prompt = createColumnsPrompt(
+            m,
+            editor,
+            getTables,
+            pubsub,
+            createPopupmenu
+        )
+        const tables = {
+            FOO: {
+                columns: [{ name: 'a' }, { name: 'b' }],
+            },
+        }
+        pubsub.emit('schema-loaded', tables)
+        editor.setValue('select a from foo')
+        pubsub.emit('columns-select')
+        const list = prompt.controller.getList()
+        expect(list.length).to.equal(2)
+        expect(list[0].name).to.equal('a')
+        expect(list[0].checked).to.equal(true)
+        expect(list[1].name).to.equal('b')
+        expect(list[1].checked).to.equal(false)
+    })
 
-describe('columns prompt', function() {
-    it('should check current columns', function() {
-        var prompt = createColumnsPrompt(m, editor, getTables, pubsub, createPopupmenu),
-            tables = {
-                'FOO': {
-                    columns: [{ name: 'a' }, { name: 'b' }]
-                }
-            };
-        pubsub.emit('schema-loaded', tables);
-        editor.setValue('select a from foo');
-        pubsub.emit('columns-select');
-        var list = prompt.controller.getList();
-        expect(list.length).to.equal(2);
-        expect(list[0].name).to.equal('a');
-        expect(list[0].checked).to.equal(true);
-        expect(list[1].name).to.equal('b');
-        expect(list[1].checked).to.equal(false);
-    });
-
-    it('should check current columns and contain columns not found in any table', function() {
-        var prompt = createColumnsPrompt(m, editor, getTables, pubsub, createPopupmenu),
-            tables = {
-                'FOO': {
-                    columns: [{ name: 'a' }, { name: 'b' }]
-                }
-            };
-        pubsub.emit('schema-loaded', tables);
-        editor.setValue('select a, foo(b) from foo');
-        pubsub.emit('columns-select');
-        var list = prompt.controller.getList();
-        expect(list.length).to.equal(3);
-        expect(list[0].checked).to.equal(true);
-        expect(list[1].name).to.equal('foo(b)');
-        expect(list[1].checked).to.equal(true);
-        expect(list[2].checked).to.equal(false);
-    });
-});
+    it('should check current columns and contain columns not found in any table', () => {
+        const prompt = createColumnsPrompt(
+            m,
+            editor,
+            getTables,
+            pubsub,
+            createPopupmenu
+        )
+        const tables = {
+            FOO: {
+                columns: [{ name: 'a' }, { name: 'b' }],
+            },
+        }
+        pubsub.emit('schema-loaded', tables)
+        editor.setValue('select a, foo(b) from foo')
+        pubsub.emit('columns-select')
+        const list = prompt.controller.getList()
+        expect(list.length).to.equal(3)
+        expect(list[0].checked).to.equal(true)
+        expect(list[1].name).to.equal('foo(b)')
+        expect(list[1].checked).to.equal(true)
+        expect(list[2].checked).to.equal(false)
+    })
+})
