@@ -1,5 +1,7 @@
 .p-menu-search {
-    width: 400px;
+    width: 392px;
+    margin: 4px;
+    outline: 1px solid var(--primary-color)
 }
 .p-menu-list {
     list-style: none;
@@ -27,6 +29,10 @@
 }
 .p-menu-item-selected {
     color: @color;
+    background-color: var(--selected-color);
+    .p-menu-shortcut {
+        opacity: .6
+    }
 }
 .hint-remarks {
   	overflow: hidden;

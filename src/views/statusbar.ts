@@ -12,7 +12,7 @@ export const createStatusbar = (m, pubsub) => {
     const endTime = res => {
         time = Date.now() - time
         rowCount = 0
-        status('time: ' + time + 'ms' + getRowsText(res))
+        status('Time ' + time + 'ms' + getRowsText(res))
     }
 
     function setStatus(text) {
@@ -28,7 +28,7 @@ export const createStatusbar = (m, pubsub) => {
     pubsub.on('reconnecting', () => setStatus('reconnecting...'))
     pubsub.on('data', endTime)
     pubsub.on('data-more', res => {
-        status('time: ' + time + 'ms' + getRowsText(res))
+        status('Time ' + time + 'ms' + getRowsText(res))
     })
     pubsub.on('data-error', endTime)
     pubsub.on('schema-loaded', () => {

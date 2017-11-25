@@ -80,19 +80,16 @@ getSettings(process.env.HOME)
         })
 
         pubsub.on('connected', connection => {
-            const settingsStyle = document.getElementById('settings-style')
-            const primaryColor = connection.settings().primaryColor || '#e35f28'
-            if (settingsStyle) {
-                settingsStyle.textContent =
-                    '.table-head th { color: ' +
-                    primaryColor +
-                    '} .cm-s-gandalf span.cm-keyword { color: ' +
-                    primaryColor +
-                    '} .p-menu-item-selected {background-color: ' +
-                    primaryColor +
-                    '} .CodeMirror-hint-active {background-color: ' +
-                    primaryColor +
-                    '}'
+            const primaryColor = connection.settings().primaryColor
+            if (primaryColor) {
+                document.body.style.setProperty('--primary-color', primaryColor)
+            }
+            const selectedColor = connection.settings().selectedColor
+            if (selectedColor) {
+                document.body.style.setProperty(
+                    '--selected-color',
+                    selectedColor
+                )
             }
 
             connected = true

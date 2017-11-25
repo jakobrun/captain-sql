@@ -9,6 +9,8 @@ module.exports = {
     host: 'myhost',
     user: '',
     editorFile: 'myhost.sql',
+    primaryColor: '#DF620B',
+    selectionColor: '#864108',
     history: {
       file: 'myhost.history',
       max: 300,
