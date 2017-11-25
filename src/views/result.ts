@@ -41,7 +41,7 @@ export const createResult = function (m, pubsub) {
     data.map(col => {
       col.colWidth = Math.min(300, 12 + (col.precision * 9));
     })
-    !errorMsg() && metadata(data)
+    metadata(data)
   });
   pubsub.on('data', function (res) {
     running(false);
@@ -79,7 +79,17 @@ export const createResult = function (m, pubsub) {
                 }, col.name);
               }))
             ]),
-          m('div', {
+            m('div.shortcuts', [
+              m('div.shortcut-item', [
+                m('div.shortcut-label', 'Show All Commands '),
+                m('div.shortcut-value', 'CMD + Shift + P'),
+              ]),
+              m('div.shortcut-item', [
+                m('div.shortcut-label', 'Execute '),
+                m('div.shortcut-value', 'Ctrl + Enter'),
+              ])
+            ]),
+            m('div', {
             'class': 'table-body',
             onscroll: scroll
           }, [
@@ -93,7 +103,7 @@ export const createResult = function (m, pubsub) {
                 }));
               }))
             ]),
-          m('div', { 'class': 'spinner-loader' + (running() ? '' : ' hidden') }, '')
+          m('div', { 'class': 'spinner-loader' + (running() ? '' : ' hidden') }, ''),
         ]);
     }
   };

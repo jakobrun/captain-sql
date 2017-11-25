@@ -36,9 +36,28 @@
 	overflow: auto;
 	.spinner-loader {
 		position: absolute;
-		top: 60px;
+		top: 44px;
 		left: 50%;
 	}
+}
+.shortcuts {
+	color: #666;
+	padding-top: 50px;
+}
+.shortcut-item {
+	display: flex;
+}
+.shortcut-label {
+	text-align: right;
+	width: 50%;
+	padding: 8px;
+}
+.shortcut-value {
+	width: 50%;
+	padding: 8px;
+}
+.table-head {
+	height: 36px;
 }
 .table-head,
 .table-body-rows {
@@ -53,6 +72,7 @@
 	top: 2.2rem;
 	bottom: 0;
 	left: 0;
+	background-color: darken(@bg-color, 4%);
 }
 .table th {
 	cursor: pointer;	
@@ -67,5 +87,5 @@
 }
 .table-head th {
 	padding: 8px;
-	background-color: darken(@bg-color, 3%);
+	background-color: darken(@bg-color, 6%);
 }
