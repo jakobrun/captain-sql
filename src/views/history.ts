@@ -5,7 +5,7 @@ export const createHistoryView = function (m, pubsub, createPopupmenu, createHis
         return history ? history.list() : [];
       },
       renderItem: function (historyItem) {
-        return [m('div', historyItem.original.name), m('div', {
+        return [m('div', m.trust(historyItem.string)), m('div', {
           'class': 'hint-remarks'
         }, historyItem.original.time)];
       },

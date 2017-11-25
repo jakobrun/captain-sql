@@ -1,10 +1,12 @@
 export const createActions = function (m, pubsub, createPopupmenu) {
   var list = [{
-    name: 'Run query (ctrl + Enter)',
-    eventName: 'run-query'
+    name: 'Run query',
+    eventName: 'run-query',
+    shortcut: ['Ctrl', 'Enter']
   }, {
-    name: 'Content assist (ctrl + Space)',
-    eventName: 'content-assist'
+    name: 'Content assist',
+    eventName: 'content-assist',
+    shortcut: ['Ctrl', 'Space']
   }, {
     name: 'New window',
     eventName: 'new-window'

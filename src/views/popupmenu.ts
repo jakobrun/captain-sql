@@ -30,11 +30,15 @@ export const createPopupmenu = function (pubsub, controller, m) {
       searchElement = el;
     },
     getList = function () {
-      return fuzzy.filter(searchValue(), controller.getList(), {
+      const list = fuzzy.filter(searchValue(), controller.getList(), {
         pre: '<span class="match">', post: '</span>', extract: function (item) {
           return item.name;
         }
       });
+      if(selectedIndex() >= list.length) {
+        selectedIndex(0)
+      }
+      return list;
     },
     keyDown = function (e) {
       var list = getList(),
@@ -83,10 +87,14 @@ export const createPopupmenu = function (pubsub, controller, m) {
           m('ul', {
             'class': 'p-menu-list'
           }, getList().map(function (item, index) {
+            const shortcut = item.original.shortcut || []
             return m('li', {
               'class': 'p-menu-item' + (index === selectedIndex() ? ' p-menu-item-selected' : ''),
               'id': menuId + '-i' + index
-            }, controller.renderItem ? controller.renderItem(item) : m.trust(item.string));
+            }, [
+              m('div.p-menu-item-text', controller.renderItem ? controller.renderItem(item) : m.trust(item.string)),
+              ...shortcut.map(sc => m('div.p-menu-shortcut', sc))
+            ]);
           }))
         ]);
     }

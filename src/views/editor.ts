@@ -74,7 +74,7 @@ export const createEditor = function (m, pubsub, codeMirror, fs) {
         cm.setValue(data.toString());
       });
 
-      const saveFile = () => fs.writeFile(fileName, cm.getValue());
+      const saveFile = () => fs.writeFile(fileName, cm.getValue(), () => console.log('done saving file'));
 
       pubsub.once('disconnect', saveFile);
       pubsub.once('reconnecting', saveFile);

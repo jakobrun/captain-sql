@@ -12,6 +12,18 @@
     border-top: 1px solid lighten(@bg-color, 8%);
     padding: 8px;
     color: darken(@color, 20%);
+    display: flex;
+    align-content: stretch;
+}
+.p-menu-item-text {
+    flex-grow: 1;
+}
+.p-menu-shortcut {
+    border-radius: 4px;
+    background-color: lighten(@bg-color, 8%);
+    padding: 4px;
+    margin-left: 4px;
+    margin-top: -4px;
 }
 .p-menu-item-selected {
     color: @color;
