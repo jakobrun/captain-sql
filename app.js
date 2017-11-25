@@ -88,6 +88,31 @@ function createMenu() {
                 },
             ],
         },
+        {
+            label: 'View',
+            submenu: [
+                {
+                    label: 'Toggle Full Screen',
+                    accelerator: 'Shift+CmdOrCtrl+F',
+                    role: 'togglefullscreen',
+                },
+                {
+                    label: 'Actual Size',
+                    accelerator: 'CmdOrCtrl+0',
+                    role: 'resetzoom',
+                },
+                {
+                    label: 'Zoom In',
+                    accelerator: 'CmdOrCtrl+Plus',
+                    role: 'zoomin',
+                },
+                {
+                    label: 'Zoom Out',
+                    accelerator: 'CmdOrCtrl+-',
+                    role: 'zoomout',
+                },
+            ],
+        },
     ]
 
     Menu.setApplicationMenu(Menu.buildFromTemplate(template))

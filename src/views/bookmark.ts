@@ -40,7 +40,11 @@ export const createBookmarkModel = (m, fs, pubsub, editor, createPopupmenu) => {
             getList: () => bookmarks || [],
             renderItem: bookmark => [
                 m('div', m.trust(bookmark.string)),
-                m('div', { class: 'hint-remarks' }, bookmark.original.value),
+                m(
+                    'div',
+                    { class: 'hint-remarks p-menu-item-small' },
+                    bookmark.original.value
+                ),
             ],
             itemSelected: bookmark => {
                 const i = bookmarks.indexOf(bookmark)

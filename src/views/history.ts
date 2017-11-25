@@ -1,3 +1,4 @@
+import * as moment from 'moment'
 export const createHistoryView = (
     m,
     pubsub,
@@ -15,9 +16,9 @@ export const createHistoryView = (
                     m(
                         'div',
                         {
-                            class: 'hint-remarks',
+                            class: 'p-menu-item-small',
                         },
-                        historyItem.original.time
+                        moment(historyItem.original.time).fromNow()
                     ),
                 ]
             },

@@ -10,6 +10,7 @@
         "faker": "^2.1.1",
         "fuzzy": "^0.1.0",
         "mithril": "^0.1.25",
+        "moment": "^2.19.2",
         "node-jt400": "1.3.0",
         "q": "~1.0.0",
         "sql-parser": "git+https://github.com/jakobrun/sql-parser"
@@ -37,7 +38,8 @@
         "url": "gh:jakobrun/gandalf.git"
     },
     "scripts": {
-        "precommit": "npm run lint && npm run check-format && npm run build && npm t && npm run ui-test",
+        "precommit":
+            "npm run lint && npm run check-format && npm run build && npm t && npm run ui-test",
         "build-deps":
             "electron-rebuild && node node_modules/java/postInstall.js",
         "postinstall": "npm run build-deps",
