@@ -2,6 +2,7 @@ import { getSettings } from './modules/get_settings'
 import { connect } from './modules/connect'
 import { getTables } from './modules/get_tables'
 import { getHistoryModel } from './modules/history'
+import { createSplitter } from './views/splitter'
 const { ipcRenderer, remote } = require('electron');
 const m = require('mithril');
 const CodeMirror = require('codemirror');
@@ -28,7 +29,8 @@ getSettings(process.env.HOME).then(function (settings) {
     { createExecuter } = require('./modules/executer'),
     { createSchemaHandler } = require('./modules/schema'),
     { createSqlHint } = require('./modules/sql-hint');
-
+  const splitter = createSplitter(m);
+  
   var pubsub = new events.EventEmitter(),
     errorHandler = createErrorHandler(m),
     loginModule = createLoginModule(m, pubsub, connect, settings),
@@ -54,10 +56,6 @@ getSettings(process.env.HOME).then(function (settings) {
     console.log('emit new-window');
     ipcRenderer.send('new-window');
   });
-
-  // win.on('focus', function() {
-  //   pubsub.emit('editor-focus');
-  // });
 
   pubsub.on('connected', function (connection) {
     const settingsStyle = document.getElementById('settings-style');
@@ -98,9 +96,7 @@ getSettings(process.env.HOME).then(function (settings) {
     view: function () {
       return [
         editor.view(),
-        m('div', {
-          'class': 'result-gutter'
-        }),
+        splitter(),
         loginModule.view(),
         result.view(),
         statusbar.view(),

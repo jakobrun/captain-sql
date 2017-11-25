@@ -1,11 +1,12 @@
 .popup{
-	background-color: lighten(@bg-color, 5%);
+	background-color: @bg-color;
 	position: absolute;
 	width: 400px;
 	margin-left: -200px;
 	top: 4px;
 	left: 50%;
 	z-index: 100;
+	box-shadow: 1px 1px 10px darken(@bg-color, 10%)
 }
 .popup-title{
 	padding-bottom: @gutter;

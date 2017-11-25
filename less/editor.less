@@ -2,11 +2,15 @@
 .cm-s-gandalf.CodeMirror {
 	background-color: transparent;
 	color: @color;
-	font-size: 15px;
+  font-size: 15px;
+  height: var(--editor-height);
 }
 .cm-s-gandalf {
   div.CodeMirror-selected {background: lighten(@bg-color, 16%) !important;}
-  .CodeMirror-gutters {background: #151515; border-right: 0px;}
+  .CodeMirror-gutters {
+    background: transparent;
+    border-right: 0px;
+  }
   .CodeMirror-linenumber {color: #505050;}
   .CodeMirror-cursor {border-left: 1px solid #b0b0b0 !important;}
 

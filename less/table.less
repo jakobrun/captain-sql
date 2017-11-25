@@ -4,29 +4,39 @@
 	top: 0;
 	left: 0;
 	right: 0;
-	bottom: 300px;
+	bottom: var(--editor-height);
+}
+.splitter {
+	position: absolute;
+	left: 0;
+	right: 20px;
+	top: var(--editor-height);
+	height: 4px;
+	margin-top: -4px;
+	background-color: transparent;
+	z-index: 90;
+	cursor: row-resize;	
 }
 .result-gutter {
 	position: absolute;
 	left: 0;
 	width: @result-gutter;
 	right: 20px;
-	top: 300px;
-	bottom: 30px;
-	background-color: darken(@bg-color, 3%);
-	border-top: 1px solid @border-color;
+	top: var(--editor-height);
+	bottom: 26px;
+	background-color: darken(@bg-color, 4%);
 }
 .result {
 	position: absolute;
-	left: @result-gutter;
+	background-color: darken(@bg-color, 4%);
+	left: 0;
 	right: 0;
-	top: 300px;
-	bottom: 30px;
+	top: var(--editor-height);
+	bottom: 26px;
 	overflow: auto;
-	border-top: 1px solid @border-color;
 	.spinner-loader {
 		position: absolute;
-		top: 1.7rem;
+		top: 60px;
 		left: 50%;
 	}
 }
@@ -40,7 +50,7 @@
 .table-body {
 	overflow-y: scroll;
 	position: absolute;
-	top: 1.7rem;
+	top: 2.2rem;
 	bottom: 0;
 	left: 0;
 }
@@ -53,9 +63,9 @@
 	border: 1px solid @border-color;
 	margin: 0;
 	overflow: hidden;
-	padding: 8px 6px;
+	padding: 8px;
 }
 .table-head th {
-	padding: 4px 6px;
+	padding: 8px;
 	background-color: darken(@bg-color, 3%);
 }
