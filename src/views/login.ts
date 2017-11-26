@@ -1,21 +1,16 @@
+import { centerItem } from '../modules/centerItem'
+
 export const createLoginModule = (m, pubsub, connect, settings) => {
     const connecting = m.prop(false)
     const show = m.prop(true)
     const errorMsg = m.prop('')
     const loginInfo = {
-        host: m.prop(''),
-        username: m.prop(''),
         password: m.prop(''),
     }
     let conn
 
-    const selectConn = e => {
-        const i = e.target.selectedIndex - 1
-        if (i > -1) {
-            conn = settings.connections[i]
-            loginInfo.host(conn.host)
-            loginInfo.username(conn.user)
-        }
+    const selectConn = c => {
+        conn = c
     }
 
     const clone = obj => {
@@ -30,8 +25,8 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
         connecting(true)
         m.endComputation()
         const config: any = clone(conn.properties || {})
-        config.host = loginInfo.host()
-        config.user = loginInfo.username()
+        config.host = conn.host
+        config.user = conn.user
         config.password = loginInfo.password()
 
         // Connect
@@ -44,6 +39,7 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                 pubsub.once('disconnect', () => {
                     connection.close()
                     show(true)
+                    resetConn()
                 })
             })
             .fail(err => {
@@ -70,10 +66,21 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
 
     pubsub.on('connected', () => show(false))
 
+    const resetConn = () => {
+        conn = undefined
+        document.body.style.setProperty('--login-pos', '0px')
+        const el = document.querySelector('.login-item') as HTMLElement
+        if (el) {
+            setTimeout(() => el.focus(), 1)
+        }
+    }
+
     const loginOnEnter = prop => {
         return e => {
             if (e.keyCode === 13) {
                 login()
+            } else if (e.keyCode === 27) {
+                resetConn()
             } else {
                 prop(e.target.value)
             }
@@ -88,114 +95,73 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
             return m(
                 'div',
                 {
-                    class: show() ? 'glass' : 'hidden',
+                    class: 'glass' + (show() ? '' : ' glass-hide'),
                 },
                 [
                     m(
+                        'div.login-container',
+                        settings.connections.map((c, i) => {
+                            const selectItem = () => {
+                                selectConn(c)
+                                const pwEl = document.getElementById('password')
+                                const pos =
+                                    centerItem(i, settings.connections.length) *
+                                    224
+                                document.body.style.setProperty(
+                                    '--login-pos',
+                                    pos + 'px'
+                                )
+                                if (pwEl) {
+                                    setTimeout(() => pwEl.focus(), 1)
+                                }
+                            }
+                            const isHidden = conn && conn !== c
+                            return m(
+                                'div.login-item',
+                                {
+                                    tabindex: isHidden ? undefined : '0',
+                                    onclick: selectItem,
+                                    onkeydown: e => {
+                                        if (e.keyCode === 13) {
+                                            selectItem()
+                                        }
+                                    },
+                                    class:
+                                        'login-item' +
+                                        (isHidden ? ' hide-login-item' : ''),
+                                },
+                                [
+                                    m('div.login-icon', {
+                                        style: `background-color: ${
+                                            c.primaryColor
+                                        }`,
+                                    }),
+                                    m('div.login-text', c.name),
+                                    // m('div.login-text', c.user),
+                                ]
+                            )
+                        })
+                    ),
+                    m(
                         'div',
                         {
-                            class: 'popup container form',
+                            class:
+                                'login-password-container' +
+                                (connecting() || !conn || !show()
+                                    ? ' hide-login-item'
+                                    : ''),
                         },
                         [
-                            m(
-                                'h2',
-                                {
-                                    class: 'popup-title',
-                                },
-                                'Connect to database'
-                            ),
-                            m(
-                                'div',
-                                {
-                                    class: 'error',
-                                },
-                                errorMsg()
-                            ),
-                            m(
-                                'div',
-                                {
-                                    class: 'form-element',
-                                },
-                                [
-                                    m(
-                                        'select',
-                                        {
-                                            class: 'h-fill',
-                                            autofocus: 'true',
-                                            onchange: selectConn,
-                                        },
-                                        [
-                                            m(
-                                                'option',
-                                                {
-                                                    value: '',
-                                                },
-                                                '-- choose conection --'
-                                            ),
-                                        ].concat(
-                                            settings.connections.map(c => {
-                                                return m(
-                                                    'option',
-                                                    {
-                                                        value: c.name,
-                                                    },
-                                                    c.name
-                                                )
-                                            })
-                                        )
-                                    ),
-                                ]
-                            ),
-                            m(
-                                'div',
-                                {
-                                    class: 'form-element',
-                                },
-                                [
-                                    m('input', {
-                                        id: 'host',
-                                        placeholder: 'Hostname',
-                                        class: 'h-fill',
-                                        value: loginInfo.host(),
-                                        onkeyup: loginOnEnter(loginInfo.host),
-                                    }),
-                                ]
-                            ),
-                            m(
-                                'div',
-                                {
-                                    class: 'form-element',
-                                },
-                                [
-                                    m('input', {
-                                        id: 'username',
-                                        placeholder: 'Username',
-                                        class: 'h-fill',
-                                        value: loginInfo.username(),
-                                        onkeyup: loginOnEnter(
-                                            loginInfo.username
-                                        ),
-                                    }),
-                                ]
-                            ),
-                            m(
-                                'div',
-                                {
-                                    class: 'form-element',
-                                },
-                                [
-                                    m('input', {
-                                        id: 'password',
-                                        class: 'h-fill',
-                                        placeholder: 'Password',
-                                        type: 'password',
-                                        value: loginInfo.password(),
-                                        onkeyup: loginOnEnter(
-                                            loginInfo.password
-                                        ),
-                                    }),
-                                ]
-                            ),
+                            m('div.form-element', [
+                                m('input', {
+                                    id: 'password',
+                                    class: '',
+                                    placeholder: 'Password',
+                                    type: 'password',
+                                    value: loginInfo.password(),
+                                    onkeydown: loginOnEnter(loginInfo.password),
+                                }),
+                            ]),
                             m(
                                 'div',
                                 {
@@ -203,25 +169,24 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                                 },
                                 [
                                     m(
-                                        'button',
+                                        'button.login-btn',
                                         {
                                             onclick: login,
-                                            class: connecting() ? 'hidden' : '',
                                         },
-                                        'Connect'
-                                    ),
-                                    m(
-                                        'div',
-                                        {
-                                            class:
-                                                'spinner-loader' +
-                                                (connecting() ? '' : ' hidden'),
-                                        },
-                                        'Loading…'
+                                        '➜'
                                     ),
                                 ]
                             ),
                         ]
+                    ),
+                    m(
+                        'div',
+                        {
+                            class:
+                                'login-spinner-container' +
+                                (connecting() ? '' : ' hide-login-item'),
+                        },
+                        [m('div.spinner-loader', 'Loading…')]
                     ),
                 ]
             )

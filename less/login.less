@@ -1,0 +1,50 @@
+:root {
+    --login-pos: 0px;
+}
+.login-password-container,
+.login-spinner-container,
+.login-container {
+    display: flex;
+    justify-content: center;
+}
+.login-container {
+    transition: transform 0.5s ease-in-out;
+    transform: translateX(var(--login-pos));
+}
+.login-password-container,
+.login-spinner-container {
+    transition: opacity 0.5s ease-in-out;
+    opacity: 1;
+}
+.login-item {
+    width: 200px;
+    background-color: rgba(41, 39, 34, 0);
+    border-radius: 4px;
+    text-align: center;
+    padding: 34px 8px;
+    margin: 12px;
+    cursor: pointer;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 1;
+}
+.hide-login-item {
+    opacity: 0;
+}
+.login-item:focus {
+    background-color: rgba(41, 39, 34, 0.8);
+}
+.login-btn {
+    background-color: lighten(@bg-color, 10%);
+    border-radius: 50%;
+    margin-left: 10px;
+}
+.login-icon {
+    display: inline-block;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+}
+.login-text {
+    margin-top: 10px;
+}

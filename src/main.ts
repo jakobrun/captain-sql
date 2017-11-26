@@ -120,9 +120,9 @@ getSettings(process.env.HOME)
             controller: Controller,
             view() {
                 return [
+                    loginModule.view(),
                     editor.view(),
                     splitter(),
-                    loginModule.view(),
                     result.view(),
                     statusbar.view(),
                     actions.view(),
