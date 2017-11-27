@@ -80,17 +80,8 @@ getSettings(process.env.HOME)
         })
 
         pubsub.on('connected', connection => {
-            const primaryColor = connection.settings().primaryColor
-            if (primaryColor) {
-                document.body.style.setProperty('--primary-color', primaryColor)
-            }
-            const selectedColor = connection.settings().selectedColor
-            if (selectedColor) {
-                document.body.style.setProperty(
-                    '--selected-color',
-                    selectedColor
-                )
-            }
+            document.body.className =
+                'theme--' + (connection.settings().theme || 'dark-orange')
 
             connected = true
             document.title =

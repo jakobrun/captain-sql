@@ -112,9 +112,9 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                                 }
                             }
                             const isHidden = conn && conn !== c
-                            const primaryColor = c.primaryColor || 'orange'
+                            const theme = c.theme || 'dark-orange'
                             return m(
-                                'div.login-item',
+                                'div',
                                 {
                                     tabindex: isHidden ? undefined : '0',
                                     onclick: selectItem,
@@ -124,16 +124,13 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                                         }
                                     },
                                     class:
-                                        'login-item' +
+                                        'login-item theme--' +
+                                        theme +
                                         (isHidden ? ' hide-login-item' : ''),
                                 },
                                 [
                                     m('div.login-icon', {
-                                        style: `box-shadow: 0 0 20px ${
-                                            primaryColor
-                                        }; border-color: ${
-                                            primaryColor
-                                        }; background-image: url(${c.image ||
+                                        style: `background-image: url(${c.image ||
                                             'images/g1.png'})`,
                                     }),
                                     m('div.login-text', c.name),
