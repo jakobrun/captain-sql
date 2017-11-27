@@ -65,7 +65,7 @@ export const createSqlHint = (pubsub, editor, getTables, CodeMirror) => {
                         el.innerHTML =
                             '<div class="hint-column">' +
                             col.name +
-                            '</div><div class="hint-remarks">' +
+                            '</div><div class="hint-remarks p-menu-item-small">' +
                             col.remarks +
                             '</div>'
                     },
@@ -83,7 +83,7 @@ export const createSqlHint = (pubsub, editor, getTables, CodeMirror) => {
                     el.innerHTML =
                         '<div class="hint-table">' +
                         table.table +
-                        '</div><div class="hint-remarks">' +
+                        '</div><div class="hint-remarks p-menu-item-small">' +
                         table.remarks +
                         '</div>'
                 },
@@ -112,7 +112,7 @@ export const createSqlHint = (pubsub, editor, getTables, CodeMirror) => {
                         el.innerHTML =
                             '<div class="hint-bookmark">' +
                             bookmark.name +
-                            '</div><div class="hint-remarks">' +
+                            '</div><div class="hint-remarks p-menu-item-small">' +
                             bookmark.description +
                             '</div>'
                     },

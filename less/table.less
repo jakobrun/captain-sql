@@ -1,93 +1,94 @@
 @result-gutter: 28px;
 .editor {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: var(--editor-height);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: var(--editor-height);
 }
 .splitter {
-	position: absolute;
-	left: 0;
-	right: 20px;
-	top: var(--editor-height);
-	height: 4px;
-	margin-top: -4px;
-	background-color: transparent;
-	z-index: 90;
-	cursor: row-resize;	
+    position: absolute;
+    left: 0;
+    right: 20px;
+    top: var(--editor-height);
+    height: 4px;
+    margin-top: -4px;
+    background-color: transparent;
+    z-index: 90;
+    cursor: row-resize;
 }
 .result-gutter {
-	position: absolute;
-	left: 0;
-	width: @result-gutter;
-	right: 20px;
-	top: var(--editor-height);
-	bottom: 26px;
-	background-color: darken(@bg-color, 4%);
+    position: absolute;
+    left: 0;
+    width: @result-gutter;
+    right: 20px;
+    top: var(--editor-height);
+    bottom: 26px;
+    background-color: darken(@bg-color, 4%);
 }
 .result {
-	position: absolute;
-	background-color: darken(@bg-color, 4%);
-	left: 0;
-	right: 0;
-	top: var(--editor-height);
-	bottom: 26px;
-	overflow: auto;
-	.spinner-loader {
-		position: absolute;
-		top: 44px;
-		left: 50%;
-	}
+    position: absolute;
+    background-color: darken(@bg-color, 4%);
+    left: 0;
+    right: 0;
+    top: var(--editor-height);
+    bottom: 26px;
+    overflow: auto;
+    .spinner-loader {
+        position: absolute;
+        top: 44px;
+        left: 50%;
+    }
 }
 .shortcuts {
-	color: #666;
-	font-weight: 550;
-	padding-top: 50px;
+    color: #666;
+    font-weight: 550;
+    padding-top: 50px;
 }
 .shortcut-item {
-	display: flex;
+    display: flex;
 }
 .shortcut-label {
-	text-align: right;
-	width: 50%;
-	padding: 8px;
+    text-align: right;
+    width: 50%;
+    padding: 8px;
 }
 .shortcut-value {
-	width: 50%;
-	padding: 8px;
+    width: 50%;
+    padding: 8px;
 }
 .table-head {
-	height: 36px;
+    height: 36px;
 }
 .table-head,
 .table-body-rows {
-	border-collapse: collapse;
-	table-layout: fixed;
-	width: 0;
-	margin-top: -1px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 0;
+    margin-top: -1px;
 }
 .table-body {
-	overflow-y: scroll;
-	position: absolute;
-	top: 2.2rem;
-	bottom: 0;
-	left: 0;
-	background-color: darken(@bg-color, 4%);
-}
-.table th {
-	cursor: pointer;	
+    overflow-y: scroll;
+    position: absolute;
+    top: 2.2rem;
+    bottom: 0;
+    left: 0;
+    background-color: darken(@bg-color, 4%);
 }
 .table td,
 .table th {
-	white-space: nowrap;
-	border: 1px solid @border-color;
-	margin: 0;
-	overflow: hidden;
-	padding: 8px;
+    white-space: nowrap;
+    margin: 0;
+    overflow: hidden;
+    padding: 8px;
+    border: 1px solid darken(@bg-color, 1%);
 }
 .table-head th {
-	padding: 8px;
-	background-color: darken(@bg-color, 6%);
-	color: var(--primary-color);
+    cursor: pointer;
+    text-align: left;
+    background-color: darken(@bg-color, 6%);
+    color: var(--primary-color);
+}
+.table tr:hover td {
+    background-color: var(--selected-color);
 }

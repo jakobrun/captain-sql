@@ -1,7 +1,7 @@
 .p-menu-search {
     width: 384px;
     margin: 8px;
-    outline: 1px solid var(--primary-color)
+    outline: 1px solid var(--primary-color);
 }
 .p-menu-list {
     list-style: none;
@@ -15,6 +15,7 @@
     color: darken(@color, 20%);
     display: flex;
     align-content: stretch;
+    align-items: center;
 }
 .p-menu-item-text {
     flex-grow: 1;
@@ -24,17 +25,16 @@
     background-color: lighten(@bg-color, 8%);
     padding: 4px;
     margin-left: 4px;
-    margin-top: -4px;
 }
 .p-menu-item-selected {
     color: @color;
     background-color: var(--selected-color);
     .p-menu-shortcut {
-        opacity: .6
+        opacity: 0.6;
     }
 }
 .hint-remarks {
-  	overflow: hidden;
+    overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -46,5 +46,5 @@
     margin-top: 4px;
 }
 .match {
-  color: lighten(@color, 30%);
+    color: lighten(@color, 30%);
 }
