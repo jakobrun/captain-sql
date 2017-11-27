@@ -75,15 +75,11 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
         }
     }
 
-    const loginOnEnter = prop => {
-        return e => {
-            if (e.keyCode === 13) {
-                login()
-            } else if (e.keyCode === 27) {
-                resetConn()
-            } else {
-                prop(e.target.value)
-            }
+    const loginOnEnter = e => {
+        if (e.keyCode === 13) {
+            login()
+        } else if (e.keyCode === 27) {
+            resetConn()
         }
     }
 
@@ -132,9 +128,12 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                                 },
                                 [
                                     m('div.login-icon', {
-                                        style: `background-color: ${
+                                        style: `box-shadow: 0 0 20px ${
                                             c.primaryColor
-                                        }`,
+                                        }; border-color: ${
+                                            c.primaryColor
+                                        }; background-image: url(images/${c.image ||
+                                            'g1.jpg'})`,
                                     }),
                                     m('div.login-text', c.name),
                                     // m('div.login-text', c.user),
@@ -159,7 +158,11 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                                     placeholder: 'Password',
                                     type: 'password',
                                     value: loginInfo.password(),
-                                    onkeydown: loginOnEnter(loginInfo.password),
+                                    oninput: m.withAttr(
+                                        'value',
+                                        loginInfo.password
+                                    ),
+                                    onkeydown: loginOnEnter,
                                 }),
                             ]),
                             m(
