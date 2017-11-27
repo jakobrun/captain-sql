@@ -112,6 +112,7 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                                 }
                             }
                             const isHidden = conn && conn !== c
+                            const primaryColor = c.primaryColor || 'orange'
                             return m(
                                 'div.login-item',
                                 {
@@ -129,14 +130,14 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                                 [
                                     m('div.login-icon', {
                                         style: `box-shadow: 0 0 20px ${
-                                            c.primaryColor
+                                            primaryColor
                                         }; border-color: ${
-                                            c.primaryColor
-                                        }; background-image: url(images/${c.image ||
-                                            'g1.jpg'})`,
+                                            primaryColor
+                                        }; background-image: url(${c.image ||
+                                            'images/g1.png'})`,
                                     }),
                                     m('div.login-text', c.name),
-                                    // m('div.login-text', c.user),
+                                    m('div.login-host', `${c.user}@${c.host}`),
                                 ]
                             )
                         })

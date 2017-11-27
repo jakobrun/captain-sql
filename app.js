@@ -47,6 +47,7 @@ function createMenu() {
                     selector: 'orderFrontStandardAboutPanel:',
                 },
                 { type: 'separator' },
+                { role: 'close' },
                 {
                     label: 'Quit',
                     accelerator: 'Command+Q',
