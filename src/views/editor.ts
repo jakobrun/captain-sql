@@ -23,9 +23,6 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
                             pubsub.emit('run-query')
                         },
                         'Ctrl-Space': assist,
-                        'Shift-Cmd-P'() {
-                            pubsub.emit('actions-toggle-show')
-                        },
                     },
                 })
                 cm.on('change', () => {

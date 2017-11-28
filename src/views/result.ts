@@ -106,7 +106,11 @@ export const createResult = (m, pubsub) => {
                     m('div.shortcuts', [
                         m('div.shortcut-item', [
                             m('div.shortcut-label', 'Show All Commands '),
-                            m('div.shortcut-value', '⌘ ⇧ P'),
+                            m(
+                                'div.shortcut-value',
+                                (process.platform === 'darwin' ? '⌘' : 'Ctrl') +
+                                    ' ⇧ P'
+                            ),
                         ]),
                         m('div.shortcut-item', [
                             m('div.shortcut-label', 'Execute '),

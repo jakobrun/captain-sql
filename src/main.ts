@@ -4,6 +4,7 @@ import { connect } from './modules/connect'
 import { createExecuter } from './modules/executer'
 import { getSettings } from './modules/get_settings'
 import { getTables } from './modules/get_tables'
+import { createGlobalShortcuts } from './modules/globalShortcuts'
 import { getHistoryModel } from './modules/history'
 import { createSchemaHandler } from './modules/schema'
 import { createSqlHint } from './modules/sql-hint'
@@ -34,6 +35,7 @@ getSettings(process.env.HOME)
         const splitter = createSplitter(m)
 
         const pubsub = new EventEmitter()
+        createGlobalShortcuts(pubsub)
         const errorHandler = createErrorHandler(m)
         const loginModule = createLoginModule(m, pubsub, connect, settings)
         const actions = createActions(m, pubsub, createPopupmenu)
