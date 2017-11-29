@@ -36,6 +36,7 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                 m.startComputation()
                 pubsub.emit('connected', connection)
                 show(false)
+                loginInfo.password('')
                 m.endComputation()
                 pubsub.once('disconnect', () => {
                     connection.close()
@@ -69,6 +70,7 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
 
     const resetConn = () => {
         conn = undefined
+        loginInfo.password('')
         document.body.style.setProperty('--login-pos', '0px')
         const el = document.querySelector('.login-item') as HTMLElement
         if (el) {
