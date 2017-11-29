@@ -22,6 +22,7 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
 
     const login = () => {
         m.startComputation()
+        errorMsg('')
         connecting(true)
         m.endComputation()
         const config: any = clone(conn.properties || {})
@@ -149,20 +150,28 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                                     : ''),
                         },
                         [
-                            m('div.form-element', [
-                                m('input', {
-                                    id: 'password',
-                                    class: '',
-                                    placeholder: 'Password',
-                                    type: 'password',
-                                    value: loginInfo.password(),
-                                    oninput: m.withAttr(
-                                        'value',
-                                        loginInfo.password
-                                    ),
-                                    onkeydown: loginOnEnter,
-                                }),
-                            ]),
+                            m(
+                                'div',
+                                {
+                                    class:
+                                        'form-element' +
+                                        (errorMsg() ? ' shake-pw' : ''),
+                                },
+                                [
+                                    m('input', {
+                                        id: 'password',
+                                        class: '',
+                                        placeholder: 'Password',
+                                        type: 'password',
+                                        value: loginInfo.password(),
+                                        oninput: m.withAttr(
+                                            'value',
+                                            loginInfo.password
+                                        ),
+                                        onkeydown: loginOnEnter,
+                                    }),
+                                ]
+                            ),
                             m(
                                 'div',
                                 {

@@ -95,6 +95,7 @@ export function connect(options, settings) {
             }
         )
     } else {
+        options.prompt = 'false'
         return connectToDb(options).then(conn => {
             console.log('connected!!')
             return connection(conn, settings)
