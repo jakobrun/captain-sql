@@ -1,3 +1,4 @@
+import * as classnames from 'classnames'
 import { centerItem } from '../modules/centerItem'
 
 export const createLoginModule = (m, pubsub, connect, settings) => {
@@ -97,109 +98,118 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                     class: 'glass' + (show() ? '' : ' glass-hide'),
                 },
                 [
-                    m(
-                        'div.login-container',
-                        settings.connections.map((c, i) => {
-                            const selectItem = () => {
-                                selectConn(c)
-                                const pwEl = document.getElementById('password')
-                                const pos =
-                                    centerItem(i, settings.connections.length) *
-                                    224
-                                document.body.style.setProperty(
-                                    '--login-pos',
-                                    pos + 'px'
-                                )
-                                if (pwEl) {
-                                    setTimeout(() => pwEl.focus(), 1)
+                    m('div', { class: errorMsg() ? ' shake-pw' : '' }, [
+                        m(
+                            'div.login-container',
+                            settings.connections.map((c, i) => {
+                                const selectItem = () => {
+                                    selectConn(c)
+                                    const pwEl = document.getElementById(
+                                        'password'
+                                    )
+                                    const pos =
+                                        centerItem(
+                                            i,
+                                            settings.connections.length
+                                        ) * 224
+                                    document.body.style.setProperty(
+                                        '--login-pos',
+                                        pos + 'px'
+                                    )
+                                    if (pwEl) {
+                                        setTimeout(() => pwEl.focus(), 1)
+                                    }
                                 }
-                            }
-                            const isHidden = conn && conn !== c
-                            const theme = c.theme || 'dark-orange'
-                            return m(
-                                'div',
-                                {
-                                    tabindex: isHidden ? undefined : '0',
-                                    onclick: selectItem,
-                                    onkeydown: e => {
-                                        if (e.keyCode === 13) {
-                                            selectItem()
-                                        }
-                                    },
-                                    class:
-                                        'login-item theme--' +
-                                        theme +
-                                        (isHidden ? ' hide-login-item' : ''),
-                                },
-                                [
-                                    m('div.login-icon', {
-                                        style: `background-image: url(${c.image ||
-                                            'images/g1.png'})`,
-                                    }),
-                                    m('div.login-text', c.name),
-                                    m('div.login-host', `${c.user}@${c.host}`),
-                                ]
-                            )
-                        })
-                    ),
-                    m(
-                        'div',
-                        {
-                            class:
-                                'login-password-container' +
-                                (connecting() || !conn || !show()
-                                    ? ' hide-login-item'
-                                    : ''),
-                        },
-                        [
-                            m(
-                                'div',
-                                {
-                                    class:
-                                        'form-element' +
-                                        (errorMsg() ? ' shake-pw' : ''),
-                                },
-                                [
-                                    m('input', {
-                                        id: 'password',
-                                        class: '',
-                                        placeholder: 'Password',
-                                        type: 'password',
-                                        value: loginInfo.password(),
-                                        oninput: m.withAttr(
-                                            'value',
-                                            loginInfo.password
-                                        ),
-                                        onkeydown: loginOnEnter,
-                                    }),
-                                ]
-                            ),
-                            m(
-                                'div',
-                                {
-                                    class: 'form-element form-btn-bar',
-                                },
-                                [
-                                    m(
-                                        'button.login-btn',
-                                        {
-                                            onclick: login,
+                                const isHidden = conn && conn !== c
+                                const theme = c.theme || 'dark-orange'
+                                return m(
+                                    'div',
+                                    {
+                                        tabindex: isHidden ? undefined : '0',
+                                        onclick: selectItem,
+                                        onkeydown: e => {
+                                            if (e.keyCode === 13) {
+                                                selectItem()
+                                            }
                                         },
-                                        '➜'
-                                    ),
-                                ]
-                            ),
-                        ]
-                    ),
-                    m(
-                        'div',
-                        {
-                            class:
-                                'login-spinner-container' +
-                                (connecting() ? '' : ' hide-login-item'),
-                        },
-                        [m('div.spinner-loader', 'Loading…')]
-                    ),
+                                        class:
+                                            'login-item theme--' +
+                                            theme +
+                                            (isHidden
+                                                ? ' hide-login-item'
+                                                : ''),
+                                    },
+                                    [
+                                        m('div.login-icon', {
+                                            style: `background-image: url(${c.image ||
+                                                'images/g1.png'})`,
+                                        }),
+                                        m('div.login-text', c.name),
+                                        m(
+                                            'div.login-host',
+                                            `${c.user}@${c.host}`
+                                        ),
+                                    ]
+                                )
+                            })
+                        ),
+                        m(
+                            'div',
+                            {
+                                class: classnames(
+                                    'login-password-container',
+                                    (connecting() || !conn || !show()) &&
+                                        ' hide-login-item'
+                                ),
+                            },
+                            [
+                                m(
+                                    'div',
+                                    {
+                                        class: 'form-element',
+                                    },
+                                    [
+                                        m('input', {
+                                            id: 'password',
+                                            class: '',
+                                            placeholder: 'Password',
+                                            type: 'password',
+                                            value: loginInfo.password(),
+                                            oninput: m.withAttr(
+                                                'value',
+                                                loginInfo.password
+                                            ),
+                                            onkeydown: loginOnEnter,
+                                        }),
+                                    ]
+                                ),
+                                m(
+                                    'div',
+                                    {
+                                        class: 'form-element form-btn-bar',
+                                    },
+                                    [
+                                        m(
+                                            'button.login-btn',
+                                            {
+                                                onclick: login,
+                                            },
+                                            '➜'
+                                        ),
+                                    ]
+                                ),
+                            ]
+                        ),
+                        m(
+                            'div',
+                            {
+                                class:
+                                    'login-spinner-container' +
+                                    (connecting() ? '' : ' hide-login-item'),
+                            },
+                            [m('div.spinner-loader', 'Loading…')]
+                        ),
+                    ]),
                 ]
             )
         },

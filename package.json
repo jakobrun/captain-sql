@@ -5,6 +5,7 @@
     "main": "app.js",
     "dependencies": {
         "JSONStream": "^0.10.0",
+        "classnames": "^2.2.5",
         "codemirror": "^5.25.2",
         "electron": "^1.6.2",
         "faker": "^2.1.1",
