@@ -1,3 +1,4 @@
+import { createColSplitter } from './splitter'
 export const createResult = (m, pubsub) => {
     const metadata = m.prop([])
     const updated = m.prop('')
@@ -30,11 +31,6 @@ export const createResult = (m, pubsub) => {
         }
     }
 
-    const columnClick = index => {
-        const col = metadata()[index]
-        const size = Math.min(3200, 12 + col.precision * 9)
-        col.colWidth = col.colWidth > 300 ? 300 : size
-    }
     pubsub.on('run-query', reset(true))
     pubsub.on('connected', reset(false))
     pubsub.on('metadata', mData => {
@@ -42,7 +38,7 @@ export const createResult = (m, pubsub) => {
             return
         }
         mData.map(col => {
-            col.colWidth = Math.min(300, 12 + col.precision * 9)
+            col.splitter = createColSplitter(m, col)
         })
         metadata(mData)
     })
@@ -87,6 +83,14 @@ export const createResult = (m, pubsub) => {
                             m(
                                 'tr',
                                 metadata().map((col, index) => {
+                                    const columnClick = () => {
+                                        const size = Math.min(
+                                            3200,
+                                            12 + col.precision * 9
+                                        )
+                                        col.colWidth =
+                                            col.colWidth > 300 ? 300 : size
+                                    }
                                     return m(
                                         'th',
                                         {
@@ -95,9 +99,9 @@ export const createResult = (m, pubsub) => {
                                                 columnWidth(index) +
                                                 'px',
                                             title: col.name,
-                                            onclick: () => columnClick(index),
+                                            onclick: columnClick,
                                         },
-                                        col.name
+                                        [m('span', col.name), col.splitter()]
                                     )
                                 })
                             ),

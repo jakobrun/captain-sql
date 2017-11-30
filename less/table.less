@@ -88,6 +88,15 @@
     text-align: left;
     background-color: darken(@bg-color, 6%);
     color: var(--primary-color);
+    position: relative;
+}
+.resize-col {
+    cursor: col-resize;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 8px;
 }
 .table tr:hover td {
     background-color: var(--selected-color);
