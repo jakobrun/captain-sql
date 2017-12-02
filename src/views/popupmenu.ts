@@ -83,14 +83,17 @@ export const createPopupmenu = (pubsub, controller, m) => {
                     class: 'p-menu popup' + (show() ? '' : ' hidden'),
                 },
                 [
-                    m('input', {
-                        class: 'p-menu-search',
-                        config,
-                        value: searchValue(),
-                        oninput: m.withAttr('value', searchValue),
-                        onkeydown: keyDown,
-                        onkeyup: keyUp,
-                    }),
+                    m('div.p-menu-search-wrap', [
+                        m('img', { src: 'images/search.svg' }),
+                        m('input', {
+                            class: 'p-menu-search',
+                            config,
+                            value: searchValue(),
+                            oninput: m.withAttr('value', searchValue),
+                            onkeydown: keyDown,
+                            onkeyup: keyUp,
+                        }),
+                    ]),
                     m(
                         'ul',
                         {

@@ -6,8 +6,10 @@ export const createGlobalShortcuts = (pubsub: EventEmitter) => {
     const isCmdOrCtrl =
         process.platform === 'darwin' ? isCmdAndNotCtrl : isCtrlAndNotCmd
     const showCommands = (e: KeyboardEvent) => {
-        if (e.shiftKey && isCmdOrCtrl(e) && !e.ctrlKey && e.key === 'P') {
+        if (e.shiftKey && isCmdOrCtrl(e) && e.key === 'P') {
             pubsub.emit('actions-toggle-show')
+        } else if (!e.shiftKey && isCmdAndNotCtrl(e) && e.key === 'h') {
+            pubsub.emit('history-list')
         }
     }
     pubsub.on('connected', () => {

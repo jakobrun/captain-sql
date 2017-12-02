@@ -12,6 +12,7 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
         return (element, isInitialized) => {
             let assistTimeoutId
             if (!isInitialized) {
+                const cmdOrCtrl = process.platform === 'darwin' ? 'Cmd' : 'Ctrl'
                 cm = codeMirror(element, {
                     value: '',
                     mode: 'text/x-sql',
@@ -19,7 +20,7 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
                     theme: 'gandalf',
                     keyMap: 'sublime',
                     extraKeys: {
-                        'Ctrl-Enter': () => {
+                        [cmdOrCtrl + '-Enter']: () => {
                             pubsub.emit('run-query')
                         },
                         'Ctrl-Space': assist,

@@ -1,9 +1,10 @@
 export const createActions = (m, pubsub, createPopupmenu) => {
+    const cmdOrCtrl = process.platform === 'darwin' ? '⌘' : 'Ctrl'
     const list = [
         {
             name: 'Run query',
             eventName: 'run-query',
-            shortcut: ['Ctrl', 'Enter'],
+            shortcut: [cmdOrCtrl, 'Enter'],
         },
         {
             name: 'Content assist',
@@ -29,6 +30,7 @@ export const createActions = (m, pubsub, createPopupmenu) => {
         {
             name: 'History',
             eventName: 'history-list',
+            shortcut: [cmdOrCtrl, 'H'],
         },
         {
             name: 'Export schema',

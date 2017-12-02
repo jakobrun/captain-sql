@@ -60,6 +60,7 @@ export const createResult = (m, pubsub) => {
 
     return {
         view: () => {
+            const cmdOrCtrl = process.platform === 'darwin' ? '⌘' : 'Ctrl'
             return m(
                 'div',
                 {
@@ -110,15 +111,11 @@ export const createResult = (m, pubsub) => {
                     m('div.shortcuts', [
                         m('div.shortcut-item', [
                             m('div.shortcut-label', 'Show All Commands '),
-                            m(
-                                'div.shortcut-value',
-                                (process.platform === 'darwin' ? '⌘' : 'Ctrl') +
-                                    ' ⇧ P'
-                            ),
+                            m('div.shortcut-value', cmdOrCtrl + ' ⇧ P'),
                         ]),
                         m('div.shortcut-item', [
                             m('div.shortcut-label', 'Execute '),
-                            m('div.shortcut-value', 'Ctrl Enter'),
+                            m('div.shortcut-value', cmdOrCtrl + ' Enter'),
                         ]),
                     ]),
                     m(
