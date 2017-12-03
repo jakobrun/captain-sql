@@ -63,38 +63,52 @@ export const createSqlHint = (pubsub, editor, getTables, CodeMirror) => {
                     text: '.' + col.name,
                     render: el => {
                         el.innerHTML =
-                            '<div class="hint-column">' +
+                            '<div class="hint-column-icon"></div>' +
+                            '<div class="hint-content"><div class="hint-column">' +
                             col.name +
-                            '</div><div class="hint-remarks p-menu-item-small">' +
-                            col.remarks +
+                            '</div>' +
+                            (col.remarks
+                                ? '<div class="hint-remarks p-menu-item-small">' +
+                                  col.remarks +
+                                  '</div>'
+                                : '') +
                             '</div>'
                     },
-                    // displayText: col.name + (col.remarks ? ' ' + col.remarks : '')
                 }
             })
     }
 
     function tableAndKeywordCompletion(search) {
         const keyWordMatcher = match(search, w => w)
-        const tableToHint = table => {
-            return {
-                text: table.table,
-                render: el => {
-                    el.innerHTML =
-                        '<div class="hint-table">' +
-                        table.table +
-                        '</div><div class="hint-remarks p-menu-item-small">' +
-                        table.remarks +
-                        '</div>'
-                },
-            }
-        }
+        const tableToHint = table => ({
+            text: table.table,
+            render: el => {
+                el.innerHTML =
+                    '<div class="hint-table-icon"></div>' +
+                    '<div class="hint-content"><div class="hint-table">' +
+                    table.table +
+                    '</div>' +
+                    (table.remarks
+                        ? '<div class="hint-remarks p-menu-item-small">' +
+                          table.remarks +
+                          '</div>'
+                        : '') +
+                    '</div>'
+            },
+        })
 
         const res: any[] = Object.keys(keywords)
             .filter(keyWordMatcher)
-            .map(w => {
-                return { text: w.toUpperCase(), displayText: w.toUpperCase() }
-            })
+            .map(w => ({
+                text: w.toUpperCase(),
+                render: el => {
+                    el.innerHTML =
+                        '<div class="hint-keyword-icon"></div>' +
+                        '<div class="hint-content">' +
+                        w.toUpperCase() +
+                        '</div>'
+                },
+            }))
         return res.concat(
             values(tables)
                 .filter(match(search, table => table.table))
@@ -110,11 +124,13 @@ export const createSqlHint = (pubsub, editor, getTables, CodeMirror) => {
                     text: bookmark.value,
                     render: el => {
                         el.innerHTML =
-                            '<div class="hint-bookmark">' +
+                            '<div class="hint-snippet-icon"></div>' +
+                            '<div class="hint-content"><div class="hint-table">' +
                             bookmark.name +
-                            '</div><div class="hint-remarks p-menu-item-small">' +
+                            '</div>' +
+                            '<div class="hint-remarks p-menu-item-small">' +
                             bookmark.description +
-                            '</div>'
+                            '</div></div>'
                     },
                 }
             })

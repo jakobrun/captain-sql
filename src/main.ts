@@ -30,6 +30,11 @@ require('codemirror/keymap/sublime.js')
 require('codemirror/mode/sql/sql.js')
 require('./modules/sql-hint.js')
 
+if (remote.getGlobal('sharedObject').dev) {
+    require('electron-connect').client.create()
+    require('electron-css-reload')()
+}
+
 getSettings(process.env.HOME)
     .then(settings => {
         const splitter = createSplitter(m)

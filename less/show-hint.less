@@ -19,6 +19,8 @@
 
 .CodeMirror-hint {
     margin: 0;
+    display: flex;
+    align-items: center;
     max-width: 19em;
     overflow: hidden;
     white-space: pre;
@@ -28,4 +30,47 @@
 
 .CodeMirror-hint-active {
     background-color: var(--selected-color);
+}
+
+.hint-content {
+    padding-left: 8px;
+}
+.hint-table-icon,
+.hint-snippet-icon,
+.hint-column-icon,
+.hint-keyword-icon {
+    flex-shrink: 0;
+    border-radius: 50%;
+    height: 15px;
+    width: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 8px;
+    font-weight: bold;
+    color: #666;
+}
+.hint-table-icon {
+    background-color: rgb(247, 139, 96);
+}
+.hint-table-icon::after {
+    content: 'T';
+}
+.hint-keyword-icon {
+    background-color: rgb(132, 232, 245);
+}
+.hint-keyword-icon::after {
+    content: 'K';
+}
+.hint-snippet-icon {
+    background-color: rgb(252, 249, 87);
+}
+.hint-snippet-icon::after {
+    content: 'S';
+}
+.hint-column-icon {
+    background-color: rgb(245, 160, 241);
+}
+.hint-column-icon::after {
+    content: 'C';
 }
