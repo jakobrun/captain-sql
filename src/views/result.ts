@@ -117,6 +117,10 @@ export const createResult = (m, pubsub) => {
                             m('div.shortcut-label', 'Execute '),
                             m('div.shortcut-value', cmdOrCtrl + ' Enter'),
                         ]),
+                        m('div.shortcut-item', [
+                            m('div.shortcut-label', 'History '),
+                            m('div.shortcut-value', cmdOrCtrl + ' H'),
+                        ]),
                     ]),
                     m(
                         'div',
