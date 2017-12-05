@@ -18,7 +18,15 @@ export const createHistoryView = (
                         {
                             class: 'p-menu-item-small',
                         },
-                        moment(historyItem.original.time).fromNow()
+                        `${moment(historyItem.original.time).fromNow()}${
+                            historyItem.original.updated !== undefined
+                                ? `. ${historyItem.original.updated} row${
+                                      historyItem.original.updated > 1
+                                          ? 's'
+                                          : ''
+                                  } affected.`
+                                : ''
+                        }`
                     ),
                 ]
             },
@@ -39,6 +47,14 @@ export const createHistoryView = (
             }
             history.push(historyItem)
         }
+    })
+    pubsub.on('data-updated', event => {
+        const historyItem = {
+            name: event.sql,
+            updated: event.updated,
+            time: new Date().toISOString(),
+        }
+        history.push(historyItem)
     })
     pubsub.on('connected', connection => {
         createHistory(connection.settings().history).then(res => {

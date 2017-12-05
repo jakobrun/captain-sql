@@ -49,9 +49,11 @@ export const createResult = (m, pubsub) => {
     pubsub.on('data-more', res => {
         data(data().concat(res.data))
     })
-    pubsub.on('data-updated', n => {
+    pubsub.on('data-updated', res => {
         running(false)
-        updated(`Success! ${n} row${n > 1 ? 's' : ''} affected.`)
+        updated(
+            `Success! ${res.updated} row${res.updated > 1 ? 's' : ''} affected.`
+        )
     })
     pubsub.on('data-error', err => {
         running(false)

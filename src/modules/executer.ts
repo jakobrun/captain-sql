@@ -54,7 +54,14 @@ export const createExecuter = (pubsub, editor, m) => {
                 } else {
                     st
                         .updated()
-                        .then(emit('data-updated'))
+                        .then(
+                            compute(updated => {
+                                pubsub.emit('data-updated', {
+                                    sql,
+                                    updated,
+                                })
+                            })
+                        )
                         .catch(errorHandler)
                 }
             })
