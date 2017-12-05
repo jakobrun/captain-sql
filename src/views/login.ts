@@ -37,7 +37,6 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                 m.startComputation()
                 pubsub.emit('connected', connection)
                 show(false)
-                loginInfo.password('')
                 m.endComputation()
                 pubsub.once('disconnect', () => {
                     connection.close()
