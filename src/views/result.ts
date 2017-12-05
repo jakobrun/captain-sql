@@ -51,7 +51,7 @@ export const createResult = (m, pubsub) => {
     })
     pubsub.on('data-updated', n => {
         running(false)
-        updated(n + ' rows updated!')
+        updated(`Success! ${n} row${n > 1 ? 's' : ''} affected.`)
     })
     pubsub.on('data-error', err => {
         running(false)
@@ -74,7 +74,6 @@ export const createResult = (m, pubsub) => {
                         },
                         errorMsg()
                     ),
-                    m('div', updated()),
                     m(
                         'table',
                         {
@@ -108,6 +107,7 @@ export const createResult = (m, pubsub) => {
                             ),
                         ]
                     ),
+                    updated() && m('div.updated', updated()),
                     m('div.shortcuts', [
                         m('div.shortcut-item', [
                             m('div.shortcut-label', 'Show All Commands '),
