@@ -1,7 +1,12 @@
 export const createStatusbar = (m, pubsub) => {
     let rowCount = 0
     let time
+    const exportData = {
+        tables: 0,
+        errors: 0,
+    }
     const status = m.prop('')
+    const exportStatus = m.prop('')
     const getRowsText = res => {
         if (res.data && res.data.length) {
             rowCount += res.data.length
@@ -34,6 +39,30 @@ export const createStatusbar = (m, pubsub) => {
     pubsub.on('schema-loaded', () => {
         setStatus('Schema loaded !')
     })
+
+    const setExportStatus = () => {
+        m.startComputation()
+        exportStatus(
+            `Exported tables: ${exportData.tables}${
+                exportData.errors ? `, errors ${exportData.errors}` : ''
+            }`
+        )
+        m.endComputation()
+    }
+    pubsub.on('export-schema-start', () => {
+        exportData.tables = 0
+        exportData.errors = 0
+    })
+    pubsub.on('export-error', err => {
+        console.log('Export error', err.message)
+        exportData.errors += 1
+        setExportStatus()
+    })
+    pubsub.on('export-table', data => {
+        setStatus(`Export table: ${data.table}`)
+        exportData.tables += 1
+        setExportStatus()
+    })
     return {
         view() {
             return m(
@@ -41,7 +70,10 @@ export const createStatusbar = (m, pubsub) => {
                 {
                     class: 'statusbar',
                 },
-                status()
+                [
+                    m('div.statusbar-message', status()),
+                    m('div.statusbar-export-schema', exportStatus()),
+                ]
             )
         },
     }

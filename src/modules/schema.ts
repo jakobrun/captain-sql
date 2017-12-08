@@ -2,33 +2,78 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
     const baseDir = process.env.HOME + '/.gandalf/'
     let connection
     const loadSchema = () => {
-        connection.settings().schema.forEach(schema => {
-            const t = Date.now()
-            readFile(baseDir + schema.file, (err, schemaContent) => {
-                console.log('Load schema:', Date.now() - t)
-                if (err) {
-                    console.log(err)
-                } else {
-                    pubsub.emit(
-                        'schema-loaded',
-                        JSON.parse(schemaContent).reduce((obj, table) => {
-                            obj[table.table] = table
-                            return obj
-                        }, {})
-                    )
-                }
+        const tables: any[] = []
+        connection
+            .settings()
+            .schema.reduce(
+                (promise, schema) =>
+                    promise.then(
+                        () =>
+                            new Promise(resolve => {
+                                readFile(
+                                    baseDir + schema.file,
+                                    (err, schemaContent) => {
+                                        if (err) {
+                                            console.log(err)
+                                        } else {
+                                            try {
+                                                const data: any[] = JSON.parse(
+                                                    schemaContent
+                                                )
+                                                tables.push(...data)
+                                                resolve()
+                                            } catch (err) {
+                                                console.log(
+                                                    'schema parse error',
+                                                    err
+                                                )
+                                            }
+                                        }
+                                    }
+                                )
+                            })
+                    ),
+                Promise.resolve()
+            )
+            .then(() => {
+                pubsub.emit(
+                    'schema-loaded',
+                    tables.reduce((obj, table) => {
+                        obj[table.table] = table
+                        return obj
+                    }, {})
+                )
             })
-        })
+            .catch(err => {
+                console.log('load schema error', err)
+            })
     }
 
     pubsub.on('schema-export', () => {
         const settings = connection.settings()
-        connection
-            .exportSchemaToFile({
-                schema: settings.schema[0].name,
-                file: baseDir + settings.schema[0].file,
+        pubsub.emit('export-schema-start')
+        settings.schema
+            .reduce(
+                (promise, schema) =>
+                    promise.then(
+                        () =>
+                            new Promise((resolve, reject) => {
+                                connection
+                                    .exportSchemaToFile({
+                                        schema: schema.name,
+                                        file: baseDir + schema.file,
+                                        pubsub,
+                                    })
+                                    .on('end', () => resolve())
+                                    .on('error', reject)
+                            })
+                    ),
+                Promise.resolve()
+            )
+            .then(() => {
+                loadSchema()
+                pubsub.emit('export-schema-end')
             })
-            .on('end', loadSchema)
     })
 
     pubsub.on('connected', c => {

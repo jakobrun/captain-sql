@@ -73,8 +73,9 @@ function connection(db, settings) {
         },
         exportSchemaToFile(opt) {
             const stream = exportSchema(db, opt)
-            stream.pipe(createWriteStream(opt.file))
-            stream.on('end', () => console.log('schema to file done'))
+            stream
+                .pipe(createWriteStream(opt.file))
+                .on('error', err => opt.pubsub.emit('export-error', err))
             return stream
         },
     }

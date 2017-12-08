@@ -4,7 +4,7 @@
     "description": "sql client",
     "main": "app.js",
     "dependencies": {
-        "JSONStream": "^0.10.0",
+        "JSONStream": "^1.3.1",
         "classnames": "^2.2.5",
         "codemirror": "^5.25.2",
         "electron": "^1.6.2",
@@ -12,7 +12,7 @@
         "fuzzy": "^0.1.0",
         "mithril": "^0.1.25",
         "moment": "^2.19.2",
-        "node-jt400": "1.3.0",
+        "node-jt400": "1.5.4",
         "q": "~1.0.0",
         "sql-parser": "git+https://github.com/jakobrun/sql-parser"
     },
