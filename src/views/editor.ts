@@ -32,6 +32,30 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
                     }
                     assistTimeoutId = setTimeout(assist, 100)
                 })
+                let lastRange
+                cm.on('cursorActivity', () => {
+                    const range = getCursorStatementRange()
+                    const where = 'background'
+                    if (lastRange) {
+                        for (
+                            let i = lastRange.from.line;
+                            i <= lastRange.to.line;
+                            i++
+                        ) {
+                            cm.removeLineClass(i, where, 'active-statement')
+                        }
+                        lastRange = undefined
+                    }
+
+                    if (cm.getSelection() || !editor.getCursorStatement(' ')) {
+                        return
+                    }
+
+                    for (let i = range.from.line; i <= range.to.line; i++) {
+                        cm.addLineClass(i, where, 'active-statement')
+                    }
+                    lastRange = range
+                })
                 const focus = cm.focus.bind(cm)
                 pubsub.on('editor-focus', focus)
                 pubsub.on('run-query', focus)
@@ -83,7 +107,28 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
             pubsub.once('reconnecting', saveFile)
         }
     })
-    return {
+    const getCursorStatementRange = () => {
+        const c = cm.getCursor()
+        let startLine = c.line
+        let endLine = c.line
+        while (startLine > 0 && cm.getLine(startLine - 1)) {
+            startLine -= 1
+        }
+        while (endLine < cm.lineCount() && cm.getLine(endLine + 1)) {
+            endLine += 1
+        }
+        return {
+            from: {
+                line: startLine,
+                ch: 0,
+            },
+            to: {
+                line: endLine,
+                ch: cm.getLine(endLine).length,
+            },
+        }
+    }
+    const editor = {
         getValue(sep) {
             return cm.getValue(sep)
         },
@@ -100,26 +145,8 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
             cm.replaceSelection(text, sel)
         },
         getCursorStatement(sep) {
-            const c = cm.getCursor()
-            let startLine = c.line
-            let endLine = c.line
-            while (startLine > 0 && cm.getLine(startLine - 1)) {
-                startLine -= 1
-            }
-            while (endLine < cm.lineCount() && cm.getLine(endLine + 1)) {
-                endLine += 1
-            }
-            return cm.getRange(
-                {
-                    line: startLine,
-                    ch: 0,
-                },
-                {
-                    line: endLine,
-                    ch: cm.getLine(endLine).length,
-                },
-                sep
-            )
+            const range = getCursorStatementRange()
+            return cm.getRange(range.from, range.to, sep)
         },
         getSelection() {
             return cm.getSelection()
@@ -198,4 +225,5 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
             })
         },
     }
+    return editor
 }
