@@ -35,7 +35,9 @@
 .hint-content {
     padding-left: 8px;
 }
-.hint-table-icon,
+.hint-T-icon,
+.hint-V-icon,
+.hint-P-icon,
 .hint-snippet-icon,
 .hint-column-icon,
 .hint-keyword-icon {
@@ -50,11 +52,23 @@
     font-weight: bold;
     color: #666;
 }
-.hint-table-icon {
+.hint-T-icon {
     background-color: rgb(247, 139, 96);
 }
-.hint-table-icon::after {
+.hint-T-icon::after {
     content: 'T';
+}
+.hint-V-icon {
+    background-color: rgb(233, 248, 147);
+}
+.hint-V-icon::after {
+    content: 'V';
+}
+.hint-P-icon {
+    background-color: rgb(149, 221, 155);
+}
+.hint-P-icon::after {
+    content: 'P';
 }
 .hint-keyword-icon {
     background-color: rgb(132, 232, 245);

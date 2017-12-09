@@ -84,7 +84,9 @@ export const createSqlHint = (pubsub, editor, getTables, CodeMirror) => {
             text: table.table,
             render: el => {
                 el.innerHTML =
-                    '<div class="hint-table-icon"></div>' +
+                    '<div class="hint-' +
+                    table.type +
+                    '-icon"></div>' +
                     '<div class="hint-content"><div class="hint-table">' +
                     table.table +
                     '</div>' +

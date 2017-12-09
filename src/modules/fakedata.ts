@@ -139,8 +139,23 @@ export const createFakedata = db => {
             })
     }
 
+    function createViews() {
+        return db.update(
+            `create view TopCustomers as (
+                SELECT pe.NAME, sum(i.QUANTITY*p.PRICE) "sum", count(o.orderid) "NumberOfOrders" FROM PERSON pe
+                join PRODUCTORDER o on o.PERSONID=pe.PERSONID
+                join ORDERITEM i on i.ORDERID=o.ORDERID
+                join PRODUCT p on p.PRODUCTID=i.PRODUCTID
+                group by pe.NAME
+                order by "sum" desc
+                fetch first 20 rows only
+                )`
+        )
+    }
+
     return createPersons()
         .then(createCompanies)
         .then(createProducts)
         .then(createOrders)
+        .then(createViews)
 }
