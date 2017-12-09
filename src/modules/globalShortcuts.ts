@@ -8,8 +8,12 @@ export const createGlobalShortcuts = (pubsub: EventEmitter) => {
     const showCommands = (e: KeyboardEvent) => {
         if (e.shiftKey && isCmdOrCtrl(e) && e.key === 'P') {
             pubsub.emit('actions-toggle-show')
-        } else if (!e.shiftKey && isCmdAndNotCtrl(e) && e.key === 'h') {
+        } else if (!e.shiftKey && isCmdOrCtrl(e) && e.key === 'h') {
             pubsub.emit('history-list')
+        } else if (!e.shiftKey && isCmdOrCtrl(e) && e.key === '1') {
+            pubsub.emit('editor-focus')
+        } else if (!e.shiftKey && isCmdOrCtrl(e) && e.key === '2') {
+            pubsub.emit('results-focus')
         }
     }
     pubsub.on('connected', () => {

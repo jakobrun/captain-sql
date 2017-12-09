@@ -20,10 +20,12 @@ export const createPopupmenu = (pubsub, controller, m) => {
         searchValue('')
         selectedIndex(0)
         m.endComputation()
-        if (show() && searchElement) {
+        if (show()) {
             setTimeout(() => {
-                searchElement.focus()
-            }, 1)
+                if (searchElement) {
+                    searchElement.focus()
+                }
+            }, 50)
         }
     }
     const config = el => {

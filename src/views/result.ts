@@ -1,10 +1,76 @@
+import * as classnames from 'classnames'
 import { createColSplitter } from './splitter'
+const getElIndex = el => {
+    let i = -1
+    for (; el; i++) {
+        el = el.previousElementSibling
+    }
+    return i
+}
+const onCellKeydown = (e: KeyboardEvent) => {
+    if (e.metaKey && !e.ctrlKey && !e.altKey && e.key === 'c') {
+        const el = e.currentTarget as HTMLElement
+        const textarea = document.createElement('textarea')
+        textarea.textContent = el.textContent
+        textarea.style.position = 'fixed' // Prevent scrolling to bottom of page in MS Edge.
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+        el.focus()
+    } else if (e.key === 'ArrowRight') {
+        const el = e.currentTarget as HTMLElement
+        if (el.nextSibling) {
+            const sibling = el.nextSibling as HTMLElement
+            sibling.focus()
+            e.preventDefault()
+        }
+    } else if (e.key === 'ArrowLeft') {
+        const el = e.currentTarget as HTMLElement
+        if (el.previousSibling) {
+            const sibling = el.previousSibling as HTMLElement
+            sibling.focus()
+            e.preventDefault()
+        }
+    } else if (e.key === 'ArrowDown') {
+        const el = e.currentTarget as HTMLElement
+        const parent = el.parentNode as HTMLElement
+        if (parent.nextSibling) {
+            const nextParent = parent.nextSibling as HTMLElement
+            if (nextParent) {
+                const index = getElIndex(el)
+                const nextEl = nextParent.children[index] as HTMLElement
+                nextEl.focus()
+                e.preventDefault()
+            }
+        }
+    } else if (e.key === 'ArrowUp') {
+        const el = e.currentTarget as HTMLElement
+        const parent = el.parentNode as HTMLElement
+        if (parent.previousSibling) {
+            const nextParent = parent.previousSibling as HTMLElement
+            if (nextParent) {
+                const index = getElIndex(el)
+                const nextEl = nextParent.children[index] as HTMLElement
+                nextEl.focus()
+                e.preventDefault()
+            }
+        }
+    }
+}
 export const createResult = (m, pubsub) => {
     const metadata = m.prop([])
     const updated = m.prop('')
     const data = m.prop([])
     const running = m.prop(false)
     const errorMsg = m.prop('')
+    const selectedRow = m.prop(-1)
+    pubsub.on('results-focus', () => {
+        const el = document.querySelector('.result td') as HTMLElement
+        if (el) {
+            el.focus()
+        }
+    })
     const columnWidth = index => {
         const col = metadata()[index]
         return (col && col.colWidth) || 300
@@ -43,6 +109,7 @@ export const createResult = (m, pubsub) => {
         metadata(mData)
     })
     pubsub.on('data', res => {
+        selectedRow(-1)
         running(false)
         data(res.data)
     })
@@ -136,9 +203,15 @@ export const createResult = (m, pubsub) => {
                                 {
                                     class: 'table-body-rows',
                                 },
-                                data().map(row => {
+                                data().map((row, rowIndex) => {
                                     return m(
                                         'tr',
+                                        {
+                                            class: classnames(
+                                                selectedRow() === rowIndex &&
+                                                    'row-selected'
+                                            ),
+                                        },
                                         row.map((value, index) => {
                                             return m(
                                                 'td',
@@ -147,6 +220,10 @@ export const createResult = (m, pubsub) => {
                                                         'width: ' +
                                                         columnWidth(index) +
                                                         'px',
+                                                    tabindex: 0,
+                                                    onkeydown: onCellKeydown,
+                                                    onfocus: () =>
+                                                        selectedRow(rowIndex),
                                                 },
                                                 value
                                             )

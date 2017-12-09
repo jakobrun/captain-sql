@@ -33,6 +33,16 @@ export const createActions = (m, pubsub, createPopupmenu) => {
             shortcut: [cmdOrCtrl, 'H'],
         },
         {
+            name: 'Focus Editor',
+            eventName: 'editor-focus',
+            shortcut: [cmdOrCtrl, '1'],
+        },
+        {
+            name: 'Focus Results',
+            eventName: 'results-focus',
+            shortcut: [cmdOrCtrl, '2'],
+        },
+        {
             name: 'Export schema',
             eventName: 'schema-export',
         },
