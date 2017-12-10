@@ -86,6 +86,40 @@ describe('editor', () => {
     })
 })
 
+describe('get text position', () => {
+    const examples = [
+        ['select * from foo', 'ble: FOO', { line: 0, start: 14, end: 17 }],
+        [
+            'select * from foo f\nwhere f.err=1 and f.bar=2',
+            'ble: F.ERR',
+            {
+                line: 1,
+                start: 6,
+                end: 11,
+            },
+        ],
+        [
+            'select * from foo fa\nwhere f.err=1 and f.bar=2',
+            'ble: F.ERR',
+            {
+                line: 1,
+                start: 6,
+                end: 11,
+            },
+        ],
+        ['select * from fooa', 'ble: FOO', { line: -1, start: -1, end: -1 }],
+    ]
+    examples.map(([sql, message, res]) => {
+        it(`should get text position for sql: ${sql}, message: ${
+            message
+        }`, () => {
+            editor.setValue(sql)
+            const pos = editor.getTextPos(message)
+            expect(pos).to.eql(res)
+        })
+    })
+})
+
 describe('columns prompt', () => {
     it('should check current columns', () => {
         const prompt = createColumnsPrompt(

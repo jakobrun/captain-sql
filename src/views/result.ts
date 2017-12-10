@@ -136,13 +136,17 @@ export const createResult = (m, pubsub) => {
                     class: 'result table',
                 },
                 [
-                    m(
-                        'div',
-                        {
-                            class: 'error',
-                        },
-                        errorMsg()
-                    ),
+                    errorMsg() &&
+                        m(
+                            'div',
+                            {
+                                class: 'error',
+                            },
+                            [
+                                m('div.error-icon', '✕'),
+                                m('div.error-msg', errorMsg()),
+                            ]
+                        ),
                     m(
                         'table',
                         {

@@ -1,6 +1,7 @@
 export const createEditor = (m, pubsub, codeMirror, fs) => {
     let tables = {}
     let cm
+    let errorMark
     const assist = () => {
         cm.focus()
         codeMirror.showHint(cm, null, {
@@ -29,6 +30,9 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
                 cm.on('change', () => {
                     if (assistTimeoutId) {
                         clearTimeout(assistTimeoutId)
+                    }
+                    if (errorMark) {
+                        errorMark.clear()
                     }
                     assistTimeoutId = setTimeout(assist, 100)
                 })
@@ -79,6 +83,17 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
             l += direction
         }
     }
+
+    pubsub.on('data-error', err => {
+        const { line, start, end } = editor.getTextPos(err.message)
+        if (line !== -1) {
+            errorMark = cm.markText(
+                { line, ch: start },
+                { line, ch: end },
+                { className: 'token-error' }
+            )
+        }
+    })
 
     pubsub.on('history-item-selected', historyItem => {
         cm.replaceRange(historyItem.name, cm.getCursor(), cm.getCursor())
@@ -217,6 +232,44 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
                 cm.setSelection(start, end)
             }
             return columns
+        },
+        getTextPos(errMessage) {
+            const errorToken: string = errMessage
+                .substring(errMessage.indexOf(': ') + 2, errMessage.length)
+                .toUpperCase()
+            const range = getCursorStatementRange()
+            let match = ''
+            let line = -1
+            let start = -1
+            let end = -1
+            eachTokenUntil((token, l) => {
+                if (l > range.to.line) {
+                    return true
+                } else if (errorToken === token.string.toUpperCase()) {
+                    start = token.start
+                    end = token.end
+                    line = l
+                    return true
+                } else if (
+                    errorToken === (match + token.string).toUpperCase()
+                ) {
+                    end = token.end
+                    line = l
+                    return true
+                } else if (errorToken.startsWith(token.string.toUpperCase())) {
+                    start = token.start
+                    match = token.string
+                } else if (
+                    errorToken.startsWith((match + token.string).toUpperCase())
+                ) {
+                    match = match + token.string
+                }
+            }, range.from.line)
+            return {
+                line,
+                start,
+                end,
+            }
         },
         view() {
             return m('div', {

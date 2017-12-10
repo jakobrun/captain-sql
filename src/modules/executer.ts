@@ -26,7 +26,13 @@ export const createExecuter = (pubsub, editor, m) => {
     }
     const dataHandler = emitData('data')
     const moredataHandler = emitData('data-more')
-    const errorHandler = emit('data-error')
+    const errorHandler = compute(err => {
+        const error =
+            err.cause && err.cause.getMessageSync
+                ? new Error(err.cause.getMessageSync())
+                : err
+        pubsub.emit('data-error', error)
+    })
     const runQuery = () => {
         const sql = editor.getSelection() || editor.getCursorStatement()
         if (!connection) {
