@@ -18,7 +18,7 @@
 }
 .result {
     position: absolute;
-    background-color: var(--c2);
+    background-color: var(--c3);
     left: 0;
     right: 0;
     top: var(--editor-height);
@@ -63,20 +63,35 @@
     top: 2.2rem;
     bottom: 0;
     left: 0;
-    background-color: var(--c2);
 }
 .table td,
 .table th {
     white-space: nowrap;
+    background-color: var(--c3);
     margin: 0;
     overflow: hidden;
-    padding: 8px;
-    border: 1px solid var(--c3);
+    padding: 8px 16px;
+    border: 1px solid var(--c4);
+}
+.table th {
+    border-bottom: none;
+    border-top: none;
+}
+.table td:nth-child(1),
+.table th:nth-child(1) {
+    border-left: none;
+}
+.table td:last-child,
+.table th:last-child {
+    border-right: none;
+}
+.table tr:last-child td {
+    border-bottom: none;
 }
 .table-head th {
     cursor: pointer;
     text-align: left;
-    background-color: var(--c1);
+    background-color: var(--c2);
     color: var(--primary-color);
     position: relative;
 }
@@ -89,10 +104,14 @@
     width: 8px;
 }
 .table tr:hover td {
-    background-color: var(--c3);
+    background-color: var(--c4);
 }
 .table tr.row-selected td {
     background-color: var(--selected-color);
+}
+.table tr td:focus {
+    outline: none;
+    background-color: var(--primary-color);
 }
 .updated {
     color: var(--c13);
@@ -100,14 +119,14 @@
     margin: 16px auto;
     max-width: 300px;
     padding: 16px;
-    background-color: var(--c3);
+    background-color: var(--c4);
     border-radius: 16px;
     text-align: center;
 }
 .error {
     display: flex;
     color: rgb(248, 39, 39);
-    background-color: var(--c3);
+    background-color: var(--c4);
     margin: 16px auto;
     max-width: 700px;
     padding: 16px;
