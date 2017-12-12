@@ -86,28 +86,41 @@ describe('editor', () => {
     })
 })
 
-describe('get text position', () => {
+describe.only('get text position', () => {
     const examples = [
-        ['select * from foo', 'ble: FOO', { line: 0, start: 14, end: 17 }],
         [
-            'select * from foo f\nwhere f.err=1 and f.bar=2',
-            'ble: F.ERR',
+            'select * from foo',
+            'FOO in *LIBL type *FILE not found.',
+            { line: 0, start: 14, end: 17 },
+        ],
+        [
+            'select * from foo f\nwhere bar=1 and f.baz=2',
+            'Column or global variable BAR not found.',
             {
                 line: 1,
                 start: 6,
+                end: 9,
+            },
+        ],
+        [
+            'select * from foo f\nwhere f.bar=1 and f.baz=2',
+            '[SQL0205] Column BAR not in table GRSI02P in WTMDTA.',
+            {
+                line: 1,
+                start: 7,
                 end: 11,
             },
         ],
         [
-            'select * from foo fa\nwhere f.err=1 and f.bar=2',
-            'ble: F.ERR',
-            {
-                line: 1,
-                start: 6,
-                end: 11,
-            },
+            'select * from foo bar baz',
+            '[SQL0104] Token BAZ was not valid. Valid tokens: FOR USE SKIP WAIT WITH FETCH LIMIT ORDER UNION EXCEPT OFFSET.',
+            { line: 0, start: 22, end: 25 },
         ],
-        ['select * from fooa', 'ble: FOO', { line: -1, start: -1, end: -1 }],
+        [
+            'select * from foo bar baz',
+            'nomatch',
+            { line: -1, start: -1, end: -1 },
+        ],
     ]
     examples.map(([sql, message, res]) => {
         it(`should get text position for sql: ${sql}, message: ${

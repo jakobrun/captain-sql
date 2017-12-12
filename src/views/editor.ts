@@ -143,6 +143,22 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
             },
         }
     }
+
+    const errorsRegEx = [
+        /Column or global variable (\w*) not found./i,
+        /(\w*) in \*LIBL type \*FILE not found./i,
+        /Token (\w*) was not valid. Valid tokens:/i,
+        /Column (\w*) not in table/i,
+        /Keyword (\w*) not expected./i,
+    ]
+
+    const getErrorToken = (errMessage: string): string | undefined => {
+        const match = errorsRegEx
+            .map(regEx => errMessage.match(regEx))
+            .find(res => Boolean(res && res[1]))
+        return match ? match[1] : undefined
+    }
+
     const editor = {
         getValue(sep) {
             return cm.getValue(sep)
@@ -234,18 +250,28 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
             return columns
         },
         getTextPos(errMessage) {
-            const errorToken: string = errMessage
-                .substring(errMessage.indexOf(': ') + 2, errMessage.length)
-                .toUpperCase()
-            const range = getCursorStatementRange()
+            const errorToken = getErrorToken(errMessage)
             let match = ''
             let line = -1
             let start = -1
             let end = -1
+            if (!errorToken) {
+                return {
+                    line,
+                    start,
+                    end,
+                }
+            }
+            const tokenWithoutLeadingDot = (token: string) =>
+                (token.startsWith('.') ? token.substr(1) : token).toUpperCase()
+
+            const range = getCursorStatementRange()
             eachTokenUntil((token, l) => {
                 if (l > range.to.line) {
                     return true
-                } else if (errorToken === token.string.toUpperCase()) {
+                } else if (
+                    errorToken === tokenWithoutLeadingDot(token.string)
+                ) {
                     start = token.start
                     end = token.end
                     line = l
