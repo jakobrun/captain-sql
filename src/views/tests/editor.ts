@@ -86,7 +86,7 @@ describe('editor', () => {
     })
 })
 
-describe.only('get text position', () => {
+describe('get text position', () => {
     const examples = [
         [
             'select * from foo',
