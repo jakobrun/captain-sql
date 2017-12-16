@@ -12,19 +12,31 @@
         transform: translateY(-10000px);
     }
 }
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 .glass {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgb(33, 33, 33);
+    background-color: var(--c3);
     z-index: 90;
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: center;
     opacity: 1;
+}
+.glass-show {
+    animation: fadeIn 0.3s ease-in-out;
+    transform: translateY(0px);
 }
 
 .glass-hide {

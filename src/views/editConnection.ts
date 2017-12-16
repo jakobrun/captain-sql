@@ -108,210 +108,208 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
             m.endComputation()
         }
     })
+
+    const checkPropRows = () => {
+        const props = properties()
+        if (
+            props.length > 1 &&
+            !props[props.length - 2].name() &&
+            !props[props.length - 1].name()
+        ) {
+            properties(props.slice(0, -1))
+        } else if (props[props.length - 1].name()) {
+            properties([
+                ...props,
+                {
+                    name: m.prop(''),
+                    value: m.prop(''),
+                },
+            ])
+        }
+    }
+    const checkSchemaRows = () => {
+        if (
+            schemas().length > 1 &&
+            !schemas()[schemas().length - 2]() &&
+            !schemas()[schemas().length - 1]()
+        ) {
+            schemas(schemas().slice(0, -1))
+        } else if (schemas()[schemas().length - 1]()) {
+            schemas([...schemas(), m.prop('')])
+        }
+    }
     return {
         view() {
-            return m('div', [
-                m(
-                    'div',
-                    {
-                        class: classnames(
-                            'container popup form',
-                            !show() && 'hidden',
-                            'theme--' + theam()
-                        ),
-                    },
-                    [
-                        m('h2.popup-title', 'Add connection'),
-                        m('div.connection-base-data', [
-                            m('div.connection-image', [
-                                m('div.login-icon', {
-                                    onclick: () => {
-                                        dialog.showOpenDialog(
-                                            {
-                                                filters: [
-                                                    {
-                                                        name: 'images',
-                                                        extensions: [
-                                                            'png',
-                                                            'jpg',
-                                                        ],
-                                                    },
-                                                ],
-                                            },
-                                            res => {
-                                                if (res && res[0]) {
-                                                    m.startComputation()
-                                                    image(res[0])
-                                                    m.endComputation()
+            return m(
+                'div',
+                {
+                    class: classnames(
+                        'glass',
+                        show() ? 'glass-show' : 'glass-hide'
+                    ),
+                },
+                [
+                    m(
+                        'div',
+                        {
+                            class: classnames(
+                                'container popup form',
+                                'theme--' + theam()
+                            ),
+                        },
+                        [
+                            m('h2.popup-title', 'Add connection'),
+                            m('div.connection-base-data', [
+                                m('div.connection-image', [
+                                    m('div.login-icon', {
+                                        onclick: () => {
+                                            dialog.showOpenDialog(
+                                                {
+                                                    filters: [
+                                                        {
+                                                            name: 'images',
+                                                            extensions: [
+                                                                'png',
+                                                                'jpg',
+                                                            ],
+                                                        },
+                                                    ],
+                                                },
+                                                res => {
+                                                    if (res && res[0]) {
+                                                        m.startComputation()
+                                                        image(res[0])
+                                                        m.endComputation()
+                                                    }
                                                 }
-                                            }
-                                        )
-                                    },
-                                    style: `background-image: url(${image() ||
-                                        'images/g1.png'})`,
-                                }),
-                            ]),
-                            m('div.connection-base-data-inputs', [
-                                m('div.form-element', [
-                                    m('input', {
-                                        class: 'h-fill',
-                                        placeholder: 'Name',
-                                        config: configName,
-                                        value: name(),
-                                        onchange: m.withAttr('value', name),
+                                            )
+                                        },
+                                        style: `background-image: url(${image() ||
+                                            'images/g1.png'})`,
                                     }),
                                 ]),
-                                m('div.form-element', [
-                                    m('input', {
-                                        class: 'h-fill',
-                                        placeholder: 'Host',
-                                        rows: '5',
-                                        value: host(),
-                                        onchange: m.withAttr('value', host),
-                                    }),
-                                ]),
-                                m('div.form-element', [
-                                    m('input', {
-                                        class: 'h-fill',
-                                        placeholder: 'Username',
-                                        rows: '5',
-                                        value: username(),
-                                        onchange: m.withAttr('value', username),
-                                    }),
-                                ]),
-                                m('div.form-element', [
-                                    m(
-                                        'select',
-                                        {
+                                m('div.connection-base-data-inputs', [
+                                    m('div.form-element', [
+                                        m('input', {
+                                            class: 'h-fill',
+                                            placeholder: 'Name',
+                                            config: configName,
+                                            value: name(),
+                                            onchange: m.withAttr('value', name),
+                                        }),
+                                    ]),
+                                    m('div.form-element', [
+                                        m('input', {
+                                            class: 'h-fill',
+                                            placeholder: 'Host',
+                                            rows: '5',
+                                            value: host(),
+                                            onchange: m.withAttr('value', host),
+                                        }),
+                                    ]),
+                                    m('div.form-element', [
+                                        m('input', {
                                             class: 'h-fill',
                                             placeholder: 'Username',
                                             rows: '5',
-                                            onchange: e => {
-                                                theam(
-                                                    theams[
-                                                        e.target.selectedIndex
-                                                    ]
-                                                )
-                                            },
-                                        },
-                                        theams.map(th =>
-                                            m(
-                                                'option',
-                                                {
-                                                    selected: th === theam(),
+                                            value: username(),
+                                            onchange: m.withAttr(
+                                                'value',
+                                                username
+                                            ),
+                                        }),
+                                    ]),
+                                    m('div.form-element', [
+                                        m(
+                                            'select',
+                                            {
+                                                class: 'h-fill',
+                                                placeholder: 'Username',
+                                                rows: '5',
+                                                onchange: e => {
+                                                    theam(
+                                                        theams[
+                                                            e.target
+                                                                .selectedIndex
+                                                        ]
+                                                    )
                                                 },
-                                                th
+                                            },
+                                            theams.map(th =>
+                                                m(
+                                                    'option',
+                                                    {
+                                                        selected:
+                                                            th === theam(),
+                                                    },
+                                                    th
+                                                )
                                             )
-                                        )
-                                    ),
+                                        ),
+                                    ]),
                                 ]),
                             ]),
-                        ]),
-                        m('h3', 'Connection properties'),
-                        m(
-                            'div.connection-props',
-                            properties().map(prop =>
-                                m('div.connection-prop', [
-                                    m('input.connection-prop-name', {
-                                        placeholder: 'Name',
-                                        rows: '5',
-                                        value: prop.name(),
-                                        onchange: m.withAttr(
-                                            'value',
-                                            prop.name
-                                        ),
-                                    }),
-                                    m('input.connection-prop-value', {
-                                        placeholder: 'Value',
-                                        rows: '5',
-                                        value: prop.value(),
-                                        onchange: m.withAttr(
-                                            'value',
-                                            prop.value
-                                        ),
-                                    }),
-                                    m(
-                                        'button.delete-connection-prop',
-                                        {
-                                            onclick: () =>
-                                                properties(
-                                                    properties().filter(
-                                                        p => p !== prop
-                                                    )
+                            m('div.container-extra pb0', [
+                                m('h3.extra-title', 'Connection properties'),
+                                m(
+                                    'div.connection-props',
+                                    properties().map(prop =>
+                                        m('div.connection-prop', [
+                                            m('input.connection-prop-name', {
+                                                placeholder: 'Name',
+                                                rows: '5',
+                                                value: prop.name(),
+                                                onkeyup: e => {
+                                                    prop.name(e.target.value)
+                                                    checkPropRows()
+                                                },
+                                            }),
+                                            m('input.connection-prop-value', {
+                                                placeholder: 'Value',
+                                                rows: '5',
+                                                value: prop.value(),
+                                                onchange: m.withAttr(
+                                                    'value',
+                                                    prop.value
                                                 ),
-                                        },
-                                        '❌'
-                                    ),
-                                ])
-                            )
-                        ),
-                        m(
-                            'button.add-button',
-                            {
-                                onclick: () =>
-                                    properties([
-                                        ...properties(),
-                                        {
-                                            name: m.prop(''),
-                                            value: m.prop(''),
-                                        },
-                                    ]),
-                            },
-                            '＋'
-                        ),
-                        m('h3', 'Schemas'),
-                        m(
-                            'div.schemas',
-                            schemas()
-                                .map(schema =>
-                                    m('div.schema', [
-                                        m('input.schema-name', {
+                                            }),
+                                        ])
+                                    )
+                                ),
+                                m('h3.extra-title mt1', 'Schemas'),
+                                m(
+                                    'div.schemas',
+                                    schemas().map(schema =>
+                                        m('input.schema', {
                                             placeholder: 'Name',
                                             rows: '5',
                                             value: schema(),
-                                            onchange: m.withAttr(
-                                                'value',
-                                                schema
-                                            ),
-                                        }),
-                                        m(
-                                            'button.delete-schema',
-                                            {
-                                                onclick: () =>
-                                                    schemas(
-                                                        schemas().filter(
-                                                            s => s !== schema
-                                                        )
-                                                    ),
+                                            onkeyup: e => {
+                                                schema(e.target.value)
+                                                checkSchemaRows()
                                             },
-                                            '❌'
-                                        ),
-                                    ])
-                                )
-                                .concat([
-                                    m(
-                                        'button.add-button',
-                                        {
-                                            onclick: () =>
-                                                schemas([
-                                                    ...schemas(),
-                                                    m.prop(''),
-                                                ]),
-                                        },
-                                        '＋'
-                                    ),
-                                ])
-                        ),
-                        m(
-                            'button.save-connection',
-                            {
-                                onclick: save,
-                            },
-                            'Save'
-                        ),
-                    ]
-                ),
-            ])
+                                        })
+                                    )
+                                ),
+                            ]),
+                            m(
+                                'button.save-connection',
+                                {
+                                    onclick: save,
+                                },
+                                'Save'
+                            ),
+                            m(
+                                'button.cancel-connection',
+                                {
+                                    onclick: reset,
+                                },
+                                'Cancel'
+                            ),
+                        ]
+                    ),
+                ]
+            )
         },
     }
 }
