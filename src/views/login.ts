@@ -1,6 +1,7 @@
 import * as classnames from 'classnames'
 import { centerItem } from '../modules/centerItem'
 import { ISettings, saveSettings } from '../modules/settings'
+import { createBack } from './icons/back'
 import { createCopy } from './icons/copy'
 import { createDelete } from './icons/delete'
 import { createEditIcon } from './icons/edit'
@@ -205,39 +206,30 @@ export const createLoginModule = (m, pubsub, connect, settings: ISettings) => {
                             },
                             [
                                 m(
-                                    'div',
+                                    'button.login-btn',
                                     {
-                                        class: 'form-element',
+                                        onclick: resetConn,
                                     },
-                                    [
-                                        m('input', {
-                                            id: 'password',
-                                            class: '',
-                                            placeholder: 'Password',
-                                            type: 'password',
-                                            value: loginInfo.password(),
-                                            oninput: m.withAttr(
-                                                'value',
-                                                loginInfo.password
-                                            ),
-                                            onkeydown: loginOnEnter,
-                                        }),
-                                    ]
+                                    [createBack(m)]
                                 ),
+                                m('input', {
+                                    id: 'password',
+                                    class: '',
+                                    placeholder: 'Password',
+                                    type: 'password',
+                                    value: loginInfo.password(),
+                                    oninput: m.withAttr(
+                                        'value',
+                                        loginInfo.password
+                                    ),
+                                    onkeydown: loginOnEnter,
+                                }),
                                 m(
-                                    'div',
+                                    'button.login-btn',
                                     {
-                                        class: 'form-element form-btn-bar',
+                                        onclick: login,
                                     },
-                                    [
-                                        m(
-                                            'button.login-btn',
-                                            {
-                                                onclick: login,
-                                            },
-                                            '➜'
-                                        ),
-                                    ]
+                                    [m('div', '➜')]
                                 ),
                             ]
                         ),
@@ -255,7 +247,7 @@ export const createLoginModule = (m, pubsub, connect, settings: ISettings) => {
                             {
                                 class: classnames(
                                     'login-edit-buttons',
-                                    !conn && 'hide-login-item'
+                                    (!conn || connecting()) && 'hide-login-item'
                                 ),
                             },
                             [

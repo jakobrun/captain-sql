@@ -64,16 +64,26 @@
     background-color: rgba(53, 50, 44, 0.8);
 }
 .login-btn {
-    background-color: transparent;
+    background-color: var(--c4);
     border-radius: 50%;
-    margin-left: 10px;
-    padding: 8px;
+    margin: 0 10px;
+    padding: 0;
     color: var(--c7);
-    border-color: var(--c7);
+    border: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    stroke: var(--c7);
 }
-.login-bt:hover {
-    color: var(--c14);
-    border-color: var(--c14);
+.login-btn:hover {
+    background-color: var(--c5);
+    stroke: var(--c14);
+}
+.login-btn:focus {
+    background-color: var(--c5);
+    stroke: var(--c15);
 }
 .add-connection-icon,
 .login-icon {

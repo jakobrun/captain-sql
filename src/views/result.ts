@@ -159,7 +159,7 @@ export const createResult = (m, pubsub) => {
                                     const columnClick = () => {
                                         const size = Math.min(
                                             3200,
-                                            12 + col.precision * 9
+                                            32 + col.precision * 9
                                         )
                                         col.colWidth =
                                             col.colWidth > 300 ? 300 : size

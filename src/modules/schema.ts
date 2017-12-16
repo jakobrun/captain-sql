@@ -5,7 +5,7 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
         const tables: any[] = []
         connection
             .settings()
-            .schema.reduce(
+            .schemas.reduce(
                 (promise, schema) =>
                     promise.then(
                         () =>
