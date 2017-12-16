@@ -1,7 +1,11 @@
 import * as classnames from 'classnames'
 import { centerItem } from '../modules/centerItem'
+import { ISettings, saveSettings } from '../modules/settings'
+import { createCopy } from './icons/copy'
+import { createDelete } from './icons/delete'
+import { createEditIcon } from './icons/edit'
 
-export const createLoginModule = (m, pubsub, connect, settings) => {
+export const createLoginModule = (m, pubsub, connect, settings: ISettings) => {
     const connecting = m.prop(false)
     const show = m.prop(true)
     const errorMsg = m.prop('')
@@ -67,6 +71,10 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
     pubsub.on('login', () => show(true))
 
     pubsub.on('connected', () => show(false))
+
+    pubsub.on('connection-updated', connection => (conn = connection))
+
+    pubsub.on('connection-added', () => resetConn())
 
     const resetConn = () => {
         conn = undefined
@@ -241,6 +249,75 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                                     (connecting() ? '' : ' hide-login-item'),
                             },
                             [m('div.spinner-loader', 'Loading…')]
+                        ),
+                        m(
+                            'div',
+                            {
+                                class: classnames(
+                                    'login-edit-buttons',
+                                    !conn && 'hide-login-item'
+                                ),
+                            },
+                            [
+                                m(
+                                    'button.edit-connection',
+                                    {
+                                        onclick: () =>
+                                            pubsub.emit(
+                                                'edit-connection',
+                                                conn
+                                            ),
+                                    },
+                                    [
+                                        m('div.edit-connection-icon', [
+                                            createEditIcon(m),
+                                        ]),
+                                        m('div', 'Edit'),
+                                    ]
+                                ),
+                                m(
+                                    'button.edit-connection',
+                                    {
+                                        onclick: () =>
+                                            pubsub.emit(
+                                                'copy-connection',
+                                                conn
+                                            ),
+                                    },
+                                    [
+                                        m('div.edit-connection-icon', [
+                                            createCopy(m),
+                                        ]),
+                                        m('div', 'Copy'),
+                                    ]
+                                ),
+                                m(
+                                    'button.edit-connection',
+                                    {
+                                        onclick: () => {
+                                            if (
+                                                window.confirm(
+                                                    `Are you sure you want to delete ${
+                                                        conn.name
+                                                    }?`
+                                                )
+                                            ) {
+                                                settings.connections = settings.connections.filter(
+                                                    c => c !== conn
+                                                )
+                                                saveSettings(settings)
+                                                resetConn()
+                                            }
+                                        },
+                                    },
+                                    [
+                                        m('div.edit-connection-icon', [
+                                            createDelete(m),
+                                        ]),
+                                        m('div', 'Delete'),
+                                    ]
+                                ),
+                            ]
                         ),
                     ]),
                 ]

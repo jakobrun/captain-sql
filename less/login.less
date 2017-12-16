@@ -64,9 +64,16 @@
     background-color: rgba(53, 50, 44, 0.8);
 }
 .login-btn {
-    background-color: var(--c6);
+    background-color: transparent;
     border-radius: 50%;
     margin-left: 10px;
+    padding: 8px;
+    color: var(--c7);
+    border-color: var(--c7);
+}
+.login-bt:hover {
+    color: var(--c14);
+    border-color: var(--c14);
 }
 .add-connection-icon,
 .login-icon {
@@ -135,4 +142,53 @@
     60% {
         transform: translate3d(8px, 0, 0);
     }
+}
+
+.login-edit-buttons {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+.edit-connection {
+    background-color: transparent;
+    color: var(--c7);
+    border: none;
+    outline: none;
+}
+.edit-connection-icon {
+    border-radius: 50%;
+    border: 2px solid var(--c7);
+    width: 50px;
+    height: 50px;
+    margin-bottom: 16px;
+    stroke: var(--c7);
+    fill: var(--c7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.edit-icon-group {
+    fill: var(--c7);
+}
+.edit-connection:hover .edit-icon-group {
+    fill: var(--c14);
+}
+
+.edit-connection:hover .edit-connection-icon {
+    border-color: var(--c14);
+    stroke: var(--c14);
+    fill: var(--c14);
+}
+.edit-connection:focus .edit-icon-group {
+    fill: var(--c15);
+}
+
+.edit-connection:focus .edit-connection-icon {
+    border-color: var(--c15);
+    stroke: var(--c15);
+    fill: var(--c15);
+}
+.delete-icon {
+    width: 28px;
+    height: 28px;
 }

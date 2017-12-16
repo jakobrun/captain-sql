@@ -9,19 +9,32 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
     const name = m.prop('')
     const host = m.prop('')
     const username = m.prop('')
-    const theam = m.prop('dark-orange')
+    const theam = m.prop('')
     const theams = ['dark-orange', 'dark-lime', 'dark-green', 'dark-blue']
-    const properties = m.prop([
-        {
-            name: m.prop(''),
-            value: m.prop(''),
-        },
-    ])
-    const schemas = m.prop([m.prop('')])
+    const properties = m.prop()
+    const schemas = m.prop()
+    let currentConn
     let nameEl
     const configName = el => {
         nameEl = el
     }
+    const reset = () => {
+        show(false)
+        name('')
+        host('')
+        username('')
+        image('')
+        theam('dark-orange')
+        properties([
+            {
+                name: m.prop(''),
+                value: m.prop(''),
+            },
+        ])
+        schemas([m.prop('')])
+        currentConn = undefined
+    }
+    reset()
     const save = () => {
         const connection: IConnectionInfo = {
             name: name(),
@@ -48,21 +61,50 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                     file: schema() + '.json',
                 })),
         }
-        settings.connections.push(connection)
+        if (currentConn) {
+            settings.connections = settings.connections.map(
+                c => (c === currentConn ? connection : c)
+            )
+            pubsub.emit('connection-updated', connection)
+        } else {
+            settings.connections.push(connection)
+            pubsub.emit('connection-added', connection)
+        }
         saveSettings(settings)
-        show(false)
+        reset()
     }
     const showEdit = () => {
         show(true)
         setTimeout(nameEl.focus.bind(nameEl), 0)
     }
 
+    const displayConnection = (conn: IConnectionInfo) => {
+        name(conn.name)
+        host(conn.host)
+        username(conn.user)
+        theam(conn.theme)
+        image(conn.image)
+        properties(
+            Object.keys(conn.properties).map(k => ({
+                name: m.prop(k),
+                value: m.prop(conn.properties[k]),
+            }))
+        )
+        schemas(conn.schemas.map(schema => m.prop(schema.name)))
+        showEdit()
+    }
+
     pubsub.on('add-connection', showEdit)
+    pubsub.on('copy-connection', displayConnection)
+    pubsub.on('edit-connection', (conn: IConnectionInfo) => {
+        currentConn = conn
+        displayConnection(conn)
+    })
 
     document.addEventListener('keyup', e => {
         if (e.keyCode === 27 && show()) {
             m.startComputation()
-            show(false)
+            reset()
             m.endComputation()
         }
     })
