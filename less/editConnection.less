@@ -1,0 +1,63 @@
+.connection-base-data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.connection-image {
+    padding-right: 16px;
+    text-align: center;
+    flex-shrink: 1;
+}
+.connection-base-data-inputs {
+    flex-grow: 1;
+}
+.connection-image .login-icon {
+    cursor: pointer;
+}
+.connection-prop {
+    display: flex;
+    padding-bottom: 16px;
+}
+.connection-prop-name {
+    width: 120px;
+}
+.connection-prop-value {
+    width: 240px;
+    margin-left: 16px;
+}
+.delete-schema,
+.delete-connection-prop {
+    background: transparent;
+    border: none;
+    visibility: hidden;
+    outline: none;
+}
+.schema:hover .delete-schema,
+.connection-prop:hover .delete-connection-prop {
+    visibility: visible;
+}
+.schemas {
+    display: flex;
+    flex-wrap: wrap;
+    padding-bottom: 16px;
+}
+.schema-name {
+    width: 92px;
+}
+.save-connection {
+    float: right;
+    background-color: var(--selected-color);
+    border: none;
+    font-size: 1.1rem;
+}
+.add-button {
+    border-radius: 50%;
+    background-color: var(--c5);
+    border: none;
+    flex-shrink: 1;
+    height: 30px;
+    width: 30px;
+    font-size: 24px;
+    padding: 0;
+    outline: none;
+}

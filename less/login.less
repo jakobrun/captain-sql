@@ -16,6 +16,7 @@
     transition: opacity 0.5s ease-in-out;
     opacity: 1;
 }
+.add-connection,
 .login-item {
     width: 200px;
     background-color: rgba(41, 39, 34, 0);
@@ -23,10 +24,13 @@
     text-align: center;
     padding: 34px 8px;
     margin: 12px;
-    cursor: pointer;
     opacity: 1;
     transform: scale(1, 1);
     animation: show 0.5s ease-in-out;
+}
+.add-connection-icon,
+.login-item {
+    cursor: pointer;
 }
 @keyframes hide {
     0% {
@@ -64,17 +68,36 @@
     border-radius: 50%;
     margin-left: 10px;
 }
+.add-connection-icon,
 .login-icon {
     display: inline-block;
     border-radius: 50%;
     width: 100px;
     height: 100px;
     margin-bottom: 10px;
-    border: 2px solid var(--primary-color);
-    box-shadow: 0 0 20px var(--primary-color);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
+}
+.add-connection-icon {
+    border: 2px solid var(--c6);
+    line-height: 100px;
+    font-size: 80px;
+    color: var(--c6);
+    outline: none;
+}
+.add-connection-icon:hover,
+.add-connection-icon:focus {
+    border-color: var(--c9);
+    color: var(--c9);
+}
+.add-connection-icon:focus {
+    border-color: rgb(18, 126, 228);
+    box-shadow: 0 0 20px rgb(4, 74, 139);
+}
+.login-icon {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 20px var(--primary-color);
 }
 .login-text {
     margin-top: 10px;

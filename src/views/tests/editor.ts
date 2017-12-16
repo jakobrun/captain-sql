@@ -123,9 +123,7 @@ describe('get text position', () => {
         ],
     ]
     examples.map(([sql, message, res]) => {
-        it(`should get text position for sql: ${sql}, message: ${
-            message
-        }`, () => {
+        it(`should get text position for sql: ${sql}, message: ${message}`, () => {
             editor.setValue(sql)
             const pos = editor.getTextPos(message)
             expect(pos).to.eql(res)

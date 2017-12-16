@@ -100,57 +100,91 @@ export const createLoginModule = (m, pubsub, connect, settings) => {
                     m('div', { class: errorMsg() ? ' shake-pw' : '' }, [
                         m(
                             'div.login-container',
-                            settings.connections.map((c, i) => {
-                                const selectItem = () => {
-                                    selectConn(c)
-                                    const pwEl = document.getElementById(
-                                        'password'
-                                    )
-                                    const pos =
-                                        centerItem(
-                                            i,
-                                            settings.connections.length
-                                        ) * 224
-                                    document.body.style.setProperty(
-                                        '--login-pos',
-                                        pos + 'px'
-                                    )
-                                    if (pwEl) {
-                                        setTimeout(() => pwEl.focus(), 1)
+                            settings.connections
+                                .map((c, i) => {
+                                    const selectItem = () => {
+                                        selectConn(c)
+                                        const pwEl = document.getElementById(
+                                            'password'
+                                        )
+                                        const pos =
+                                            centerItem(
+                                                i,
+                                                settings.connections.length + 1
+                                            ) * 224
+                                        document.body.style.setProperty(
+                                            '--login-pos',
+                                            pos + 'px'
+                                        )
+                                        if (pwEl) {
+                                            setTimeout(() => pwEl.focus(), 1)
+                                        }
                                     }
-                                }
-                                const isHidden = conn && conn !== c
-                                const theme = c.theme || 'dark-orange'
-                                return m(
-                                    'div',
-                                    {
-                                        tabindex: isHidden ? undefined : '0',
-                                        onclick: selectItem,
-                                        onkeydown: e => {
-                                            if (e.keyCode === 13) {
-                                                selectItem()
-                                            }
+                                    const isHidden = conn && conn !== c
+                                    const theme = c.theme || 'dark-orange'
+                                    return m(
+                                        'div',
+                                        {
+                                            tabindex: isHidden
+                                                ? undefined
+                                                : '0',
+                                            onclick: selectItem,
+                                            onkeydown: e => {
+                                                if (e.keyCode === 13) {
+                                                    selectItem()
+                                                }
+                                            },
+                                            class:
+                                                'login-item theme--' +
+                                                theme +
+                                                (isHidden
+                                                    ? ' hide-login-item'
+                                                    : ''),
                                         },
-                                        class:
-                                            'login-item theme--' +
-                                            theme +
-                                            (isHidden
-                                                ? ' hide-login-item'
-                                                : ''),
-                                    },
-                                    [
-                                        m('div.login-icon', {
-                                            style: `background-image: url(${c.image ||
-                                                'images/g1.png'})`,
-                                        }),
-                                        m('div.login-text', c.name),
-                                        m(
-                                            'div.login-host',
-                                            `${c.user}@${c.host}`
-                                        ),
-                                    ]
-                                )
-                            })
+                                        [
+                                            m('div.login-icon', {
+                                                style: `background-image: url(${c.image ||
+                                                    'images/g1.png'})`,
+                                            }),
+                                            m('div.login-text', c.name),
+                                            m(
+                                                'div.login-host',
+                                                `${c.user}@${c.host}`
+                                            ),
+                                        ]
+                                    )
+                                })
+                                .concat([
+                                    m(
+                                        'div',
+                                        {
+                                            class: classnames(
+                                                'add-connection',
+                                                conn && 'hide-login-item'
+                                            ),
+                                        },
+                                        [
+                                            m(
+                                                'div.add-connection-icon',
+                                                {
+                                                    tabindex: 0,
+                                                    onclick: () =>
+                                                        pubsub.emit(
+                                                            'add-connection'
+                                                        ),
+                                                    onkeydown: e => {
+                                                        if (e.keyCode === 13) {
+                                                            pubsub.emit(
+                                                                'add-connection'
+                                                            )
+                                                        }
+                                                    },
+                                                },
+                                                '＋'
+                                            ),
+                                        ]
+                                    ),
+                                ])
                         ),
                         m(
                             'div',

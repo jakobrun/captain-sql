@@ -2,15 +2,16 @@ import { EventEmitter } from 'events'
 import * as fs from 'fs'
 import { connect } from './modules/connect'
 import { createExecuter } from './modules/executer'
-import { getSettings } from './modules/get_settings'
 import { getTables } from './modules/get_tables'
 import { createGlobalShortcuts } from './modules/globalShortcuts'
 import { getHistoryModel } from './modules/history'
 import { createSchemaHandler } from './modules/schema'
+import { getSettings } from './modules/settings'
 import { createSqlHint } from './modules/sql-hint'
 import { createActions } from './views/actions'
 import { createBookmarkModel } from './views/bookmark'
 import { createColumnsPrompt } from './views/columns_prompt'
+import { createEditConnection } from './views/editConnection'
 import { createEditor } from './views/editor'
 import { createErrorHandler } from './views/errorhandler'
 import { createHistoryView } from './views/history'
@@ -47,6 +48,7 @@ getSettings(process.env.HOME)
         const statusbar = createStatusbar(m, pubsub)
         const editor = createEditor(m, pubsub, CodeMirror, fs)
         const result = createResult(m, pubsub)
+        const editConnection = createEditConnection(m, pubsub, settings)
         const bookmarkModule = createBookmarkModel(
             m,
             fs,
@@ -102,7 +104,7 @@ getSettings(process.env.HOME)
                 const connSettings = settings.connections.find(
                     c => c.name === connName
                 )
-                if (connSettings.host === 'hsql:inmemory') {
+                if (connSettings && connSettings.host === 'hsql:inmemory') {
                     console.log('reconnect to hsql:inmemory!!')
                     connect({ host: connSettings.host }, connSettings).then(
                         connection => {
@@ -128,6 +130,7 @@ getSettings(process.env.HOME)
                     historyModule.view(),
                     columnsPrompt.view(),
                     errorHandler.view(),
+                    editConnection.view(),
                 ]
             },
         }
