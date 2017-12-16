@@ -7,14 +7,14 @@ import { getSettings, ISettings } from '../settings'
 
 const gandalfFolder = join(__dirname, '/.gandalf')
 
-describe.only('get settings', () => {
+describe('get settings', () => {
     const fileName = join(__dirname, '/.gandalf/settings.json')
 
     afterEach(done => rimraf(gandalfFolder, () => done()))
 
     it('should create default settings', () => {
         return getSettings(__dirname).then(settings => {
-            expect(settings.connections.length).to.equal(0)
+            expect(settings.connections.length).to.equal(1)
         })
     })
 

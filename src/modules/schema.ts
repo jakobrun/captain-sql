@@ -52,7 +52,7 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
     pubsub.on('schema-export', () => {
         const settings = connection.settings()
         pubsub.emit('export-schema-start')
-        settings.schema
+        settings.schemas
             .reduce(
                 (promise, schema) =>
                     promise.then(

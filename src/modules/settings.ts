@@ -30,7 +30,27 @@ export interface ISettings {
 }
 
 const defaultSettings: ISettings = {
-    connections: [],
+    connections: [
+        {
+            name: 'Inmemory database for test (no password needed)',
+            host: 'hsql:inmemory',
+            user: 'test',
+            editorFile: 'hsql:inmemory.sql',
+            history: {
+                file: 'test.history',
+                max: 150,
+                min: 100,
+            },
+            properties: {},
+            theme: 'dark-blue',
+            schemas: [
+                {
+                    name: 'PUBLIC',
+                    file: 'test_public.json',
+                },
+            ],
+        },
+    ],
 }
 
 export function getSettings(baseDir = process.env.HOME): Promise<ISettings> {
