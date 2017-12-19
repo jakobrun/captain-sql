@@ -22,6 +22,7 @@
         "chai": "^1.10.0",
         "electron-connect": "^0.6.1",
         "electron-css-reload": "^1.0.8",
+        "electron-installer-debian": "^0.7.1",
         "electron-mocha": "^3.4.0",
         "electron-packager": "^8.6.0",
         "electron-rebuild": "^1.5.7",
@@ -48,6 +49,10 @@
         "build": "tsc && gulp less",
         "package-mac":
             "electron-packager . Gandalf --platform=darwin --arch=x64",
+        "package-linux":
+            "electron-packager . Gandalf --platform=linux --arch=x64",
+        "deb64":
+            "electron-installer-debian --src Gandalf-linux-x64/ --dest builds/ --arch amd64",
         "dev": "tsc -w",
         "serve": "gulp serve",
         "test": "mocha dist/modules/tests",
