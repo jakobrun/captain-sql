@@ -62,11 +62,9 @@ export const createLoginModule = (m, pubsub, connect, settings: ISettings) => {
             })
     }
 
-    pubsub.on('data-error', err => {
-        if (err.message.indexOf('The connection does not exist') > 0) {
-            pubsub.emit('reconnecting')
-            login()
-        }
+    pubsub.on('reconnect', () => {
+        pubsub.emit('reconnecting')
+        login()
     })
 
     pubsub.on('login', () => show(true))

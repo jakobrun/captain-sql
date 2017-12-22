@@ -145,6 +145,26 @@ export const createResult = (m, pubsub) => {
                             [
                                 m('div.error-icon', '✕'),
                                 m('div.error-msg', errorMsg()),
+                                errorMsg() ===
+                                    'The connection does not exist.' &&
+                                    m(
+                                        'button.reconnect-btn',
+                                        {
+                                            config: (
+                                                element,
+                                                isInitialized
+                                            ) => {
+                                                if (!isInitialized) {
+                                                    element.focus()
+                                                }
+                                            },
+                                            onclick: () => {
+                                                errorMsg('')
+                                                pubsub.emit('reconnect')
+                                            },
+                                        },
+                                        'Reconnect'
+                                    ),
                             ]
                         ),
                     m(
