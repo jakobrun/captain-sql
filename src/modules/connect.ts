@@ -1,17 +1,69 @@
 import { createWriteStream } from 'fs'
 import * as JSONStream from 'JSONStream'
-import { connect as connectToDb, useInMemoryDb } from 'node-jt400'
+import { connect as connectToDb, Connection, useInMemoryDb } from 'node-jt400'
+import { Readable } from 'stream'
 import { exportSchema } from './export-schema'
 import { createFakedata } from './fakedata'
+import { IConnectionInfo } from './settings'
 
-function connection(db, settings) {
+export interface IColumnMetadata {
+    precision: number
+    name: string
+}
+
+export interface IMoreBuffer {
+    data: string[][]
+    more?: () => Promise<IMoreBuffer>
+}
+
+export interface IStatement {
+    isQuery: () => boolean
+    metadata: () => Promise<IColumnMetadata[]>
+    updated: () => Promise<number>
+    query: () => Promise<IMoreBuffer>
+}
+
+export interface IClientConnection {
+    settings: () => IConnectionInfo
+    execute: (statement: string) => Promise<IStatement>
+    isAutoCommit: () => boolean
+    setAutoCommit: (autoCommit: boolean) => void
+    commit: () => Promise<void>
+    rollback: () => Promise<void>
+    close: () => void
+    exportSchemaToFile: (options: any) => Readable
+}
+
+function connection(
+    db: Connection,
+    settings: IConnectionInfo
+): IClientConnection {
+    let transaction
+    let commitTransaction
+    let rollbackTransaction
     let statement
+    const createTransaction = () => {
+        db
+            .transaction(t => {
+                transaction = t
+                return new Promise((resolve, reject) => {
+                    commitTransaction = resolve
+                    rollbackTransaction = reject
+                })
+            })
+            .catch(() => {
+                console.log('connection rolled back')
+            })
+    }
+    if (!settings.autoCommit) {
+        createTransaction()
+    }
     return {
         settings() {
             return settings
         },
         execute(sqlStatement) {
-            const buffer: any[] = []
+            const buffer: string[][] = []
 
             // close previous statement
             if (statement) {
@@ -19,9 +71,9 @@ function connection(db, settings) {
                 statement = undefined
             }
 
-            return db.execute(sqlStatement).then(st => {
+            return (transaction || db).execute(sqlStatement).then(st => {
                 statement = st
-                return {
+                const statmentWrap: IStatement = {
                     isQuery: st.isQuery,
                     metadata: st.metadata,
                     updated: st.updated,
@@ -38,7 +90,7 @@ function connection(db, settings) {
                                 .pipe(JSONStream.parse([true]))
                                 .on('error', handleError)
 
-                            stream.on('data', data => {
+                            stream.on('data', (data: string[]) => {
                                 buffer.push(data)
                                 if (buffer.length >= 131) {
                                     stream.pause()
@@ -66,10 +118,40 @@ function connection(db, settings) {
                         })
                     },
                 }
+                return statmentWrap
             })
         },
+        isAutoCommit: () => Boolean(transaction),
+        setAutoCommit: (autoCommit: boolean) => {
+            if (commitTransaction) {
+                commitTransaction()
+            }
+            if (autoCommit) {
+                createTransaction()
+            } else {
+                transaction = undefined
+                commitTransaction = undefined
+                rollbackTransaction = undefined
+            }
+        },
+        commit: () => {
+            if (commitTransaction) {
+                commitTransaction()
+            }
+            createTransaction()
+
+            return Promise.resolve()
+        },
+        rollback: () => {
+            if (rollbackTransaction) {
+                rollbackTransaction('rollback')
+            }
+            createTransaction()
+            return Promise.resolve()
+        },
         close() {
-            db.close()
+            const d = db as any
+            d.close()
         },
         exportSchemaToFile(opt) {
             const stream = exportSchema(db, opt)

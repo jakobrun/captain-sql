@@ -47,6 +47,14 @@ export const createActions = (m, pubsub, createPopupmenu) => {
             eventName: 'schema-export',
         },
         {
+            name: 'Commit',
+            eventName: 'commit',
+        },
+        {
+            name: 'Rollback',
+            eventName: 'rollback',
+        },
+        {
             name: 'Disconnect',
             eventName: 'disconnect',
         },

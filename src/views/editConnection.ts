@@ -11,6 +11,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
     const username = m.prop('')
     const theam = m.prop('')
     const theams = ['dark-orange', 'dark-lime', 'dark-green', 'dark-blue']
+    const autoCommit = m.prop(false)
     const properties = m.prop()
     const schemas = m.prop()
     let currentConn
@@ -25,6 +26,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
         username('')
         image('')
         theam('dark-orange')
+        autoCommit(false)
         properties([
             {
                 name: m.prop(''),
@@ -41,6 +43,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
             host: host(),
             user: username(),
             theme: theam(),
+            autoCommit: autoCommit(),
             history: {
                 file: host() + '.history',
                 min: 200,
@@ -83,6 +86,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
         host(conn.host)
         username(conn.user)
         theam(conn.theme)
+        autoCommit(conn.autoCommit || false)
         image(conn.image)
         properties(
             Object.keys(conn.properties).map(k => ({
@@ -245,6 +249,23 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                                     th
                                                 )
                                             )
+                                        ),
+                                    ]),
+                                    m('div', [
+                                        m('input', {
+                                            type: 'checkbox',
+                                            checked: autoCommit(),
+                                            id: 'autoCommit',
+                                            onchange: e => {
+                                                autoCommit(e.target.checked)
+                                            },
+                                        }),
+                                        m(
+                                            'label',
+                                            {
+                                                for: 'autoCommit',
+                                            },
+                                            'Auto Commit'
                                         ),
                                     ]),
                                 ]),

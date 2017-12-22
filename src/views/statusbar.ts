@@ -1,3 +1,5 @@
+import { ICommitControlUpdateEvent } from '../modules/commitControl'
+
 export const createStatusbar = (m, pubsub) => {
     let rowCount = 0
     let time
@@ -7,6 +9,9 @@ export const createStatusbar = (m, pubsub) => {
     }
     const status = m.prop('')
     const exportStatus = m.prop('')
+    const commitStatus = m.prop('')
+    const uncommited = m.prop(0)
+    const uncommitedClass = m.prop('')
     const getRowsText = res => {
         if (res.data && res.data.length) {
             rowCount += res.data.length
@@ -63,6 +68,24 @@ export const createStatusbar = (m, pubsub) => {
         exportData.tables += 1
         setExportStatus()
     })
+    pubsub.on('commit-ctrl-update', (event: ICommitControlUpdateEvent) => {
+        if (event.autoCommit) {
+            commitStatus('Auto commit')
+        } else {
+            commitStatus('')
+        }
+        uncommited(event.uncommited.length)
+        if (event.uncommited.length) {
+            uncommitedClass('statusbar-uncommited notify-uncommited')
+            setTimeout(() => {
+                m.startComputation()
+                uncommitedClass('statusbar-uncommited')
+                m.endComputation()
+            }, 1000)
+        } else {
+            uncommitedClass('statusbar-uncommited hide-login-item')
+        }
+    })
     return {
         view() {
             return m(
@@ -73,6 +96,12 @@ export const createStatusbar = (m, pubsub) => {
                 [
                     m('div.statusbar-message', status()),
                     m('div.statusbar-export-schema', exportStatus()),
+                    m('div.statusbar-commit-status', commitStatus()),
+                    m(
+                        'div',
+                        { title: 'Uncommited', class: uncommitedClass() },
+                        uncommited()
+                    ),
                 ]
             )
         },

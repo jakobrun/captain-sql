@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events'
 import * as fs from 'fs'
+import { createCommitControl } from './modules/commitControl'
 import { connect } from './modules/connect'
 import { createExecuter } from './modules/executer'
 import { getTables } from './modules/get_tables'
@@ -42,6 +43,7 @@ getSettings(process.env.HOME)
 
         const pubsub = new EventEmitter()
         createGlobalShortcuts(pubsub)
+        createCommitControl(pubsub)
         const errorHandler = createErrorHandler(m)
         const loginModule = createLoginModule(m, pubsub, connect, settings)
         const actions = createActions(m, pubsub, createPopupmenu)
@@ -138,9 +140,7 @@ getSettings(process.env.HOME)
         m.route(
             document.getElementById('body'),
             '/sql/' +
-                (remote.getGlobal('sharedObject').dev
-                    ? 'hsql inmemory dev'
-                    : ''),
+                (remote.getGlobal('sharedObject').dev ? 'Gandalf dev' : ''),
             {
                 '/sql': sqlModule,
                 '/sql/:conn': sqlModule,

@@ -1,3 +1,8 @@
+export interface IUpdatedEvent {
+    sql: string
+    updated: number
+}
+
 export const createExecuter = (pubsub, editor, m) => {
     let more
     let connection
@@ -62,10 +67,11 @@ export const createExecuter = (pubsub, editor, m) => {
                         .updated()
                         .then(
                             compute(updated => {
-                                pubsub.emit('data-updated', {
+                                const event: IUpdatedEvent = {
                                     sql,
                                     updated,
-                                })
+                                }
+                                pubsub.emit('data-updated', event)
                             })
                         )
                         .catch(errorHandler)

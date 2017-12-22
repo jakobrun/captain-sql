@@ -18,6 +18,7 @@ export interface IConnectionInfo {
     editorFile: string
     image?: string
     theme?: string
+    autoCommit?: boolean
     properties: {
         [key: string]: string
     }

@@ -10,3 +10,35 @@
 .statusbar-message {
     flex-grow: 1;
 }
+.statusbar-commit-status {
+    padding-left: 16px;
+}
+.statusbar-uncommited {
+    background-color: red;
+    width: 60px;
+    height: 60px;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 60px;
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    font-weight: bold;
+    opacity: 0.8;
+}
+@keyframes notify-uncommited {
+    0% {
+        transform: scale(1, 1);
+    }
+    50% {
+        transform: scale(2, 2);
+    }
+    100% {
+        transform: scale(1, 1);
+    }
+}
+
+.notify-uncommited {
+    animation: notify-uncommited 0.5s ease-in-out;
+}

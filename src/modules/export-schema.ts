@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events'
 import * as JSONStream from 'JSONStream'
 import { Connection } from 'node-jt400'
-import { Transform } from 'stream'
+import { Readable, Transform } from 'stream'
 
 export interface IExportSchemaOptions {
     pubsub: EventEmitter
@@ -39,7 +39,7 @@ interface IFlusableTransform extends Transform {
 export function exportSchema(
     db: Connection,
     { schema, pubsub }: IExportSchemaOptions
-) {
+): Readable {
     let currentTable
     const groupTables = new Transform({
         objectMode: true,
