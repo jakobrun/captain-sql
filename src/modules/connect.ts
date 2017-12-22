@@ -27,7 +27,6 @@ export interface IClientConnection {
     settings: () => IConnectionInfo
     execute: (statement: string) => Promise<IStatement>
     isAutoCommit: () => boolean
-    setAutoCommit: (autoCommit: boolean) => void
     commit: () => Promise<void>
     rollback: () => Promise<void>
     close: () => void
@@ -51,8 +50,8 @@ function connection(
                     rollbackTransaction = reject
                 })
             })
-            .catch(() => {
-                console.log('connection rolled back')
+            .catch(err => {
+                console.log('connection rolled back:', err)
             })
     }
     if (!settings.autoCommit) {
@@ -122,31 +121,19 @@ function connection(
             })
         },
         isAutoCommit: () => Boolean(transaction),
-        setAutoCommit: (autoCommit: boolean) => {
-            if (commitTransaction) {
-                commitTransaction()
-            }
-            if (autoCommit) {
-                createTransaction()
-            } else {
-                transaction = undefined
-                commitTransaction = undefined
-                rollbackTransaction = undefined
-            }
-        },
         commit: () => {
             if (commitTransaction) {
                 commitTransaction()
+                createTransaction()
             }
-            createTransaction()
 
             return Promise.resolve()
         },
         rollback: () => {
             if (rollbackTransaction) {
                 rollbackTransaction('rollback')
+                createTransaction()
             }
-            createTransaction()
             return Promise.resolve()
         },
         close() {
