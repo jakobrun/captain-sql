@@ -53,6 +53,7 @@ function connection(
             .catch(err => {
                 console.log('connection rolled back:', err)
             })
+            .then(createTransaction)
     }
     if (!settings.autoCommit) {
         createTransaction()
@@ -124,7 +125,6 @@ function connection(
         commit: () => {
             if (commitTransaction) {
                 commitTransaction()
-                createTransaction()
             }
 
             return Promise.resolve()
@@ -132,7 +132,6 @@ function connection(
         rollback: () => {
             if (rollbackTransaction) {
                 rollbackTransaction('rollback')
-                createTransaction()
             }
             return Promise.resolve()
         },
