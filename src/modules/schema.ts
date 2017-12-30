@@ -64,7 +64,7 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                                         file: baseDir + schema.file,
                                         pubsub,
                                     })
-                                    .on('end', () => resolve())
+                                    .on('close', resolve)
                                     .on('error', reject)
                             })
                     ),

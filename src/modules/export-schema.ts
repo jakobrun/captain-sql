@@ -33,13 +33,11 @@ const getTableType = (type: string): string => {
             return type
     }
 }
-interface IFlusableTransform extends Transform {
+export interface IFlusableTransform extends Transform {
     _flush: (done: () => void) => void
 }
-export function exportSchema(
-    db: Connection,
-    { schema, pubsub }: IExportSchemaOptions
-): Readable {
+
+export const createGroupTablesTransform = (pubsub: EventEmitter) => {
     let currentTable
     const groupTables = new Transform({
         objectMode: true,
@@ -85,6 +83,14 @@ export function exportSchema(
         }
         done()
     }
+    return groupTables
+}
+
+export function exportSchema(
+    db: Connection,
+    { schema, pubsub }: IExportSchemaOptions
+): Readable {
+    const groupTables = createGroupTablesTransform(pubsub)
     const handleError = err => pubsub.emit('export-error', err)
     const sql = db.isInMemory() ? hsqlQuery : db2Query
     return db

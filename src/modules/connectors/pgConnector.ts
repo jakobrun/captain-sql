@@ -1,5 +1,10 @@
+import { createWriteStream } from 'fs'
+import * as JSONStream from 'JSONStream'
+import { Readable } from 'stream'
+import { createGroupTablesTransform } from '../export-schema'
 import { IConnectionInfo } from '../settings'
 import { IClientConnection } from './types'
+
 const { Client } = require('pg')
 
 export const connect = async (
@@ -17,18 +22,6 @@ export const connect = async (
     return {
         settings: () => settings,
         execute: async statement => {
-            // const cursor = client.query(
-            //     new Cursor(statement, null, { rowMode: 'array' })
-            // )
-            // const rows = await new Promise((resolve, reject) => {
-            //     cursor.read(30, (err, _, result) => {
-            //         if (err) {
-            //             reject(err)
-            //         } else {
-            //             resolve(result)
-            //         }
-            //     })
-            // })
             const result = await client.query({
                 text: statement,
                 rowMode: 'array',
@@ -53,8 +46,40 @@ export const connect = async (
         close: () => {
             client.end()
         },
-        exportSchemaToFile: (_: any) => {
-            throw new Error('not implemented')
+        exportSchemaToFile: ({ pubsub, file }: any) => {
+            const sql = `SELECT c.TABLE_NAME, c.TABLE_SCHEMA, '' AS TABLE_TEXT, t.TABLE_TYPE, c.COLUMN_NAME, '' AS COLUMN_TEXT, c.DATA_TYPE, coalesce(c.NUMERIC_PRECISION, c.CHARACTER_MAXIMUM_LENGTH) LENGTH, c.NUMERIC_SCALE FROM information_schema.tables t
+            join information_schema.columns c on t.table_schema=c.table_schema and t.table_name=c.table_name
+            where t.table_schema='public'
+            `
+            const handleError = err => pubsub.emit('export-error', err)
+            const stream = new Readable({ objectMode: true })
+            stream._read = () => {
+                // noop
+            }
+            client.query(
+                {
+                    text: sql,
+                    rowMode: 'array',
+                },
+                (err, result) => {
+                    if (err) {
+                        handleError(err)
+                    } else {
+                        result.rows.map(row => stream.push(row))
+                        stream.push(null)
+                    }
+                }
+            )
+
+            return stream
+                .pipe(createGroupTablesTransform(pubsub))
+                .on('error', handleError)
+                .pipe(JSONStream.stringify())
+                .on('error', handleError)
+                .on('end', () => console.log('end json stringify'))
+                .pipe(createWriteStream(file))
+                .on('end', () => console.log('end write'))
+                .on('error', handleError)
         },
     }
 }
