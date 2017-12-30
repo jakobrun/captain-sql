@@ -22,6 +22,7 @@ describe('get settings', () => {
         const settings: ISettings = {
             connections: [
                 {
+                    type: 'jt400',
                     name: 'test',
                     host: 'foo',
                     user: 'bar',

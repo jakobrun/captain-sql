@@ -49,7 +49,7 @@ export const createLoginModule = (m, pubsub, connect, settings: ISettings) => {
                     resetConn()
                 })
             })
-            .fail(err => {
+            .catch(err => {
                 console.log('connection failure')
                 m.startComputation()
                 errorMsg(err.message)

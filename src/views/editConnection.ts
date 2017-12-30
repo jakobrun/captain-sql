@@ -7,6 +7,8 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
     const show = m.prop(false)
     const image = m.prop()
     const name = m.prop('')
+    const connectionType = m.prop('')
+    const connectionTypes = ['jt400', 'postgres']
     const host = m.prop('')
     const username = m.prop('')
     const theam = m.prop('')
@@ -39,6 +41,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
     reset()
     const save = () => {
         const connection: IConnectionInfo = {
+            type: connectionType(),
             name: name(),
             host: host(),
             user: username(),
@@ -82,6 +85,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
     }
 
     const displayConnection = (conn: IConnectionInfo) => {
+        connectionType(conn.type)
         name(conn.name)
         host(conn.host)
         username(conn.user)
@@ -194,6 +198,33 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                 ]),
                                 m('div.connection-base-data-inputs', [
                                     m('div.form-element', [
+                                        m(
+                                            'select',
+                                            {
+                                                class: 'h-fill',
+                                                onchange: e => {
+                                                    connectionType(
+                                                        connectionTypes[
+                                                            e.target
+                                                                .selectedIndex
+                                                        ]
+                                                    )
+                                                },
+                                            },
+                                            connectionTypes.map(connType =>
+                                                m(
+                                                    'option',
+                                                    {
+                                                        selected:
+                                                            connType ===
+                                                            connectionType(),
+                                                    },
+                                                    connType
+                                                )
+                                            )
+                                        ),
+                                    ]),
+                                    m('div.form-element', [
                                         m('input', {
                                             class: 'h-fill',
                                             placeholder: 'Name',
@@ -206,7 +237,6 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                         m('input', {
                                             class: 'h-fill',
                                             placeholder: 'Host',
-                                            rows: '5',
                                             value: host(),
                                             onchange: m.withAttr('value', host),
                                         }),
@@ -215,7 +245,6 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                         m('input', {
                                             class: 'h-fill',
                                             placeholder: 'Username',
-                                            rows: '5',
                                             value: username(),
                                             onchange: m.withAttr(
                                                 'value',
@@ -228,8 +257,6 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                             'select',
                                             {
                                                 class: 'h-fill',
-                                                placeholder: 'Username',
-                                                rows: '5',
                                                 onchange: e => {
                                                     theam(
                                                         theams[

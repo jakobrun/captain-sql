@@ -11,7 +11,10 @@ export interface IHistorySettings {
     min: number
 }
 
+export type ConnectionType = 'jt400' | 'postgres' | undefined
+
 export interface IConnectionInfo {
+    type: ConnectionType
     name: string
     host: string
     user: string
@@ -33,6 +36,7 @@ export interface ISettings {
 const defaultSettings: ISettings = {
     connections: [
         {
+            type: 'jt400',
             name: 'Inmemory database for test (no password needed)',
             host: 'hsql:inmemory',
             user: 'test',

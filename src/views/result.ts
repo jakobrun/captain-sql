@@ -127,6 +127,13 @@ export const createResult = (m, pubsub) => {
         errorMsg(err.message)
     })
 
+    const valueToString = (value: any): string => {
+        if (typeof value === 'object') {
+            return JSON.stringify(value)
+        }
+        return value
+    }
+
     return {
         view: () => {
             const cmdOrCtrl = process.platform === 'darwin' ? '⌘' : 'Ctrl'
@@ -249,7 +256,7 @@ export const createResult = (m, pubsub) => {
                                                     onfocus: () =>
                                                         selectedRow(rowIndex),
                                                 },
-                                                value
+                                                valueToString(value)
                                             )
                                         })
                                     )

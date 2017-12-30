@@ -1,8 +1,10 @@
 import { expect } from 'chai'
 import { connect } from '../modules/connectors/pgConnector'
 import { IClientConnection } from '../modules/connectors/types'
+import { IConnectionInfo } from '../modules/settings'
 
-const settings = {
+const settings: IConnectionInfo = {
+    type: 'postgres',
     name: 'test',
     host: 'localhost',
     user: 'jakob',

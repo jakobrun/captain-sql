@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events'
 import * as fs from 'fs'
 import { createCommitControl } from './modules/commitControl'
-import { connect } from './modules/connectors/jt400Connector'
+import { connect } from './modules/connectors/connect'
 import { createExecuter } from './modules/executer'
 import { getTables } from './modules/get_tables'
 import { createGlobalShortcuts } from './modules/globalShortcuts'
