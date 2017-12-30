@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import { IClientConnection } from './connect'
+import { IClientConnection } from './connectors/types'
 import { IUpdatedEvent } from './executer'
 
 export interface ICommitControlUpdateEvent {

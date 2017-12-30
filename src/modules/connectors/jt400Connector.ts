@@ -1,37 +1,10 @@
 import { createWriteStream } from 'fs'
 import * as JSONStream from 'JSONStream'
 import { connect as connectToDb, Connection, useInMemoryDb } from 'node-jt400'
-import { Readable } from 'stream'
-import { exportSchema } from './export-schema'
-import { createFakedata } from './fakedata'
-import { IConnectionInfo } from './settings'
-
-export interface IColumnMetadata {
-    precision: number
-    name: string
-}
-
-export interface IMoreBuffer {
-    data: string[][]
-    more?: () => Promise<IMoreBuffer>
-}
-
-export interface IStatement {
-    isQuery: () => boolean
-    metadata: () => Promise<IColumnMetadata[]>
-    updated: () => Promise<number>
-    query: () => Promise<IMoreBuffer>
-}
-
-export interface IClientConnection {
-    settings: () => IConnectionInfo
-    execute: (statement: string) => Promise<IStatement>
-    isAutoCommit: () => boolean
-    commit: () => Promise<void>
-    rollback: () => Promise<void>
-    close: () => void
-    exportSchemaToFile: (options: any) => Readable
-}
+import { exportSchema } from '../export-schema'
+import { createFakedata } from '../fakedata'
+import { IConnectionInfo } from '../settings'
+import { IClientConnection, IStatement } from './types'
 
 function connection(
     db: Connection,
@@ -149,7 +122,7 @@ function connection(
     }
 }
 
-export function connect(options, settings) {
+export function connect(options, settings): Promise<IClientConnection> {
     console.log('connecting...')
     if (options.host === 'hsql:inmemory') {
         const db = useInMemoryDb()

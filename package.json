@@ -13,6 +13,7 @@
         "mithril": "^0.1.25",
         "moment": "^2.19.2",
         "node-jt400": "1.5.7",
+        "pg": "^7.4.0",
         "q": "~1.0.0",
         "sql-parser": "git+https://github.com/jakobrun/sql-parser"
     },
@@ -46,16 +47,17 @@
         "build-deps":
             "electron-rebuild && node node_modules/java/postInstall.js",
         "postinstall": "npm run build-deps",
-        "build": "tsc && gulp less",
+        "build": "rm -rf dist && tsc && gulp less",
         "package-mac":
             "electron-packager . Gandalf --platform=darwin --arch=x64",
         "package-linux":
             "electron-packager . Gandalf --platform=linux --arch=x64",
         "deb64":
             "electron-installer-debian --src Gandalf-linux-x64/ --dest builds/ --arch amd64",
-        "dev": "tsc -w",
+        "dev": "rm -rf dist && tsc -w",
         "serve": "gulp serve",
-        "test": "mocha dist/modules/tests",
+        "test": "mocha --recursive dist/modules/tests",
+        "contract-test": "mocha dist/contract-tests",
         "ui-test": "electron-mocha --renderer ./dist/views/tests/",
         "start": "electron .",
         "lint": "tslint --project .",
