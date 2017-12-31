@@ -7,8 +7,8 @@ const settings: IConnectionInfo = {
     type: 'postgres',
     name: 'test',
     host: 'localhost',
-    database: 'jakob',
-    user: 'jakob',
+    database: 'gandalf_test',
+    user: '',
     editorFile: '',
     properties: {},
     history: {
@@ -38,16 +38,16 @@ describe('pg connector', () => {
     })
     after(() => c.close())
     it('should run query', async () => {
-        const res = await c.execute(`select * from foo`)
+        const res = await c.execute(`select * from person`)
         expect(res.isQuery()).to.equal(true)
         const metadata = await res.metadata()
-        expect(metadata.length).to.equal(2)
+        expect(metadata.length).to.be.above(0)
         const rows = await res.query()
         expect(rows.data.length).to.be.above(0)
     })
     it('should update', async () => {
         const res = await c.execute(
-            `update foo set data='{"test":"2"}' where id in ('test', 'ble')`
+            `update person set name='John' where personid in (5, 42)`
         )
         expect(res.isQuery()).to.equal(false)
         expect(await res.updated()).to.equal(2)

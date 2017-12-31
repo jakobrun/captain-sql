@@ -39,7 +39,7 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                 pubsub.emit(
                     'schema-loaded',
                     tables.reduce((obj, table) => {
-                        obj[table.table] = table
+                        obj[table.table.toUpperCase()] = table
                         return obj
                     }, {})
                 )
