@@ -10,10 +10,12 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
     const connectionType = m.prop('')
     const connectionTypes = ['jt400', 'postgres']
     const host = m.prop('')
+    const database = m.prop('')
     const username = m.prop('')
     const theam = m.prop('')
     const theams = ['dark-orange', 'dark-lime', 'dark-green', 'dark-blue']
     const autoCommit = m.prop(false)
+    const ssl = m.prop(false)
     const properties = m.prop()
     const schemas = m.prop()
     let currentConn
@@ -23,12 +25,15 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
     }
     const reset = () => {
         show(false)
+        connectionType('jt400')
         name('')
         host('')
         username('')
+        database('')
         image('')
         theam('dark-orange')
         autoCommit(false)
+        ssl(false)
         properties([
             {
                 name: m.prop(''),
@@ -45,6 +50,8 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
             name: name(),
             host: host(),
             user: username(),
+            database: database(),
+            ssl: ssl(),
             theme: theam(),
             autoCommit: autoCommit(),
             history: {
@@ -89,8 +96,10 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
         name(conn.name)
         host(conn.host)
         username(conn.user)
+        database(conn.database || '')
         theam(conn.theme)
         autoCommit(conn.autoCommit || false)
+        ssl(conn.ssl || false)
         image(conn.image)
         properties(
             Object.keys(conn.properties).map(k => ({
@@ -244,6 +253,17 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                     m('div.form-element', [
                                         m('input', {
                                             class: 'h-fill',
+                                            placeholder: 'Database',
+                                            value: database(),
+                                            onchange: m.withAttr(
+                                                'value',
+                                                database
+                                            ),
+                                        }),
+                                    ]),
+                                    m('div.form-element', [
+                                        m('input', {
+                                            class: 'h-fill',
                                             placeholder: 'Username',
                                             value: username(),
                                             onchange: m.withAttr(
@@ -293,6 +313,23 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                                 for: 'autoCommit',
                                             },
                                             'Auto Commit'
+                                        ),
+                                    ]),
+                                    m('div', [
+                                        m('input', {
+                                            type: 'checkbox',
+                                            checked: ssl(),
+                                            id: 'ssl',
+                                            onchange: e => {
+                                                ssl(e.target.checked)
+                                            },
+                                        }),
+                                        m(
+                                            'label',
+                                            {
+                                                for: 'ssl',
+                                            },
+                                            'ssl'
                                         ),
                                     ]),
                                 ]),

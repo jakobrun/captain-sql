@@ -17,6 +17,8 @@ export interface IConnectionInfo {
     type: ConnectionType
     name: string
     host: string
+    database?: string
+    ssl?: boolean
     user: string
     editorFile: string
     image?: string

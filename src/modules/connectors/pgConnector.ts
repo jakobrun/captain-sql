@@ -12,10 +12,11 @@ export const connect = async (
     settings: IConnectionInfo
 ): Promise<IClientConnection> => {
     const client = new Client({
-        host: options.host || 'localhost',
+        host: settings.host || 'localhost',
         port: options.port || 5432,
-        user: options.user,
-        database: settings.schemas[0].name,
+        user: settings.user,
+        ssl: settings.ssl ? true : undefined,
+        database: settings.database,
         password: options.password,
     })
     await client.connect()

@@ -20,6 +20,7 @@
     "devDependencies": {
         "@types/mocha": "^2.2.41",
         "@types/node": "^8.5.1",
+        "@types/pg": "^7.4.1",
         "chai": "^1.10.0",
         "electron-connect": "^0.6.1",
         "electron-css-reload": "^1.0.8",
