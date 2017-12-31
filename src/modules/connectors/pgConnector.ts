@@ -47,10 +47,14 @@ export const connect = async (
         close: () => {
             client.end()
         },
-        exportSchemaToFile: ({ pubsub, file }: any) => {
-            const sql = `SELECT c.TABLE_NAME, c.TABLE_SCHEMA, '' AS TABLE_TEXT, t.TABLE_TYPE, c.COLUMN_NAME, '' AS COLUMN_TEXT, c.DATA_TYPE, coalesce(c.NUMERIC_PRECISION, c.CHARACTER_MAXIMUM_LENGTH) LENGTH, c.NUMERIC_SCALE FROM information_schema.tables t
+        exportSchemaToFile: ({ pubsub, file, schema }: any) => {
+            const sql = `SELECT c.TABLE_NAME, c.TABLE_SCHEMA, '' AS TABLE_TEXT, t.TABLE_TYPE, c.COLUMN_NAME, coalesce(pgd.description, '') AS COLUMN_TEXT, c.DATA_TYPE, coalesce(c.NUMERIC_PRECISION, c.CHARACTER_MAXIMUM_LENGTH) LENGTH, c.NUMERIC_SCALE 
+            FROM information_schema.tables t
             join information_schema.columns c on t.table_schema=c.table_schema and t.table_name=c.table_name
-            where t.table_schema='public'
+            join pg_catalog.pg_statio_all_tables pt on pt.schemaname=t.table_schema and pt.relname=t.table_name
+            left outer join pg_catalog.pg_description pgd on pgd.objoid=pt.relid and pgd.objsubid=c.ordinal_position
+            where t.table_schema=$1
+            order by c.TABLE_NAME, c.ORDINAL_POSITION
             `
             const handleError = err => pubsub.emit('export-error', err)
             const stream = new Readable({ objectMode: true })
@@ -60,6 +64,7 @@ export const connect = async (
             client.query(
                 {
                     text: sql,
+                    values: [schema],
                     rowMode: 'array',
                 },
                 (err, result) => {
