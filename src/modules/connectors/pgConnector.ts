@@ -1,12 +1,13 @@
 import { createWriteStream } from 'fs'
 import * as JSONStream from 'JSONStream'
+import { Client } from 'pg'
+import * as Cursor from 'pg-cursor'
 import { Readable } from 'stream'
 import { createGroupTablesTransform } from '../export-schema'
 import { IConnectionInfo } from '../settings'
-import { IClientConnection } from './types'
+import { IClientConnection, IMoreBuffer } from './types'
 
-const { Client } = require('pg')
-
+const bufferSize = 100
 export const connect = async (
     options,
     settings: IConnectionInfo
@@ -23,10 +24,31 @@ export const connect = async (
     return {
         settings: () => settings,
         execute: async statement => {
-            const result = await client.query({
-                text: statement,
-                rowMode: 'array',
-            })
+            const cursor: any = await client.query(
+                new Cursor(statement, null, {
+                    rowMode: 'array',
+                })
+            )
+            const readNext = () =>
+                new Promise((resolve, reject) => {
+                    cursor.read(bufferSize, (err, _, res) => {
+                        if (err) {
+                            reject(err)
+                        } else {
+                            resolve(res)
+                        }
+                    })
+                })
+            const createQueryFun = res => async (): Promise<IMoreBuffer> => {
+                return {
+                    data: res.rows,
+                    more:
+                        res.rows.length === bufferSize
+                            ? async () => createQueryFun(await readNext())()
+                            : undefined,
+                }
+            }
+            const result: any = await readNext()
             return {
                 isQuery: () => Boolean(result.fields.length),
                 metadata: async () =>
@@ -36,9 +58,7 @@ export const connect = async (
                         name: f.name,
                     })),
                 updated: async () => result.rowCount,
-                query: async () => {
-                    return { data: result.rows }
-                },
+                query: createQueryFun(result),
             }
         },
         isAutoCommit: () => true,

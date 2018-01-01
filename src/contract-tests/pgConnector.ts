@@ -43,7 +43,17 @@ describe('pg connector', () => {
         const metadata = await res.metadata()
         expect(metadata.length).to.be.above(0)
         const rows = await res.query()
-        expect(rows.data.length).to.be.above(0)
+        expect(rows.data.length).to.be.equal(100)
+        expect(rows.more).to.not.equal(undefined)
+        if (rows.more) {
+            const res2 = await rows.more()
+            expect(res2.data.length).to.equal(100)
+            if (res2.more) {
+                const res3 = await rows.more()
+                expect(res3.data.length).to.equal(0)
+                expect(res3.more).to.equal(undefined)
+            }
+        }
     })
     it('should update', async () => {
         const res = await c.execute(

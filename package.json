@@ -14,6 +14,7 @@
         "moment": "^2.19.2",
         "node-jt400": "1.5.7",
         "pg": "^7.4.0",
+        "pg-cursor": "git+https://github.com/jakobrun/node-pg-cursor",
         "q": "~1.0.0",
         "sql-parser": "git+https://github.com/jakobrun/sql-parser"
     },
