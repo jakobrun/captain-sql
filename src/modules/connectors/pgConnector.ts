@@ -20,18 +20,33 @@ export const connect = async (
         database: settings.database,
         password: options.password,
     })
+    let currentReject
+    client.on('error', err => {
+        if (currentReject) {
+            currentReject(err)
+            currentReject = undefined
+        }
+    })
     await client.connect()
+    let cursor: any
     return {
         settings: () => settings,
         execute: async statement => {
-            const cursor: any = await client.query(
+            if (cursor) {
+                cursor.close(() => {
+                    // noop
+                })
+            }
+            cursor = await client.query(
                 new Cursor(statement, null, {
                     rowMode: 'array',
                 })
             )
             const readNext = () =>
                 new Promise((resolve, reject) => {
+                    currentReject = reject
                     cursor.read(bufferSize, (err, _, res) => {
+                        currentReject = undefined
                         if (err) {
                             reject(err)
                         } else {
@@ -62,8 +77,12 @@ export const connect = async (
             }
         },
         isAutoCommit: () => true,
-        commit: () => Promise.resolve(),
-        rollback: () => Promise.resolve(),
+        commit: async () => {
+            await client.query('COMMIT')
+        },
+        rollback: async () => {
+            await client.query('ROLLBACK')
+        },
         close: () => {
             client.end()
         },

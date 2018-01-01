@@ -298,70 +298,94 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                             )
                                         ),
                                     ]),
-                                    m('div', [
-                                        m('input', {
-                                            type: 'checkbox',
-                                            checked: autoCommit(),
-                                            id: 'autoCommit',
-                                            onchange: e => {
-                                                autoCommit(e.target.checked)
-                                            },
-                                        }),
-                                        m(
-                                            'label',
-                                            {
-                                                for: 'autoCommit',
-                                            },
-                                            'Auto Commit'
-                                        ),
-                                    ]),
-                                    m('div', [
-                                        m('input', {
-                                            type: 'checkbox',
-                                            checked: ssl(),
-                                            id: 'ssl',
-                                            onchange: e => {
-                                                ssl(e.target.checked)
-                                            },
-                                        }),
-                                        m(
-                                            'label',
-                                            {
-                                                for: 'ssl',
-                                            },
-                                            'ssl'
-                                        ),
-                                    ]),
+                                    connectionType() !== 'postgres'
+                                        ? m('div', [
+                                              m('input', {
+                                                  type: 'checkbox',
+                                                  checked: autoCommit(),
+                                                  id: 'autoCommit',
+                                                  onchange: e => {
+                                                      autoCommit(
+                                                          e.target.checked
+                                                      )
+                                                  },
+                                              }),
+                                              m(
+                                                  'label',
+                                                  {
+                                                      for: 'autoCommit',
+                                                  },
+                                                  'Auto Commit'
+                                              ),
+                                          ])
+                                        : undefined,
+                                    connectionType() === 'postgres'
+                                        ? m('div', [
+                                              m('input', {
+                                                  type: 'checkbox',
+                                                  checked: ssl(),
+                                                  id: 'ssl',
+                                                  onchange: e => {
+                                                      ssl(e.target.checked)
+                                                  },
+                                              }),
+                                              m(
+                                                  'label',
+                                                  {
+                                                      for: 'ssl',
+                                                  },
+                                                  'ssl'
+                                              ),
+                                          ])
+                                        : undefined,
                                 ]),
                             ]),
                             m('div.container-extra pb0', [
-                                m('h3.extra-title', 'Connection properties'),
+                                connectionType() !== 'postgres'
+                                    ? m(
+                                          'h3.extra-title',
+                                          'Connection properties'
+                                      )
+                                    : undefined,
+                                connectionType() !== 'postgres'
+                                    ? m(
+                                          'div.connection-props',
+                                          properties().map(prop =>
+                                              m('div.connection-prop', [
+                                                  m(
+                                                      'input.connection-prop-name',
+                                                      {
+                                                          placeholder: 'Name',
+                                                          rows: '5',
+                                                          value: prop.name(),
+                                                          onkeyup: e => {
+                                                              prop.name(
+                                                                  e.target.value
+                                                              )
+                                                              checkPropRows()
+                                                          },
+                                                      }
+                                                  ),
+                                                  m(
+                                                      'input.connection-prop-value',
+                                                      {
+                                                          placeholder: 'Value',
+                                                          rows: '5',
+                                                          value: prop.value(),
+                                                          onchange: m.withAttr(
+                                                              'value',
+                                                              prop.value
+                                                          ),
+                                                      }
+                                                  ),
+                                              ])
+                                          )
+                                      )
+                                    : undefined,
                                 m(
-                                    'div.connection-props',
-                                    properties().map(prop =>
-                                        m('div.connection-prop', [
-                                            m('input.connection-prop-name', {
-                                                placeholder: 'Name',
-                                                rows: '5',
-                                                value: prop.name(),
-                                                onkeyup: e => {
-                                                    prop.name(e.target.value)
-                                                    checkPropRows()
-                                                },
-                                            }),
-                                            m('input.connection-prop-value', {
-                                                placeholder: 'Value',
-                                                rows: '5',
-                                                value: prop.value(),
-                                                onchange: m.withAttr(
-                                                    'value',
-                                                    prop.value
-                                                ),
-                                            }),
-                                        ])
-                                    )
+                                    'h3.extra-title mt1',
+                                    'Schemas to export for code completion'
                                 ),
-                                m('h3.extra-title mt1', 'Schemas'),
                                 m(
                                     'div.schemas',
                                     schemas().map(schema =>
