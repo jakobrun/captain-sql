@@ -26,7 +26,6 @@ describe('get settings', () => {
                     name: 'test',
                     host: 'foo',
                     user: 'bar',
-                    editorFile: '',
                     properties: {},
                     history: {
                         file: 'history',

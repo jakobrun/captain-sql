@@ -1,7 +1,6 @@
 import { expect } from 'chai'
 import * as CodeMirror from 'codemirror'
 import { EventEmitter } from 'events'
-import * as fs from 'fs'
 import * as m from 'mithril'
 import { getTables } from '../../modules/get_tables'
 import { createColumnsPrompt } from '../columns_prompt'
@@ -16,7 +15,7 @@ require('codemirror/mode/sql/sql.js')
 require('../../modules/sql-hint')
 
 const pubsub = new EventEmitter()
-const editor = createEditor(m, pubsub, CodeMirror, fs)
+const editor = createEditor(m, pubsub, CodeMirror)
 
 const editorContainer = document.createElement('div')
 document.body.appendChild(editorContainer)

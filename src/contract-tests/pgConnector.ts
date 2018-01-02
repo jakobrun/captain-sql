@@ -9,7 +9,6 @@ const settings: IConnectionInfo = {
     host: 'localhost',
     database: 'gandalf_test',
     user: '',
-    editorFile: '',
     properties: {},
     history: {
         file: 'test',

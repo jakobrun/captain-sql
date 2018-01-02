@@ -20,7 +20,6 @@ export interface IConnectionInfo {
     database?: string
     ssl?: boolean
     user: string
-    editorFile: string
     image?: string
     theme?: string
     autoCommit?: boolean
@@ -42,7 +41,6 @@ const defaultSettings: ISettings = {
             name: 'Inmemory database for test (no password needed)',
             host: 'hsql:inmemory',
             user: 'test',
-            editorFile: 'hsql:inmemory.sql',
             history: {
                 file: 'test.history',
                 max: 150,

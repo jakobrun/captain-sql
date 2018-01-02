@@ -1,4 +1,4 @@
-export const createEditor = (m, pubsub, codeMirror, fs) => {
+export const createEditor = (m, pubsub, codeMirror) => {
     let tables = {}
     let cm
     let errorMark
@@ -103,24 +103,16 @@ export const createEditor = (m, pubsub, codeMirror, fs) => {
     })
 
     pubsub.on('connected', connection => {
-        const fileName =
-            process.env.HOME + '/.gandalf/' + connection.settings().editorFile
-        if (fileName) {
-            fs.readFile(fileName, (err, data) => {
-                if (err) {
-                    return
-                }
-                cm.setValue(data.toString())
-            })
-
-            const saveFile = () =>
-                fs.writeFile(fileName, cm.getValue(), () =>
-                    console.log('done saving file')
-                )
-
-            pubsub.once('disconnect', saveFile)
-            pubsub.once('reconnecting', saveFile)
+        const itemId = connection.settings().name + '.editordata'
+        const data = localStorage.getItem(itemId)
+        if (data) {
+            setTimeout(() => cm.setValue(data), 300)
         }
+
+        const saveFile = () => localStorage.setItem(itemId, cm.getValue())
+
+        pubsub.once('disconnect', saveFile)
+        pubsub.once('reconnecting', saveFile)
     })
     const getCursorStatementRange = () => {
         const c = cm.getCursor()

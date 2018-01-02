@@ -60,7 +60,6 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                 max: 400,
             },
             image: image(),
-            editorFile: host() + '.sql',
             properties: properties()
                 .filter(p => p.name())
                 .reduce((obj, prop) => {

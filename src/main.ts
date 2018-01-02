@@ -48,7 +48,7 @@ getSettings(process.env.HOME)
         const loginModule = createLoginModule(m, pubsub, connect, settings)
         const actions = createActions(m, pubsub, createPopupmenu)
         const statusbar = createStatusbar(m, pubsub)
-        const editor = createEditor(m, pubsub, CodeMirror, fs)
+        const editor = createEditor(m, pubsub, CodeMirror)
         const result = createResult(m, pubsub)
         const editConnection = createEditConnection(m, pubsub, settings)
         const bookmarkModule = createBookmarkModel(
