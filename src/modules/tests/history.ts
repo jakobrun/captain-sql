@@ -11,13 +11,13 @@ describe('history', () => {
     let history
 
     beforeEach(() =>
-        getHistoryModel(options).then(res => {
+        getHistoryModel(options, __dirname).then(res => {
             history = res
         })
     )
 
     afterEach(() => {
-        unlinkSync(process.env.HOME + '/.gandalf/' + options.file)
+        unlinkSync(__dirname + '/' + options.file)
     })
 
     it('should push to history up to max', () => {
@@ -49,7 +49,7 @@ describe('history', () => {
     it('should persist in file', () => {
         return history
             .push('a')
-            .then(() => getHistoryModel(options))
+            .then(() => getHistoryModel(options, __dirname))
             .then(h2 => {
                 expect(h2.list()).to.eql(['a'])
                 h2.push('b')
@@ -58,7 +58,7 @@ describe('history', () => {
                 h2.push('e')
                 return h2.push('f')
             })
-            .then(() => getHistoryModel(options))
+            .then(() => getHistoryModel(options, __dirname))
             .then(h3 => {
                 expect(h3.list()).to.eql(['f', 'e'])
             })

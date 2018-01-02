@@ -68,10 +68,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                 }, {}),
             schemas: schemas()
                 .filter(s => s())
-                .map(schema => ({
-                    name: schema(),
-                    file: schema() + '.json',
-                })),
+                .map(schema => schema()),
         }
         if (currentConn) {
             settings.connections = settings.connections.map(
@@ -101,12 +98,19 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
         ssl(conn.ssl || false)
         image(conn.image)
         properties(
-            Object.keys(conn.properties).map(k => ({
-                name: m.prop(k),
-                value: m.prop(conn.properties[k]),
-            }))
+            Object.keys(conn.properties)
+                .map(k => ({
+                    name: m.prop(k),
+                    value: m.prop(conn.properties[k]),
+                }))
+                .concat([
+                    {
+                        name: m.prop(''),
+                        value: m.prop(''),
+                    },
+                ])
         )
-        schemas(conn.schemas.map(schema => m.prop(schema.name)))
+        schemas(conn.schemas.map(schema => m.prop(schema)).concat([m.prop('')]))
         showEdit()
     }
 

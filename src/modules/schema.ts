@@ -1,5 +1,7 @@
+import { remote } from 'electron'
+
 export const createSchemaHandler = ({ readFile }, pubsub) => {
-    const baseDir = process.env.HOME + '/.gandalf/'
+    const baseDir = remote.app.getPath('userData')
     let connection
     const loadSchema = () => {
         const tables: any[] = []
@@ -11,7 +13,12 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                         () =>
                             new Promise(resolve => {
                                 readFile(
-                                    baseDir + schema.file,
+                                    baseDir +
+                                        '/' +
+                                        connection.settings().name +
+                                        '.' +
+                                        schema +
+                                        '.json',
                                     (err, schemaContent) => {
                                         if (err) {
                                             console.log(err)
@@ -60,8 +67,14 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                             new Promise((resolve, reject) => {
                                 connection
                                     .exportSchemaToFile({
-                                        schema: schema.name,
-                                        file: baseDir + schema.file,
+                                        schema,
+                                        file:
+                                            baseDir +
+                                            '/' +
+                                            settings.name +
+                                            '.' +
+                                            schema +
+                                            '.json',
                                         pubsub,
                                     })
                                     .on('close', resolve)

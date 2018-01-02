@@ -15,12 +15,7 @@ const settings: IConnectionInfo = {
         max: 500,
         min: 400,
     },
-    schemas: [
-        {
-            name: 'public',
-            file: 'public',
-        },
-    ],
+    schemas: ['public'],
 }
 
 describe('pg connector', () => {

@@ -1,10 +1,13 @@
+import { remote } from 'electron'
+
 export const createBookmarkModel = (m, fs, pubsub, editor, createPopupmenu) => {
     let show = false
     const description = m.prop('')
     let bookmarks
     let nameEl
     let content
-    const fileName = process.env.HOME + '/.gandalf/bookmarks.json'
+    const basePath = remote.app.getPath('userData')
+    let fileName = basePath + '/bookmarks.json'
     const configName = el => {
         nameEl = el
     }
@@ -56,13 +59,19 @@ export const createBookmarkModel = (m, fs, pubsub, editor, createPopupmenu) => {
         m
     )
 
-    fs.readFile(fileName, (err, data) => {
-        bookmarks = err ? [] : JSON.parse(data)
-        pubsub.emit('bookmarks', bookmarks)
-    })
-
     pubsub.on('bookmark-add', showAdd)
     pubsub.on('bookmark-delete', listView.toggleShow)
+    pubsub.on('connected', connection => {
+        const settings = connection.settings()
+        fileName =
+            basePath +
+            '/' +
+            (settings.bookmarksFile || settings.name + '.bookmarks.json')
+        fs.readFile(fileName, (err, data) => {
+            bookmarks = err ? [] : JSON.parse(data)
+            pubsub.emit('bookmarks', bookmarks)
+        })
+    })
 
     document.addEventListener('keyup', e => {
         if (e.keyCode === 27 && show) {

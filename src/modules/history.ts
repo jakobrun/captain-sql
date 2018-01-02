@@ -1,10 +1,14 @@
+import { remote } from 'electron'
 import { readFile, writeFile } from 'fs'
 import * as q from 'q'
 
-export function getHistoryModel(options) {
+export function getHistoryModel(
+    options,
+    basePath = remote.app.getPath('userData')
+) {
     let buffer: any[] = []
     let promise = q()
-    const fileName = process.env.HOME + '/.gandalf/' + options.file
+    const fileName = basePath + '/' + options.file
     const history = {
         push(item) {
             promise = promise.then(() => {

@@ -5,17 +5,20 @@ import { nfcall } from 'q'
 import * as rimraf from 'rimraf'
 import { getSettings, ISettings } from '../settings'
 
-const gandalfFolder = join(__dirname, '/.gandalf')
+const userDataFolder = join(__dirname, '/userData')
 
 describe('get settings', () => {
-    const fileName = join(__dirname, '/.gandalf/settings.json')
+    const fileName = join(__dirname, '/userData/settings.json')
 
-    afterEach(done => rimraf(gandalfFolder, () => done()))
+    beforeEach(done => {
+        mkdir(userDataFolder, () => done())
+    })
 
-    it('should create default settings', () => {
-        return getSettings(__dirname).then(settings => {
-            expect(settings.connections.length).to.equal(1)
-        })
+    afterEach(done => rimraf(userDataFolder, () => done()))
+
+    it('should create default settings', async () => {
+        const settings = await getSettings(userDataFolder)
+        expect(settings.connections.length).to.equal(1)
     })
 
     it('should return settings file', async () => {
@@ -36,9 +39,8 @@ describe('get settings', () => {
                 },
             ],
         }
-        await nfcall(mkdir, gandalfFolder)
         await nfcall(writeFile, fileName, JSON.stringify(settings))
-        const res = await getSettings(__dirname)
+        const res = await getSettings(userDataFolder)
         expect(res.connections.length).to.equal(1)
     })
 })

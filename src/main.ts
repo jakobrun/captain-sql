@@ -37,7 +37,7 @@ if (remote.getGlobal('sharedObject').dev) {
     require('electron-css-reload')()
 }
 
-getSettings(process.env.HOME)
+getSettings()
     .then(settings => {
         const splitter = createSplitter(m)
 

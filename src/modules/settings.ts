@@ -1,9 +1,5 @@
-import { mkdir, readFile, writeFile } from 'fs'
-
-export interface ISchema {
-    name: string
-    file: string
-}
+import { remote } from 'electron'
+import { readFile, writeFile } from 'fs'
 
 export interface IHistorySettings {
     file: string
@@ -19,6 +15,7 @@ export interface IConnectionInfo {
     host: string
     database?: string
     ssl?: boolean
+    bookmarksFile?: string
     user: string
     image?: string
     theme?: string
@@ -27,7 +24,7 @@ export interface IConnectionInfo {
         [key: string]: string
     }
     history: IHistorySettings
-    schemas: ISchema[]
+    schemas: string[]
 }
 
 export interface ISettings {
@@ -48,32 +45,27 @@ const defaultSettings: ISettings = {
             },
             properties: {},
             theme: 'dark-blue',
-            schemas: [
-                {
-                    name: 'PUBLIC',
-                    file: 'test_public.json',
-                },
-            ],
+            schemas: ['PUBLIC'],
         },
     ],
 }
 
-export function getSettings(baseDir = process.env.HOME): Promise<ISettings> {
-    const fileName = baseDir + '/.gandalf/settings.json'
+export function getSettings(
+    baseDir = remote.app.getPath('userData')
+): Promise<ISettings> {
+    const fileName = baseDir + '/settings.json'
     return new Promise((resolve, reject) => {
         readFile(fileName, (_, data) => {
             if (data) {
                 resolve(data)
             } else {
-                mkdir(baseDir + '/.gandalf', () => {
-                    const str = JSON.stringify(defaultSettings)
-                    writeFile(fileName, str, writeErr => {
-                        if (writeErr) {
-                            reject(writeErr)
-                        } else {
-                            resolve(str)
-                        }
-                    })
+                const str = JSON.stringify(defaultSettings)
+                writeFile(fileName, str, writeErr => {
+                    if (writeErr) {
+                        reject(writeErr)
+                    } else {
+                        resolve(str)
+                    }
                 })
             }
         })
@@ -82,12 +74,12 @@ export function getSettings(baseDir = process.env.HOME): Promise<ISettings> {
 
 export const saveSettings = (
     settings: ISettings,
-    baseDir = process.env.HOME
+    baseDir = remote.app.getPath('userData')
 ) => {
-    const fileName = baseDir + '/.gandalf/settings.json'
+    const fileName = baseDir + '/settings.json'
     writeFile(fileName, JSON.stringify(settings, null, 4), err => {
         if (err) {
-            console.log('error saveing settings', err.message)
+            console.log('error saving settings', err.message)
         }
     })
 }
