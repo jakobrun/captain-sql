@@ -25,6 +25,7 @@
         "chai": "^1.10.0",
         "electron-connect": "^0.6.1",
         "electron-css-reload": "^1.0.8",
+        "electron-icon-maker": "0.0.4",
         "electron-installer-debian": "^0.7.1",
         "electron-mocha": "^3.4.0",
         "electron-packager": "^8.6.0",
@@ -52,7 +53,7 @@
         "postinstall": "npm run build-deps",
         "build": "rm -rf dist && tsc && gulp less",
         "package-mac":
-            "electron-packager . Gandalf --platform=darwin --arch=x64",
+            "electron-packager . Gandalf --overwrite --platform=darwin --arch=x64 --icon=icons/mac/icon.icns --prune=true",
         "package-linux":
             "electron-packager . Gandalf --platform=linux --arch=x64",
         "deb64":
