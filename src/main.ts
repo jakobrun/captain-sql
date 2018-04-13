@@ -21,6 +21,7 @@ import { createPopupmenu } from './views/popupmenu'
 import { createResult } from './views/result'
 import { createSplitter } from './views/splitter'
 import { createStatusbar } from './views/statusbar'
+import { createTableSearch } from './views/tableSearch'
 
 const { ipcRenderer, remote } = require('electron')
 const m = require('mithril')
@@ -47,6 +48,7 @@ getSettings()
         const errorHandler = createErrorHandler(m)
         const loginModule = createLoginModule(m, pubsub, connect, settings)
         const actions = createActions(m, pubsub, createPopupmenu)
+        const tableSearch = createTableSearch(m, pubsub, createPopupmenu)
         const statusbar = createStatusbar(m, pubsub)
         const editor = createEditor(m, pubsub, CodeMirror)
         const result = createResult(m, pubsub)
@@ -128,6 +130,7 @@ getSettings()
                     result.view(),
                     statusbar.view(),
                     actions.view(),
+                    tableSearch.view(),
                     bookmarkModule.view(),
                     historyModule.view(),
                     columnsPrompt.view(),

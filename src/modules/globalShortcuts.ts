@@ -8,6 +8,8 @@ export const createGlobalShortcuts = (pubsub: EventEmitter) => {
     const showCommands = (e: KeyboardEvent) => {
         if (e.shiftKey && isCmdOrCtrl(e) && e.key === 'P') {
             pubsub.emit('actions-toggle-show')
+        } else if (!e.shiftKey && isCmdOrCtrl(e) && e.key === 'p') {
+            pubsub.emit('table-search-toggle-show')
         } else if (!e.shiftKey && isCmdOrCtrl(e) && e.key === 'h') {
             pubsub.emit('history-list')
         } else if (!e.shiftKey && isCmdOrCtrl(e) && e.key === '1') {

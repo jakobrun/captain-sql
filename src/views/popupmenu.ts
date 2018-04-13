@@ -1,3 +1,4 @@
+import { highlight, single } from 'fuzzysort'
 export const createIdGenerator = () => {
     let i = 0
     return () => {
@@ -7,8 +8,6 @@ export const createIdGenerator = () => {
 }
 export const createId = createIdGenerator()
 export const createPopupmenu = (pubsub, controller, m) => {
-    const fuzzy = require('fuzzy')
-
     const searchValue = m.prop('')
     const selectedIndex = m.prop(0)
     const menuId = createId()
@@ -32,11 +31,40 @@ export const createPopupmenu = (pubsub, controller, m) => {
         searchElement = el
     }
     const getList = () => {
-        const list = fuzzy.filter(searchValue(), controller.getList(), {
-            pre: '<span class="match">',
-            post: '</span>',
-            extract: item => item.name,
-        })
+        const searchStr = searchValue()
+        let list: any[] = []
+        if (!searchStr) {
+            list = controller
+                .getList()
+                .map(item => ({ string: item.name, original: item }))
+        } else {
+            list = controller
+                .getList()
+                .reduce((arr, item) => {
+                    const result = single(searchStr, item.name)
+                    if (result) {
+                        const str = highlight(
+                            result,
+                            '<span class="match">',
+                            '</span>'
+                        )
+                        arr.push({
+                            string: str,
+                            score: result.score,
+                            original: item,
+                        })
+                    }
+                    return arr
+                }, [])
+                .sort((a, b) => {
+                    if (a.score > b.score) {
+                        return -1
+                    } else if (a.score < b.score) {
+                        return 1
+                    }
+                    return 0
+                })
+        }
         if (selectedIndex() >= list.length) {
             selectedIndex(0)
         }
