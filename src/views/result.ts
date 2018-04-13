@@ -9,10 +9,15 @@ const getElIndex = el => {
 }
 const onCellKeydown = (e: KeyboardEvent) => {
     if (e.metaKey && !e.ctrlKey && !e.altKey && e.key === 'c') {
+        // don't override the copy function if there is a selection
+        if (document.getSelection().toString()) {
+            return
+        }
+
+        // otherwise we copy the content off the cell.
         const el = e.currentTarget as HTMLElement
         const textarea = document.createElement('textarea')
         textarea.textContent = el.textContent
-        textarea.style.position = 'fixed' // Prevent scrolling to bottom of page in MS Edge.
         document.body.appendChild(textarea)
         textarea.select()
         document.execCommand('copy')
