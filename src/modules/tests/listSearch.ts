@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { search } from '../listSearch'
 
-describe.only('list search', () => {
+describe('list search', () => {
     const list = [
         {
             name: 'John',
