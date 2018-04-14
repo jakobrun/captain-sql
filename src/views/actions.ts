@@ -1,6 +1,13 @@
+import { IController } from './popupmenu'
+
+interface IAction {
+    name: string
+    eventName: string
+    shortcut?: string[]
+}
 export const createActions = (m, pubsub, createPopupmenu) => {
     const cmdOrCtrl = process.platform === 'darwin' ? '⌘' : 'Ctrl'
-    const list = [
+    const list: IAction[] = [
         {
             name: 'Run query',
             eventName: 'run-query',
@@ -59,16 +66,17 @@ export const createActions = (m, pubsub, createPopupmenu) => {
             eventName: 'disconnect',
         },
     ]
-    const menu = createPopupmenu(
-        pubsub,
-        {
-            getList: () => list,
-            itemSelected: action => {
-                pubsub.emit(action.eventName)
-            },
+    const controller: IController<IAction> = {
+        getList: () => list,
+        itemSelected: action => {
+            pubsub.emit(action.eventName)
         },
-        m
-    )
+        renderItem: ({ item, highlighted }) => [
+            m('div.p-menu-item-text', m.trust(highlighted[0])),
+            ...(item.shortcut || []).map(sc => m('div.p-menu-shortcut', sc)),
+        ],
+    }
+    const menu = createPopupmenu(pubsub, controller, m)
 
     pubsub.on('actions-toggle-show', menu.toggleShow)
     return menu

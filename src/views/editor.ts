@@ -98,6 +98,9 @@ export const createEditor = (m, pubsub, codeMirror) => {
     pubsub.on('history-item-selected', historyItem => {
         cm.replaceRange(historyItem.name, cm.getCursor(), cm.getCursor())
     })
+    pubsub.on('table-item-selected', tableItem => {
+        cm.replaceRange(tableItem.name, cm.getCursor(), cm.getCursor())
+    })
     pubsub.on('schema-loaded', tableIndex => {
         tables = tableIndex
     })

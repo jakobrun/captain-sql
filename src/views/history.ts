@@ -1,4 +1,11 @@
 import * as moment from 'moment'
+import { IController } from './popupmenu'
+
+interface IHistoryItem {
+    name: string
+    updated?: number
+    time: string
+}
 export const createHistoryView = (
     m,
     pubsub,
@@ -6,36 +13,31 @@ export const createHistoryView = (
     createHistory
 ) => {
     let history
-    const popup = createPopupmenu(
-        pubsub,
-        {
-            getList: () => (history ? history.list() : []),
-            renderItem: historyItem => {
-                return [
-                    m('div', m.trust(historyItem.string)),
-                    m(
-                        'div',
-                        {
-                            class: 'p-menu-item-small',
-                        },
-                        `${moment(historyItem.original.time).fromNow()}${
-                            historyItem.original.updated !== undefined
-                                ? `. ${historyItem.original.updated} row${
-                                      historyItem.original.updated > 1
-                                          ? 's'
-                                          : ''
-                                  } affected.`
-                                : ''
-                        }`
-                    ),
-                ]
-            },
-            itemSelected: historyItem => {
-                pubsub.emit('history-item-selected', historyItem)
-            },
+    const controller: IController<IHistoryItem> = {
+        getList: () => (history ? history.list() : []),
+        renderItem: ({ item, highlighted }) => {
+            return m('div.p-menu-item-text', [
+                m('div', m.trust(highlighted[0])),
+                m(
+                    'div',
+                    {
+                        class: 'p-menu-item-small',
+                    },
+                    `${moment(item.time).fromNow()}${
+                        item.updated !== undefined
+                            ? `. ${item.updated} row${
+                                  item.updated > 1 ? 's' : ''
+                              } affected.`
+                            : ''
+                    }`
+                ),
+            ])
         },
-        m
-    )
+        itemSelected: historyItem => {
+            pubsub.emit('history-item-selected', historyItem)
+        },
+    }
+    const popup = createPopupmenu(pubsub, controller, m)
 
     pubsub.on('history-list', popup.toggleShow)
     pubsub.on('succesfull-query', event => {

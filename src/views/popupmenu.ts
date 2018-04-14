@@ -1,4 +1,4 @@
-import { highlight, single } from 'fuzzysort'
+import { IResultItem, search, ValuesToSearch } from '../modules/listSearch'
 export const createIdGenerator = () => {
     let i = 0
     return () => {
@@ -7,11 +7,23 @@ export const createIdGenerator = () => {
     }
 }
 export const createId = createIdGenerator()
-export const createPopupmenu = (pubsub, controller, m) => {
+
+export interface IController<I> {
+    getList: () => I[]
+    itemSelected: (item: I) => void
+    keyDown?: (e: any, item: I) => void
+    valuesToSearch?: ValuesToSearch<I>
+    renderItem?: (item: IResultItem<I>) => any
+}
+const defaultValuesToSearch = item => [item.name]
+export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
     const searchValue = m.prop('')
     const selectedIndex = m.prop(0)
     const menuId = createId()
     const show = m.prop(false)
+    const defaultRender = item => [
+        m('div.p-menu-item-text', m.trust(item.highlighted[0])),
+    ]
     let searchElement
     const toggleShow = () => {
         m.startComputation()
@@ -31,40 +43,11 @@ export const createPopupmenu = (pubsub, controller, m) => {
         searchElement = el
     }
     const getList = () => {
-        const searchStr = searchValue()
-        let list: any[] = []
-        if (!searchStr) {
-            list = controller
-                .getList()
-                .map(item => ({ string: item.name, original: item }))
-        } else {
-            list = controller
-                .getList()
-                .reduce((arr, item) => {
-                    const result = single(searchStr, item.name)
-                    if (result) {
-                        const str = highlight(
-                            result,
-                            '<span class="match">',
-                            '</span>'
-                        )
-                        arr.push({
-                            string: str,
-                            score: result.score,
-                            original: item,
-                        })
-                    }
-                    return arr
-                }, [])
-                .sort((a, b) => {
-                    if (a.score > b.score) {
-                        return -1
-                    } else if (a.score < b.score) {
-                        return 1
-                    }
-                    return 0
-                })
-        }
+        const list = search({
+            searchValue: searchValue(),
+            list: controller.getList(),
+            valuesToSearch: controller.valuesToSearch || defaultValuesToSearch,
+        })
         if (selectedIndex() >= list.length) {
             selectedIndex(0)
         }
@@ -91,13 +74,13 @@ export const createPopupmenu = (pubsub, controller, m) => {
             pubsub.emit('editor-focus', {})
         }
         if (controller.keyDown && l) {
-            controller.keyDown(e, list[selectedIndex()].original)
+            controller.keyDown(e, list[selectedIndex()].item)
         }
     }
     const keyUp = e => {
         const list = getList()
         if (e.keyCode === 13 && list.length) {
-            controller.itemSelected(list[selectedIndex()].original)
+            controller.itemSelected(list[selectedIndex()].item)
             toggleShow()
         }
     }
@@ -130,7 +113,6 @@ export const createPopupmenu = (pubsub, controller, m) => {
                             class: 'p-menu-list',
                         },
                         getList().map((item, index) => {
-                            const shortcut = item.original.shortcut || []
                             return m(
                                 'li',
                                 {
@@ -141,17 +123,7 @@ export const createPopupmenu = (pubsub, controller, m) => {
                                             : ''),
                                     id: menuId + '-i' + index,
                                 },
-                                [
-                                    m(
-                                        'div.p-menu-item-text',
-                                        controller.renderItem
-                                            ? controller.renderItem(item)
-                                            : m.trust(item.string)
-                                    ),
-                                    ...shortcut.map(sc =>
-                                        m('div.p-menu-shortcut', sc)
-                                    ),
-                                ]
+                                (controller.renderItem || defaultRender)(item)
                             )
                         })
                     ),
