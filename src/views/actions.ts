@@ -19,6 +19,11 @@ export const createActions = (m, pubsub, createPopupmenu) => {
             shortcut: ['Ctrl', 'Space'],
         },
         {
+            name: 'Search tables',
+            eventName: 'table-search-toggle-show',
+            shortcut: [cmdOrCtrl, 'P'],
+        },
+        {
             name: 'New window',
             eventName: 'new-window',
         },

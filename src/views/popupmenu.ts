@@ -14,6 +14,7 @@ export interface IController<I> {
     keyDown?: (e: any, item: I) => void
     valuesToSearch?: ValuesToSearch<I>
     renderItem?: (item: IResultItem<I>) => any
+    renderDetailView?: (item: IResultItem<I>) => any
 }
 const defaultValuesToSearch = item => [item.name]
 export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
@@ -43,6 +44,9 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
         searchElement = el
     }
     const getList = () => {
+        if (!show()) {
+            return []
+        }
         const list = search({
             searchValue: searchValue(),
             list: controller.getList(),
@@ -51,7 +55,7 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
         if (selectedIndex() >= list.length) {
             selectedIndex(0)
         }
-        return list
+        return list.slice(0, 30)
     }
     const keyDown = e => {
         const list = getList()
@@ -90,6 +94,7 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
         keyDown,
         keyUp,
         view() {
+            const list = getList()
             return m(
                 'div',
                 {
@@ -100,6 +105,7 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
                         m('img', { src: 'images/search.svg' }),
                         m('input', {
                             class: 'p-menu-search',
+                            placeholder: 'Search',
                             config,
                             value: searchValue(),
                             oninput: m.withAttr('value', searchValue),
@@ -107,14 +113,13 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
                             onkeyup: keyUp,
                         }),
                     ]),
-                    m(
-                        'ul',
-                        {
-                            class: 'p-menu-list',
-                        },
-                        (show() ? getList() : [])
-                            .slice(0, 30)
-                            .map((item, index) => {
+                    m('div.p-menu-result', [
+                        m(
+                            'ul',
+                            {
+                                class: 'p-menu-list',
+                            },
+                            list.map((item, index) => {
                                 return m(
                                     'li',
                                     {
@@ -124,13 +129,29 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
                                                 ? ' p-menu-item-selected'
                                                 : ''),
                                         id: menuId + '-i' + index,
+                                        onmouseover: () => selectedIndex(index),
+                                        onclick: () => {
+                                            controller.itemSelected(
+                                                list[selectedIndex()].item
+                                            )
+                                            toggleShow()
+                                        },
                                     },
                                     (controller.renderItem || defaultRender)(
                                         item
                                     )
                                 )
                             })
-                    ),
+                        ),
+                        controller.renderDetailView && list[selectedIndex()]
+                            ? m(
+                                  'div.p-menu-detail',
+                                  controller.renderDetailView(
+                                      list[selectedIndex()]
+                                  )
+                              )
+                            : undefined,
+                    ]),
                 ]
             )
         },

@@ -17,12 +17,24 @@
     flex-grow: 1;
     background-color: var(--c7);
 }
+.p-menu-result {
+    display: flex;
+    max-height: 400px;
+}
 .p-menu-list {
     list-style: none;
+    flex-grow: 1;
     margin: 0;
     padding: 0;
-    max-height: 400px;
     overflow: scroll;
+    width: 50%;
+}
+.p-menu-detail {
+    flex-grow: 1;
+    overflow: scroll;
+    background-color: var(--c3);
+    padding: 8px 16px;
+    width: 50%;
 }
 .p-menu-item {
     padding: 8px 16px;
@@ -30,6 +42,7 @@
     display: flex;
     align-content: stretch;
     align-items: center;
+    cursor: pointer;
 }
 .p-menu-item-text {
     flex-grow: 1;
