@@ -112,20 +112,24 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
                         {
                             class: 'p-menu-list',
                         },
-                        getList().map((item, index) => {
-                            return m(
-                                'li',
-                                {
-                                    class:
-                                        'p-menu-item' +
-                                        (index === selectedIndex()
-                                            ? ' p-menu-item-selected'
-                                            : ''),
-                                    id: menuId + '-i' + index,
-                                },
-                                (controller.renderItem || defaultRender)(item)
-                            )
-                        })
+                        (show() ? getList() : [])
+                            .slice(0, 30)
+                            .map((item, index) => {
+                                return m(
+                                    'li',
+                                    {
+                                        class:
+                                            'p-menu-item' +
+                                            (index === selectedIndex()
+                                                ? ' p-menu-item-selected'
+                                                : ''),
+                                        id: menuId + '-i' + index,
+                                    },
+                                    (controller.renderItem || defaultRender)(
+                                        item
+                                    )
+                                )
+                            })
                     ),
                 ]
             )
