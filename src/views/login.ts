@@ -151,7 +151,7 @@ export const createLoginModule = (m, pubsub, connect, settings: ISettings) => {
                                         [
                                             m('div.login-icon', {
                                                 style: `background-image: url(${c.image ||
-                                                    'images/g1.png'})`,
+                                                    `images/${theme}-logo.svg`})`,
                                             }),
                                             m('div.login-text', c.name),
                                             m(

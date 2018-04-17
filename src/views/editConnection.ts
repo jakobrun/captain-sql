@@ -205,7 +205,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                             )
                                         },
                                         style: `background-image: url(${image() ||
-                                            'images/g1.png'})`,
+                                            `images/${theam()}-logo.svg`})`,
                                     }),
                                 ]),
                                 m('div.connection-base-data-inputs', [
