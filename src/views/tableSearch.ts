@@ -9,6 +9,8 @@ interface IColumn {
 }
 interface ITable {
     name: string
+    schema: string
+    type: string
     remarks: string
     columns: IColumn[]
 }
@@ -28,16 +30,21 @@ export const createTableSearch = (m, pubsub, createPopupmenu) => {
             pubsub.emit('table-item-selected', table)
         },
         valuesToSearch: item => [item.name, item.remarks],
-        renderItem: ({ highlighted }) => {
+        renderItem: ({ highlighted, item }) => {
             const [table, remarks] = highlighted
-            return m('div.p-menu-item-text', [
-                m('div', m.trust(table)),
-                m('div.p-menu-item-small', m.trust(remarks || '')),
+            return m('div.p-menu-item-text table-list-item', [
+                m(`div.hint-${item.type}-icon`, ''),
+                m('div.hint-content', [
+                    m('div', m.trust(table)),
+                    remarks
+                        ? m('div.p-menu-item-small', m.trust(remarks || ''))
+                        : undefined,
+                ]),
             ])
         },
         renderDetailView: ({ item }) => {
             return [
-                m('h3.table-detail-title', item.name),
+                m('h3.table-detail-title', `${item.schema}.${item.name}`),
                 m(
                     'div.table-detail-columns',
                     item.columns.map(col =>
