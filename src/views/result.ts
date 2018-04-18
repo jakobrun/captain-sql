@@ -70,8 +70,13 @@ export const createResult = (m, pubsub) => {
     const running = m.prop(false)
     const errorMsg = m.prop('')
     const selectedRow = m.prop(-1)
+    const selectedCol = m.prop(-1)
     pubsub.on('results-focus', () => {
-        const el = document.querySelector('.result td') as HTMLElement
+        const selector =
+            selectedRow() === -1
+                ? '.result td'
+                : `.result .col-${selectedRow()}-${selectedCol()}`
+        const el = document.querySelector(selector) as HTMLElement
         if (el) {
             el.focus()
         }
@@ -115,6 +120,7 @@ export const createResult = (m, pubsub) => {
     })
     pubsub.on('data', res => {
         selectedRow(-1)
+        selectedCol(-1)
         running(false)
         data(res.data)
     })
@@ -252,14 +258,21 @@ export const createResult = (m, pubsub) => {
                                             return m(
                                                 'td',
                                                 {
+                                                    class:
+                                                        'col-' +
+                                                        rowIndex +
+                                                        '-' +
+                                                        index,
                                                     style:
                                                         'width: ' +
                                                         columnWidth(index) +
                                                         'px',
                                                     tabindex: 0,
                                                     onkeydown: onCellKeydown,
-                                                    onfocus: () =>
-                                                        selectedRow(rowIndex),
+                                                    onfocus: () => {
+                                                        selectedRow(rowIndex)
+                                                        selectedCol(index)
+                                                    },
                                                 },
                                                 valueToString(value)
                                             )
