@@ -33,20 +33,20 @@ export interface ISettings {
 
 const defaultSettings: ISettings = {
     connections: [
-        {
-            type: 'jt400',
-            name: 'Inmemory database for test (no password needed)',
-            host: 'hsql:inmemory',
-            user: 'test',
-            history: {
-                file: 'test.history',
-                max: 150,
-                min: 100,
-            },
-            properties: {},
-            theme: 'dark-blue',
-            schemas: ['PUBLIC'],
-        },
+        // {
+        //     type: 'jt400',
+        //     name: 'Inmemory database for test (no password needed)',
+        //     host: 'hsql:inmemory',
+        //     user: 'test',
+        //     history: {
+        //         file: 'test.history',
+        //         max: 150,
+        //         min: 100,
+        //     },
+        //     properties: {},
+        //     theme: 'dark-blue',
+        //     schemas: ['PUBLIC'],
+        // },
     ],
 }
 

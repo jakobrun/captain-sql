@@ -18,7 +18,7 @@ describe('get settings', () => {
 
     it('should create default settings', async () => {
         const settings = await getSettings(userDataFolder)
-        expect(settings.connections.length).to.equal(1)
+        expect(settings.connections.length).to.equal(0)
     })
 
     it('should return settings file', async () => {
