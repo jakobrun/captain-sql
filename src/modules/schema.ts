@@ -15,7 +15,7 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                                 readFile(
                                     baseDir +
                                         '/' +
-                                        connection.settings().name +
+                                        connection.settings().host +
                                         '.' +
                                         schema +
                                         '.json',
@@ -71,7 +71,7 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                                         file:
                                             baseDir +
                                             '/' +
-                                            settings.name +
+                                            settings.host +
                                             '.' +
                                             schema +
                                             '.json',

@@ -12,6 +12,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
     const host = m.prop('')
     const database = m.prop('')
     const username = m.prop('')
+    const bookmarks = m.prop('')
     const theam = m.prop('')
     const theams = ['dark-orange', 'dark-lime', 'dark-green', 'dark-blue']
     const autoCommit = m.prop(false)
@@ -51,6 +52,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
             host: host(),
             user: username(),
             database: database(),
+            bookmarksFile: bookmarks(),
             ssl: ssl(),
             theme: theam(),
             autoCommit: autoCommit(),
@@ -93,6 +95,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
         host(conn.host)
         username(conn.user)
         database(conn.database || '')
+        bookmarks(conn.bookmarksFile || '')
         theam(conn.theme)
         autoCommit(conn.autoCommit || false)
         ssl(conn.ssl || false)
@@ -261,6 +264,17 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                             onchange: m.withAttr(
                                                 'value',
                                                 database
+                                            ),
+                                        }),
+                                    ]),
+                                    m('div.form-element', [
+                                        m('input', {
+                                            class: 'h-fill',
+                                            placeholder: 'Bookmarks',
+                                            value: bookmarks(),
+                                            onchange: m.withAttr(
+                                                'value',
+                                                bookmarks
                                             ),
                                         }),
                                     ]),

@@ -13,8 +13,7 @@ describe('history', () => {
     beforeEach(() =>
         getHistoryModel(options, __dirname).then(res => {
             history = res
-        })
-    )
+        }))
 
     afterEach(() => {
         unlinkSync(__dirname + '/' + options.file)
