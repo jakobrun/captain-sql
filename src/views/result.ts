@@ -225,6 +225,10 @@ export const createResult = (m, pubsub) => {
                             m('div.shortcut-value', cmdOrCtrl + ' ⇧ P'),
                         ]),
                         m('div.shortcut-item', [
+                            m('div.shortcut-label', 'Search tables '),
+                            m('div.shortcut-value', cmdOrCtrl + ' P'),
+                        ]),
+                        m('div.shortcut-item', [
                             m('div.shortcut-label', 'Execute '),
                             m('div.shortcut-value', cmdOrCtrl + ' Enter'),
                         ]),
