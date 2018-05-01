@@ -178,4 +178,24 @@ describe('columns prompt', () => {
         expect(list[1].checked).to.equal(true)
         expect(list[2].checked).to.equal(false)
     })
+
+    it('should have empty list if editor is empty', () => {
+        const prompt = createColumnsPrompt(
+            m,
+            editor,
+            getTables,
+            pubsub,
+            createPopupmenu
+        )
+        const tables = {
+            FOO: {
+                columns: [{ name: 'a' }, { name: 'b' }],
+            },
+        }
+        pubsub.emit('schema-loaded', tables)
+        editor.setValue('')
+        pubsub.emit('columns-select')
+        const list = prompt.controller.getList()
+        expect(list.length).to.equal(0)
+    })
 })

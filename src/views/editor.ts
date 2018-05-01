@@ -73,7 +73,7 @@ export const createEditor = (m, pubsub, codeMirror) => {
         let tokens
         let i
         direction = direction || 1
-        while (l < cm.lineCount()) {
+        while (l < cm.lineCount() && l >= 0) {
             tokens = cm.getLineTokens(l)
             for (i = 0; i < tokens.length; i++) {
                 if (f(tokens[i], l, i, tokens)) {
@@ -237,7 +237,9 @@ export const createEditor = (m, pubsub, codeMirror) => {
                 }
             }, startLine)
 
-            columns.push(column.trim())
+            if (column.trim()) {
+                columns.push(column.trim())
+            }
 
             if (start && end) {
                 cm.setSelection(start, end)

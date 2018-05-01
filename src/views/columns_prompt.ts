@@ -96,7 +96,9 @@ export const createColumnsPrompt = (
                         []
                     )
             )
-        listView.toggleShow()
+        if (columnList.length) {
+            listView.toggleShow()
+        }
     })
 
     return listView
