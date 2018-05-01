@@ -26,6 +26,18 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
         m('div.p-menu-item-text', m.trust(item.highlighted[0])),
     ]
     let searchElement
+    let popupElement
+    const hidePopup = e => {
+        if (
+            show() &&
+            popupElement &&
+            popupElement !== e.target &&
+            !popupElement.contains(e.target)
+        ) {
+            toggleShow()
+        }
+    }
+
     const toggleShow = () => {
         m.startComputation()
         show(!show())
@@ -33,13 +45,17 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
         selectedIndex(0)
         m.endComputation()
         if (show()) {
+            document.addEventListener('click', hidePopup)
             setTimeout(() => {
                 if (searchElement) {
                     searchElement.focus()
                 }
             }, 50)
+        } else {
+            document.removeEventListener('click', hidePopup)
         }
     }
+    const popupConfig = el => (popupElement = el)
     const config = el => {
         searchElement = el
     }
@@ -98,6 +114,7 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
             return m(
                 'div',
                 {
+                    config: popupConfig,
                     class: 'p-menu popup' + (show() ? '' : ' hidden'),
                 },
                 [
