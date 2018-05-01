@@ -12,22 +12,26 @@ export const connect = async (
     options,
     settings: IConnectionInfo
 ): Promise<IClientConnection> => {
-    const client = new Client({
-        host: settings.host || 'localhost',
-        port: options.port || 5432,
-        user: settings.user,
-        ssl: settings.ssl ? true : undefined,
-        database: settings.database,
-        password: options.password,
-    })
+    const createClient = async () => {
+        const pgClient = new Client({
+            host: settings.host || 'localhost',
+            port: options.port || 5432,
+            user: settings.user,
+            ssl: settings.ssl ? true : undefined,
+            database: settings.database,
+            password: options.password,
+        })
+        pgClient.on('error', err => {
+            if (currentReject) {
+                currentReject(err)
+                currentReject = undefined
+            }
+        })
+        await pgClient.connect()
+        return pgClient
+    }
     let currentReject
-    client.on('error', err => {
-        if (currentReject) {
-            currentReject(err)
-            currentReject = undefined
-        }
-    })
-    await client.connect()
+    let client: any = await createClient()
     let cursor: any
     return {
         settings: () => settings,
@@ -36,6 +40,9 @@ export const connect = async (
                 cursor.close(() => {
                     // noop
                 })
+            }
+            if (!client) {
+                client = await createClient()
             }
             cursor = await client.query(
                 new Cursor(statement, null, {
@@ -48,6 +55,8 @@ export const connect = async (
                     cursor.read(bufferSize, (err, _, res) => {
                         currentReject = undefined
                         if (err) {
+                            client.end()
+                            client = undefined
                             reject(err)
                         } else {
                             resolve(res)
