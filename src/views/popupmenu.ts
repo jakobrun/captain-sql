@@ -78,12 +78,14 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
         const l = list.length
         const i = selectedIndex()
         if (e.keyCode === 40 && l > 0) {
+            e.preventDefault()
             selectedIndex((i + 1) % l)
             const elem: any = document.getElementById(
                 menuId + '-i' + selectedIndex()
             )
             elem.scrollIntoViewIfNeeded()
         } else if (e.keyCode === 38 && l > 0) {
+            e.preventDefault()
             selectedIndex((i - 1 + l) % l)
             const elem: any = document.getElementById(
                 menuId + '-i' + selectedIndex()
