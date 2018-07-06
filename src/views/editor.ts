@@ -107,15 +107,26 @@ export const createEditor = (m, pubsub, codeMirror) => {
 
     pubsub.on('connected', connection => {
         const itemId = connection.settings().name + '.editordata'
+        const cursorPosItemId = connection.settings().name + '.cursorpos'
         const data = localStorage.getItem(itemId)
         if (data) {
             setTimeout(() => cm.setValue(data), 300)
         }
+        const cursorData = localStorage.getItem(cursorPosItemId)
+        if (cursorData) {
+            setTimeout(() => cm.setCursor(JSON.parse(cursorData)), 300)
+        }
 
-        const saveFile = () => localStorage.setItem(itemId, cm.getValue())
+        const saveState = () => {
+            localStorage.setItem(itemId, cm.getValue())
+            localStorage.setItem(
+                cursorPosItemId,
+                JSON.stringify(cm.getCursor())
+            )
+        }
 
-        pubsub.once('disconnect', saveFile)
-        pubsub.once('reconnecting', saveFile)
+        pubsub.once('disconnect', saveState)
+        pubsub.once('reconnecting', saveState)
     })
     const getCursorStatementRange = () => {
         const c = cm.getCursor()
