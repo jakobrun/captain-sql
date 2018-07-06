@@ -28,7 +28,6 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                                                     schemaContent
                                                 )
                                                 tables.push(...data)
-                                                resolve()
                                             } catch (err) {
                                                 console.log(
                                                     'schema parse error',
@@ -36,6 +35,7 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                                                 )
                                             }
                                         }
+                                        resolve()
                                     }
                                 )
                             })
@@ -56,7 +56,7 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
             })
     }
 
-    pubsub.on('schema-export', () => {
+    const exportSchema = () => {
         const settings = connection.settings()
         pubsub.emit('export-schema-start')
         settings.schemas
@@ -84,13 +84,21 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                 Promise.resolve()
             )
             .then(() => {
+                localStorage.setItem('schemaLastExported', String(Date.now()))
                 loadSchema()
                 pubsub.emit('export-schema-end')
             })
-    })
+    }
+
+    pubsub.on('schema-export', exportSchema)
 
     pubsub.on('connected', c => {
         connection = c
-        loadSchema()
+        const schemaLastExported = localStorage.getItem('schemaLastExported')
+        if (!schemaLastExported) {
+            exportSchema()
+        } else {
+            loadSchema()
+        }
     })
 }
