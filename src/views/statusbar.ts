@@ -2,6 +2,7 @@ import { ICommitControlUpdateEvent } from '../modules/commitControl'
 
 export const createStatusbar = (m, pubsub) => {
     let rowCount = 0
+    let startTime
     let time
     const exportData = {
         tables: 0,
@@ -20,11 +21,11 @@ export const createStatusbar = (m, pubsub) => {
         return ''
     }
     const endTime = res => {
-        if (time) {
-            time = Date.now() - time
+        if (startTime) {
+            time = Date.now() - startTime
             rowCount = 0
             status('Time ' + time + 'ms' + getRowsText(res))
-            time = undefined
+            startTime = undefined
         }
     }
 
@@ -35,7 +36,7 @@ export const createStatusbar = (m, pubsub) => {
     }
 
     pubsub.on('run-query', () => {
-        time = Date.now()
+        startTime = Date.now()
         setStatus('executing...')
     })
     pubsub.on('reconnecting', () => setStatus('reconnecting...'))
