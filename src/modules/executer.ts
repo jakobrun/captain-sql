@@ -43,6 +43,14 @@ export const createExecuter = (pubsub, editor, m) => {
         if (!connection) {
             return
         }
+        if (sql.trim().toUpperCase() === 'COMMIT') {
+            pubsub.emit('commit')
+            return
+        }
+        if (sql.trim().toUpperCase() === 'ROLLBACK') {
+            pubsub.emit('rollback')
+            return
+        }
         connection
             .execute(sql)
             .then(st => {

@@ -133,6 +133,7 @@ export const createResult = (m, pubsub) => {
             `Success! ${res.updated} row${res.updated > 1 ? 's' : ''} affected.`
         )
     })
+    pubsub.on('commit-ctrl-update', reset(false))
     pubsub.on('data-error', err => {
         running(false)
         errorMsg(err.message)

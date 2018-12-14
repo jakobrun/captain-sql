@@ -20,9 +20,12 @@ export const createStatusbar = (m, pubsub) => {
         return ''
     }
     const endTime = res => {
-        time = Date.now() - time
-        rowCount = 0
-        status('Time ' + time + 'ms' + getRowsText(res))
+        if (time) {
+            time = Date.now() - time
+            rowCount = 0
+            status('Time ' + time + 'ms' + getRowsText(res))
+            time = undefined
+        }
     }
 
     function setStatus(text) {
@@ -38,6 +41,7 @@ export const createStatusbar = (m, pubsub) => {
     pubsub.on('reconnecting', () => setStatus('reconnecting...'))
     pubsub.on('data', endTime)
     pubsub.on('data-updated', endTime)
+    pubsub.on('commit-ctrl-update', endTime)
     pubsub.on('data-more', res => {
         status('Time ' + time + 'ms' + getRowsText(res))
     })
