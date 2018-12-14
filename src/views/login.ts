@@ -37,7 +37,10 @@ export const createLoginModule = (m, pubsub, connect, settings: ISettings) => {
         config.password = loginInfo.password()
 
         // Connect
-        connect(config, conn)
+        connect(
+            config,
+            conn
+        )
             .then(connection => {
                 m.startComputation()
                 pubsub.emit('connected', connection)

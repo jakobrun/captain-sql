@@ -1,10 +1,10 @@
 'use strict'
-const gulp = require('gulp'),
-    electron = require('electron-connect').server.create(),
-    less = require('gulp-less')
+const gulp = require('gulp')
+const electron = require('electron-connect').server.create()
+const less = require('gulp-less')
 
 function compileLess() {
-    gulp
+    return gulp
         .src('./less/main.less')
         .pipe(less())
         .pipe(gulp.dest('./css'))

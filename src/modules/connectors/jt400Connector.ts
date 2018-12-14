@@ -15,14 +15,13 @@ function connection(
     let rollbackTransaction
     let statement
     const createTransaction = () => {
-        db
-            .transaction(t => {
-                transaction = t
-                return new Promise((resolve, reject) => {
-                    commitTransaction = resolve
-                    rollbackTransaction = reject
-                })
+        db.transaction(t => {
+            transaction = t
+            return new Promise((resolve, reject) => {
+                commitTransaction = resolve
+                rollbackTransaction = reject
             })
+        })
             .catch(err => {
                 console.log('connection rolled back:', err)
             })

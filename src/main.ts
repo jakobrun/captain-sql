@@ -110,11 +110,12 @@ getSettings()
                 )
                 if (connSettings && connSettings.host === 'hsql:inmemory') {
                     console.log('reconnect to hsql:inmemory!!')
-                    connect({ host: connSettings.host }, connSettings).then(
-                        connection => {
-                            pubsub.emit('connected', connection)
-                        }
-                    )
+                    connect(
+                        { host: connSettings.host },
+                        connSettings
+                    ).then(connection => {
+                        pubsub.emit('connected', connection)
+                    })
                 } else {
                     pubsub.emit('login')
                 }

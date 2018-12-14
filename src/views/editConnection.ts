@@ -73,8 +73,8 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                 .map(schema => schema()),
         }
         if (currentConn) {
-            settings.connections = settings.connections.map(
-                c => (c === currentConn ? connection : c)
+            settings.connections = settings.connections.map(c =>
+                c === currentConn ? connection : c
             )
             pubsub.emit('connection-updated', connection)
         } else {

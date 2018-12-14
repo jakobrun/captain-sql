@@ -26,8 +26,11 @@ export function getHistoryModel(
         },
         list: () => buffer,
     }
-    return q.nfcall(readFile, fileName).then(content => {
-        buffer = JSON.parse('[' + content + ']')
-        return history
-    }, () => history)
+    return q.nfcall(readFile, fileName).then(
+        content => {
+            buffer = JSON.parse('[' + content + ']')
+            return history
+        },
+        () => history
+    )
 }

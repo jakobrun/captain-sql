@@ -55,12 +55,10 @@ export const createExecuter = (pubsub, editor, m) => {
             .execute(sql)
             .then(st => {
                 if (st.isQuery()) {
-                    st
-                        .metadata()
+                    st.metadata()
                         .then(emit('metadata'))
                         .catch(errorHandler)
-                    st
-                        .query()
+                    st.query()
                         .then(res => {
                             pubsub.emit('succesfull-query', {
                                 sql,
@@ -71,8 +69,7 @@ export const createExecuter = (pubsub, editor, m) => {
                         .then(dataHandler)
                         .catch(errorHandler)
                 } else {
-                    st
-                        .updated()
+                    st.updated()
                         .then(
                             compute(updated => {
                                 const event: IUpdatedEvent = {
