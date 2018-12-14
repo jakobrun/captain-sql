@@ -37,6 +37,7 @@ export const createStatusbar = (m, pubsub) => {
     })
     pubsub.on('reconnecting', () => setStatus('reconnecting...'))
     pubsub.on('data', endTime)
+    pubsub.on('data-updated', endTime)
     pubsub.on('data-more', res => {
         status('Time ' + time + 'ms' + getRowsText(res))
     })

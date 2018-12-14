@@ -8,6 +8,7 @@
   </filter>
   <g filter = "url(#i1)">
     <circle cx="512" cy="512" r="480" stroke="#333" fill="peru" stroke-width="32"/>
+    <!-- head -->
     <path d="M 380 400        C 360 140, 684 149, 644 400       Q 644 520, 632 500       L 620 420       Q 570 460, 520 420       Q 512 414, 504 420       Q 454 460, 404 420       L 388 500       Q 380 520, 380 400    " fill="#333"/>
     <!-- Eyes -->
     <ellipse cx="456" cy="406" rx="24" ry="10" fill="#ccf"/>
