@@ -1,4 +1,4 @@
-import * as classnames from 'classnames'
+import classnames from 'classnames'
 import { remote } from 'electron'
 import { IConnectionInfo, ISettings, saveSettings } from '../modules/settings'
 const { dialog } = remote
@@ -187,6 +187,7 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                     m('div.login-icon', {
                                         onclick: () => {
                                             dialog.showOpenDialog(
+                                                remote.getCurrentWindow(),
                                                 {
                                                     filters: [
                                                         {
@@ -197,14 +198,18 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                                             ],
                                                         },
                                                     ],
-                                                },
-                                                res => {
-                                                    if (res && res[0]) {
-                                                        m.startComputation()
-                                                        image(res[0])
-                                                        m.endComputation()
-                                                    }
                                                 }
+                                                // res => {
+                                                //     console.log(
+                                                //         'Debug I believe I should never get here, res: ',
+                                                //         res
+                                                //     )
+                                                //     if (res && res[0]) {
+                                                //         m.startComputation()
+                                                //         image(res[0])
+                                                //         m.endComputation()
+                                                //     }
+                                                // }
                                             )
                                         },
                                         style: `background-image: url(${image() ||

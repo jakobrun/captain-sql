@@ -11,14 +11,10 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "outDir": "dist",
-        "sourceMap": true
+        "sourceMap": true,
+        "types": ["mocha", "node", "pg", "electron"]
     },
-    "exclude": [
-        "node_modules",
-        "dist"
-    ],
-    "include": [
-        "src"
-    ],
+    "exclude": ["node_modules", "dist"],
+    "include": ["src"],
     "compileOnSave": true
 }

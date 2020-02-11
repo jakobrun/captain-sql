@@ -16,6 +16,9 @@ function createWindow() {
         width: 800,
         height: 600,
         icon: path.join(__dirname, 'icons/png/64x64.png'),
+        webPreferences: {
+            nodeIntegration: true,
+        },
     })
 
     // and load the index.html of the app.
