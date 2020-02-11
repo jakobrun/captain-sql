@@ -6,7 +6,7 @@ export const createGlobalShortcuts = (pubsub: EventEmitter) => {
     const isCmdOrCtrl =
         process.platform === 'darwin' ? isCmdAndNotCtrl : isCtrlAndNotCmd
     const showCommands = (e: KeyboardEvent) => {
-        if (e.shiftKey && isCmdOrCtrl(e) && e.key === 'P') {
+        if (e.shiftKey && isCmdOrCtrl(e) && (e.key === 'P' || e.key === 'p')) {
             pubsub.emit('actions-toggle-show')
         } else if (!e.shiftKey && isCmdOrCtrl(e) && e.key === 'p') {
             pubsub.emit('table-search-toggle-show')
