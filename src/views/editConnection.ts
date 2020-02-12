@@ -186,31 +186,33 @@ export const createEditConnection = (m, pubsub, settings: ISettings) => {
                                 m('div.connection-image', [
                                     m('div.login-icon', {
                                         onclick: () => {
-                                            dialog.showOpenDialog(
-                                                remote.getCurrentWindow(),
-                                                {
-                                                    filters: [
-                                                        {
-                                                            name: 'images',
-                                                            extensions: [
-                                                                'png',
-                                                                'jpg',
-                                                            ],
-                                                        },
-                                                    ],
-                                                }
-                                                // res => {
-                                                //     console.log(
-                                                //         'Debug I believe I should never get here, res: ',
-                                                //         res
-                                                //     )
-                                                //     if (res && res[0]) {
-                                                //         m.startComputation()
-                                                //         image(res[0])
-                                                //         m.endComputation()
-                                                //     }
-                                                // }
-                                            )
+                                            dialog
+                                                .showOpenDialog(
+                                                    remote.getCurrentWindow(),
+                                                    {
+                                                        filters: [
+                                                            {
+                                                                name: 'images',
+                                                                extensions: [
+                                                                    'png',
+                                                                    'jpg',
+                                                                ],
+                                                            },
+                                                        ],
+                                                    }
+                                                )
+                                                .then(res => {
+                                                    if (
+                                                        res &&
+                                                        !res.canceled &&
+                                                        res.filePaths &&
+                                                        res.filePaths[0]
+                                                    ) {
+                                                        m.startComputation()
+                                                        image(res.filePaths[0])
+                                                        m.endComputation()
+                                                    }
+                                                })
                                         },
                                         style: `background-image: url(${image() ||
                                             `images/${theam()}-logo.svg`})`,
