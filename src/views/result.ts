@@ -10,7 +10,7 @@ const getElIndex = el => {
 const onCellKeydown = (e: KeyboardEvent) => {
     if (e.metaKey && !e.ctrlKey && !e.altKey && e.key === 'c') {
         // don't override the copy function if there is a selection
-        if (document.getSelection().toString()) {
+        if (document.getSelection()?.toString()) {
             return
         }
 
