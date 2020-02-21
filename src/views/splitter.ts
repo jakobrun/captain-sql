@@ -27,9 +27,11 @@ export const createSplitter = m => {
 
 export const createColSplitter = (m, col) => {
     let currentPos = 0
-
-    col.colWidth = Math.min(300, 12 + col.precision * 9)
-
+    const columnNameWidth = col.name && col.name.length * 12
+    col.colWidth = Math.min(
+        300,
+        Math.max(columnNameWidth, 12 + col.precision * 9)
+    )
     const onMove = e => {
         const diff = e.pageX - currentPos
         currentPos = e.pageX
