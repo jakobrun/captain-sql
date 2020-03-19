@@ -2,7 +2,7 @@
 
 sql client built with node-webkit
 
-##Installation Instructions:
+## Installation Instructions:
 
 * install node-webkit and make executable (http://nwjs.io/)
 * npm install
