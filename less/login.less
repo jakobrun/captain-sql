@@ -1,0 +1,204 @@
+:root {
+    --login-pos: 0px;
+}
+.login-password-container,
+.login-spinner-container,
+.login-container {
+    display: flex;
+    justify-content: center;
+}
+.login-container {
+    transition: transform 0.5s ease-in-out;
+    transform: translateX(var(--login-pos));
+}
+.login-password-container,
+.login-spinner-container {
+    transition: opacity 0.5s ease-in-out;
+    opacity: 1;
+}
+.add-connection,
+.login-item {
+    width: 200px;
+    background-color: rgba(41, 39, 34, 0);
+    border-radius: 4px;
+    text-align: center;
+    padding: 34px 8px;
+    margin: 12px;
+    opacity: 1;
+    transform: scale(1, 1);
+    animation: show 0.5s ease-in-out;
+}
+.add-connection-icon,
+.login-item {
+    cursor: pointer;
+}
+@keyframes hide {
+    0% {
+        opacity: 1;
+        transform: scale(1, 1);
+    }
+    99% {
+        opacity: 0;
+        transform: scale(1, 1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0, 0);
+    }
+}
+@keyframes show {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.hide-login-item {
+    animation: hide 0.5s ease-in-out;
+    opacity: 0;
+    transform: scale(0, 0);
+}
+.login-item:focus {
+    background-color: rgba(53, 50, 44, 0.8);
+}
+.login-btn {
+    background-color: var(--c4);
+    border-radius: 50%;
+    margin: 0 10px;
+    padding: 0;
+    color: var(--c7);
+    border: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    stroke: var(--c7);
+}
+.login-btn:hover {
+    background-color: var(--c5);
+    stroke: var(--c14);
+}
+.login-btn:focus {
+    background-color: var(--c5);
+    stroke: var(--c15);
+}
+.add-connection-icon,
+.login-icon {
+    display: inline-block;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.add-connection-icon {
+    border: 2px solid var(--c6);
+    line-height: 100px;
+    font-size: 80px;
+    color: var(--c6);
+    outline: none;
+}
+.add-connection-icon:hover,
+.add-connection-icon:focus {
+    border-color: var(--c9);
+    color: var(--c9);
+}
+.add-connection-icon:focus {
+    border-color: rgb(18, 126, 228);
+    box-shadow: 0 0 20px rgb(4, 74, 139);
+}
+.login-icon {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 20px var(--primary-color);
+}
+.login-text {
+    margin-top: 10px;
+}
+.login-host {
+    font-size: 0.8em;
+    color: var(--c10);
+    padding: 8px;
+}
+.shake-pw {
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+@keyframes shake {
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(4px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-8px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(8px, 0, 0);
+    }
+}
+
+.login-edit-buttons {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+.edit-connection {
+    background-color: transparent;
+    color: var(--c7);
+    border: none;
+    outline: none;
+}
+.edit-connection-icon {
+    border-radius: 50%;
+    border: 2px solid var(--c7);
+    width: 50px;
+    height: 50px;
+    margin-bottom: 16px;
+    stroke: var(--c7);
+    fill: var(--c7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.edit-icon-group {
+    fill: var(--c7);
+}
+.edit-connection:hover .edit-icon-group {
+    fill: var(--c14);
+}
+
+.edit-connection:hover .edit-connection-icon {
+    border-color: var(--c14);
+    stroke: var(--c14);
+    fill: var(--c14);
+}
+.edit-connection:focus .edit-icon-group {
+    fill: var(--c15);
+}
+
+.edit-connection:focus .edit-connection-icon {
+    border-color: var(--c15);
+    stroke: var(--c15);
+    fill: var(--c15);
+}
+.delete-icon {
+    width: 28px;
+    height: 28px;
+}

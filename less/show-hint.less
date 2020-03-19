@@ -1,33 +1,90 @@
 .CodeMirror-hints {
-  position: absolute;
-  z-index: 10;
-  overflow: hidden;
-  list-style: none;
+    position: absolute;
+    z-index: 10;
+    overflow: hidden;
+    list-style: none;
 
-  margin: 0;
-  padding: 2px;
+    margin: 0;
+    padding: 0;
 
-  background-color: lighten(@bg-color, 5%);
+    background-color: var(--c6);
+    border: 1px solid var(--c7);
 
-  font-size: 90%;
-  font-family: monospace;
+    font-size: 90%;
+    font-family: monospace;
 
-  max-height: 20em;
-  overflow-y: auto;
-
+    max-height: 20em;
+    overflow-y: auto;
 }
 
 .CodeMirror-hint {
-  margin: 0;
-  max-width: 19em;
-  overflow: hidden;
-  white-space: pre;
-  cursor: pointer;
-  padding: 0 4px;
-  border-bottom: 1px solid @bg-color;
-  border-top: 1px solid lighten(@bg-color, 15%);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    max-width: 19em;
+    overflow: hidden;
+    white-space: pre;
+    cursor: pointer;
+    padding: 8px;
 }
 
 .CodeMirror-hint-active {
-  color: lighten(@color, 40%);
+    background-color: var(--selected-color);
+}
+
+.hint-content {
+    padding-left: 8px;
+}
+.hint-T-icon,
+.hint-V-icon,
+.hint-P-icon,
+.hint-snippet-icon,
+.hint-column-icon,
+.hint-keyword-icon {
+    flex-shrink: 0;
+    border-radius: 50%;
+    height: 15px;
+    width: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 8px;
+    font-weight: bold;
+    color: #666;
+}
+.hint-T-icon {
+    background-color: rgb(247, 139, 96);
+}
+.hint-T-icon::after {
+    content: 'T';
+}
+.hint-V-icon {
+    background-color: rgb(233, 248, 147);
+}
+.hint-V-icon::after {
+    content: 'V';
+}
+.hint-P-icon {
+    background-color: rgb(149, 221, 155);
+}
+.hint-P-icon::after {
+    content: 'P';
+}
+.hint-keyword-icon {
+    background-color: rgb(132, 232, 245);
+}
+.hint-keyword-icon::after {
+    content: 'K';
+}
+.hint-snippet-icon {
+    background-color: rgb(252, 249, 87);
+}
+.hint-snippet-icon::after {
+    content: 'S';
+}
+.hint-column-icon {
+    background-color: rgb(245, 160, 241);
+}
+.hint-column-icon::after {
+    content: 'C';
 }

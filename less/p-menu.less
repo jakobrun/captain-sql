@@ -1,29 +1,77 @@
+.p-menu-search-wrap {
+    background-color: var(--c7);
+    display: flex;
+    font-size: 1.6rem;
+    align-content: center;
+}
+.p-menu-search-wrap img {
+    text-align: center;
+    padding-left: 12px;
+}
 .p-menu-search {
-    width: 400px;
+    margin: 0px;
+    outline: none;
+    border-radius: 0;
+    padding: 8px;
+    font-size: 1.6rem;
+    flex-grow: 1;
+    background-color: var(--c7);
+}
+.p-menu-result {
+    display: flex;
+    max-height: 400px;
 }
 .p-menu-list {
     list-style: none;
+    flex-grow: 1;
     margin: 0;
-    padding: 0 4px;
-    max-height: 400px;
+    padding: 0;
     overflow: scroll;
+    width: 50%;
+}
+.p-menu-detail {
+    flex-grow: 1;
+    overflow: scroll;
+    background-color: var(--c3);
+    padding: 8px 16px;
+    width: 50%;
 }
 .p-menu-item {
-    border-bottom: 1px solid @bg-color;
-    border-top: 1px solid lighten(@bg-color, 15%);
-    padding: 4px 0;
-    color: darken(@color, 20%);
+    padding: 8px 16px;
+    color: var(--c13);
+    display: flex;
+    align-content: stretch;
+    align-items: center;
+    cursor: pointer;
+}
+.p-menu-item-text {
+    flex-grow: 1;
+}
+.p-menu-shortcut {
+    border-radius: 4px;
+    background-color: var(--c6);
+    padding: 4px;
+    margin-left: 4px;
 }
 .p-menu-item-selected {
-    color: @color;
+    background-color: var(--selected-color);
+    .p-menu-shortcut {
+        opacity: 0.6;
+    }
 }
 .hint-remarks {
-  	overflow: hidden;
+    overflow: hidden;
     text-overflow: ellipsis;
+    white-space: pre-wrap;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
 }
+.p-menu-item-small {
+    font-size: 0.8rem;
+    color: var(--c9);
+    margin-top: 4px;
+}
 .match {
-  color: lighten(@color, 30%);
+    color: var(--primary-color);
 }

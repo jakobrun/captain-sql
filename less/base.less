@@ -1,31 +1,72 @@
-body{
-	background-color: rgba(45, 39, 34, 0.98);
-	color: @color;
-	font-family: sans-serif;
-	font-size: @font-size;
+body {
+    background-color: var(--c4);
+    color: var(--c13);
+    font-family: sans-serif;
+    font-size: var(--font-size);
 }
 * {
-	box-sizing: border-box;
+    box-sizing: border-box;
 }
-.container{
-	padding: @gutter;
+.container {
+    padding: var(--p1);
 }
-.h-fill{
-	width: 100%;
+.h-fill {
+    width: 100%;
 }
-body .hidden{
-	display: none;
+body .hidden {
+    display: none;
 }
-input, select, textarea{
-	background-color: @bg-color;
-	border: 1px solid @border-color;
-	color: lighten(@color, 10%);
-	font-size: @font-size;
-	padding: 5px;
+input,
+select,
+textarea {
+    background-color: var(--c6);
+    border: none;
+    color: var(--c14);
+    font-size: var(--font-size);
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
 }
 
-button{
-	border: 1px solid darken(@bg-color, 10%);
-	background-color: darken(@bg-color, 1%);
-	color: lighten(@color, 10%);
+button {
+    border: none;
+    background-color: var(--c4);
+    color: var(--c10);
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 16px;
+    outline: none;
+    border: 2px solid var(--c6);
+    cursor: pointer;
+}
+button:hover {
+    color: var(--c14);
+    border-color: var(--c14);
+}
+button:focus {
+    color: var(--c15);
+    border-color: var(--c15);
+}
+
+.container {
+    padding: var(--p1);
+}
+.container-extra {
+    background-color: var(--c3);
+    margin: 16px -16px;
+    padding: var(--p1);
+}
+.container-extras input {
+    background-color: var(--c4);
+}
+
+.extra-title {
+    padding-bottom: var(--p1);
+    margin: 0;
+}
+.mt1 {
+    margin-top: var(--p1);
+}
+.pb0 {
+    padding-bottom: 0;
 }

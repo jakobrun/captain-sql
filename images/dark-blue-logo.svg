@@ -1,0 +1,26 @@
+<svg width="1024" height="1024" version="1.1" 
+  xmlns="http://www.w3.org/2000/svg">
+  <filter id="i1">
+    <feDiffuseLighting result = "diffOut" in = "SourceGraphic" diffuseConstant = "1.2" lighting-color = "white">
+      <fePointLight x = "512" y = "480" z = "64" pointsAtX = "0" pointsAtY = "0" pointsAtZ = "0"/>
+    </feDiffuseLighting>
+    <feComposite in = "SourceGraphic" in2 = "diffOut" operator = "arithmetic" k1 = "1.3" k2 = "0.03" k3 = "0" k4 = "0"/>
+  </filter>
+  <g filter = "url(#i1)">
+    <circle cx="512" cy="512" r="480" stroke="#333" fill="#66F" stroke-width="32"/>
+    <path d="M 380 400        C 360 140, 684 149, 644 400       Q 644 520, 632 500       L 620 420       Q 570 460, 520 420       Q 512 414, 504 420       Q 454 460, 404 420       L 388 500       Q 380 520, 380 400    " fill="#333"/>
+    <!-- Eyes -->
+    <ellipse cx="456" cy="406" rx="24" ry="10" fill="#ccf"/>
+    <ellipse cx="568" cy="406" rx="24" ry="10" fill="#ccf"/>
+    <!-- Mouth -->
+    <path d="M 480 500 L 544 500" fill="none" stroke="#222" stroke-width="10"/>
+    <!-- jaw -->
+    <path d="M 384 492      C 424 592, 600 592, 640 492  " fill="none" stroke="#222" stroke-width="2"/>
+    <!-- Body -->
+    <path d="M 184 740      Q 200 560, 384 560      Q 512 660, 640 560     Q 824 560, 840 740      Z  " stroke-width="1" fill="#333" />
+    <!-- icon -->
+    <circle cx="512" cy="370" r="52" fill="transparent" stroke="" stroke-width="8" />
+    <!-- star -->
+    <path fill="#ccf" d="m512,260 12,34h36l-28,22 10,34-30-20-30,20 10-34-28-22h36z"/>
+  </g>
+</svg> 

@@ -1,41 +1,70 @@
 {
-  "name": "gandalf",
-  "version": "0.0.0",
-  "description": "sql client",
-  "main": "index.html",
-  "window": {
-    "toolbar": false,
-    "frame": true,
-    "transparent": true
-  },
-  "dependencies": {
-    "JSONStream": "^0.10.0",
-    "fuzzy": "^0.1.0",
-    "node-jt400": "0.2.3",
-    "q": "~1.0.0",
-    "sql-parser": "git+https://github.com/jakobrun/sql-parser"
-  },
-  "devDependencies": {
-    "chai": "^1.10.0",
-    "faker": "^2.1.1",
-    "gulp": "^3.8.10",
-    "gulp-less": "^1.3.6",
-    "mocha": "^2.0.1",
-    "precommit-hook": "^2.0.1",
-    "rimraf": "^2.2.8"
-  },
-  "repository": {
-    "type": "git",
-    "url": "gh:jakobrun/gandalf.git"
-  },
-  "pre-commit": ["lint", "build"],
-  "scripts": {
-    "build": "babel js --out-dir dist",
-    "dev": "babel js --out-dir dist -w",
-    "test": "mocha --compilers js:babel/register",
-    "lint": "eslint ./"
-  },
-  "author": "Jakob Már Rúnarsson",
-  "license": "MIT",
-  "readmeFilename": "README.md"
+    "name": "gandalf",
+    "version": "0.0.1",
+    "description": "sql client",
+    "main": "app.js",
+    "dependencies": {
+        "JSONStream": "^1.3.2",
+        "classnames": "^2.2.5",
+        "codemirror": "^5.51.0",
+        "electron": "^8.0.0",
+        "faker": "^4.1.0",
+        "fuzzysort": "^1.1.1",
+        "mithril": "^0.1.25",
+        "moment": "^2.24.0",
+        "node-jt400": "^4.0.1",
+        "pg": "^7.18.1",
+        "pg-cursor": "git+https://github.com/jakobrun/node-pg-cursor",
+        "q": "^1.5.1",
+        "sql-parser": "git+https://github.com/jakobrun/sql-parser"
+    },
+    "devDependencies": {
+        "@types/electron": "^1.6.10",
+        "@types/mocha": "^7.0.1",
+        "@types/node": "^12.0.0",
+        "@types/pg": "^7.14.1",
+        "chai": "^4.2.0",
+        "electron-connect": "^0.6.1",
+        "electron-css-reload": "^1.0.8",
+        "electron-icon-maker": "0.0.4",
+        "electron-installer-debian": "^3.0.0",
+        "electron-mocha": "^8.2.0",
+        "electron-packager": "^14.2.1",
+        "electron-rebuild": "^1.10.0",
+        "gulp": "^4.0.2",
+        "gulp-less": "^4.0.1",
+        "husky": "^4.2.1",
+        "mocha": "^7.0.1",
+        "prettier": "^1.19.1",
+        "rimraf": "^3.0.2",
+        "source-map-support": "^0.5.16",
+        "tslint": "^6.0.0",
+        "tslint-config-prettier": "^1.18.0",
+        "typescript": "^3.7.5"
+    },
+    "repository": {
+        "type": "git",
+        "url": "gh:jakobrun/gandalf.git"
+    },
+    "scripts": {
+        "precommit": "npm run lint && npm run check-format && npm run build && npm t && npm run ui-test",
+        "build-deps": "electron-rebuild && node node_modules/java/postInstall.js",
+        "postinstall": "npm run build-deps",
+        "build": "rm -rf dist && tsc && gulp less",
+        "package-mac": "electron-packager . Gandalf --overwrite --platform=darwin --arch=x64 --icon=icons/mac/icon.icns --prune=true",
+        "package-linux": "electron-packager . Gandalf --platform=linux --arch=x64",
+        "deb64": "electron-installer-debian --src Gandalf-linux-x64/ --dest builds/ --arch amd64",
+        "dev": "rm -rf dist && tsc -w",
+        "serve": "gulp serve",
+        "test": "mocha --require source-map-support/register --recursive dist/modules/tests",
+        "contract-test": "mocha --require source-map-support/register dist/contract-tests",
+        "ui-test": "electron-mocha --renderer ./dist/views/tests/",
+        "start": "electron .",
+        "lint": "tslint --project .",
+        "format": "prettier --write \"src/**/*.ts*\"",
+        "check-format": "prettier -l \"src/**/*.ts\""
+    },
+    "author": "Jakob Már Rúnarsson",
+    "license": "MIT",
+    "readmeFilename": "README.md"
 }
