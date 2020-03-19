@@ -1,6 +1,6 @@
 # Gandalf
 
-sql client built electron
+sql client built with electron
 
 ## Installation Instructions:
 
