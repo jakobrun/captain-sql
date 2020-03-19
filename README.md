@@ -1,7 +1,7 @@
 gandalf
 =======
 
-sql client build with node-webkit
+sql client built with node-webkit
 
 Instructions:
 
