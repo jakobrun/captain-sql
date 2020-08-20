@@ -1,4 +1,5 @@
 import { remote } from 'electron'
+import { join } from 'path'
 
 export const createSchemaHandler = ({ readFile }, pubsub) => {
     const baseDir = remote.app.getPath('userData')
@@ -13,12 +14,12 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                         () =>
                             new Promise(resolve => {
                                 readFile(
-                                    baseDir +
-                                        '/' +
-                                        connection.settings().host +
-                                        '.' +
-                                        schema +
-                                        '.json',
+                                    join(
+                                        baseDir,
+                                        `${
+                                            connection.settings().host
+                                        }.${schema}.json`
+                                    ),
                                     (err, schemaContent) => {
                                         if (err) {
                                             console.log(err)
@@ -68,13 +69,10 @@ export const createSchemaHandler = ({ readFile }, pubsub) => {
                                 connection
                                     .exportSchemaToFile({
                                         schema,
-                                        file:
-                                            baseDir +
-                                            '/' +
-                                            settings.host +
-                                            '.' +
-                                            schema +
-                                            '.json',
+                                        file: join(
+                                            baseDir,
+                                            `${settings.host}.${schema}.json`
+                                        ),
                                         pubsub,
                                     })
                                     .on('close', resolve)

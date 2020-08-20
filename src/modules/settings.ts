@@ -1,5 +1,6 @@
 import { remote } from 'electron'
 import { readFile, writeFile } from 'fs'
+import { join } from 'path'
 
 export interface IHistorySettings {
     file: string
@@ -53,7 +54,7 @@ const defaultSettings: ISettings = {
 export function getSettings(
     baseDir = remote.app.getPath('userData')
 ): Promise<ISettings> {
-    const fileName = baseDir + '/settings.json'
+    const fileName = join(baseDir, 'settings.json')
     return new Promise((resolve, reject) => {
         readFile(fileName, (_, data) => {
             if (data) {
@@ -76,7 +77,7 @@ export const saveSettings = (
     settings: ISettings,
     baseDir = remote.app.getPath('userData')
 ) => {
-    const fileName = baseDir + '/settings.json'
+    const fileName = join(baseDir, '/settings.json')
     writeFile(fileName, JSON.stringify(settings, null, 4), err => {
         if (err) {
             console.log('error saving settings', err.message)

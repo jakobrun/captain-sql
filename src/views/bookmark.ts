@@ -1,5 +1,6 @@
 import { remote } from 'electron'
 import { IController } from './popupmenu'
+import { join } from 'path'
 
 interface IBookmarkItem {
     name: string
@@ -13,7 +14,7 @@ export const createBookmarkModel = (m, fs, pubsub, editor, createPopupmenu) => {
     let nameEl
     let content
     const basePath = remote.app.getPath('userData')
-    let fileName = basePath + '/bookmarks.json'
+    let fileName = join(basePath, '/bookmarks.json')
     const configName = el => {
         nameEl = el
     }

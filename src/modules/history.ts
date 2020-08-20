@@ -1,5 +1,6 @@
 import { remote } from 'electron'
 import { readFile, writeFile } from 'fs'
+import { join } from 'path'
 import * as q from 'q'
 
 export function getHistoryModel(
@@ -8,7 +9,7 @@ export function getHistoryModel(
 ) {
     let buffer: any[] = []
     let promise = q()
-    const fileName = basePath + '/' + options.file
+    const fileName = join(basePath, options.file)
     const history = {
         push(item) {
             promise = promise.then(() => {
