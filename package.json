@@ -48,7 +48,7 @@
     "scripts": {
         "precommit": "npm run lint && npm run check-format && npm run build && npm t && npm run ui-test",
         "build-deps": "electron-rebuild && node node_modules/java/postInstall.js",
-        "postinstall": "npm run build-deps && npm build",
+        "postinstall": "npm run build-deps && npm run build",
         "build": "rm -rf dist && tsc && gulp less",
         "package-mac": "electron-packager . Gandalf --overwrite --platform=darwin --arch=x64 --icon=icons/mac/icon.icns --prune=true",
         "package-linux": "electron-packager . Gandalf --platform=linux --arch=x64",
