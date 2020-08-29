@@ -1,91 +1,55 @@
-import { remote } from 'electron'
+import { ipcRenderer } from 'electron'
 import { join } from 'path'
 
-export const createSchemaHandler = ({ readFile }, pubsub) => {
-    const baseDir = remote.app.getPath('userData')
+export const createSchemaHandler = pubsub => {
     let connection
-    const loadSchema = () => {
-        const tables: any[] = []
-        connection
-            .settings()
-            .schemas.reduce(
-                (promise, schema) =>
-                    promise.then(
-                        () =>
-                            new Promise(resolve => {
-                                readFile(
-                                    join(
-                                        baseDir,
-                                        `${
-                                            connection.settings().host
-                                        }.${schema}.json`
-                                    ),
-                                    (err, schemaContent) => {
-                                        if (err) {
-                                            console.log(err)
-                                        } else {
-                                            try {
-                                                const data: any[] = JSON.parse(
-                                                    schemaContent
-                                                )
-                                                tables.push(...data)
-                                            } catch (err) {
-                                                console.log(
-                                                    'schema parse error',
-                                                    err
-                                                )
-                                            }
-                                        }
-                                        resolve()
-                                    }
-                                )
-                            })
-                    ),
-                Promise.resolve()
-            )
-            .then(() => {
-                pubsub.emit(
-                    'schema-loaded',
-                    tables.reduce((obj, table) => {
-                        obj[table.table.toUpperCase()] = table
-                        return obj
-                    }, {})
+    const loadSchema = async () => {
+        const index: any = {}
+        const { schemas } = connection.settings()
+        for (const schema of schemas) {
+            const schemaContent = await ipcRenderer
+                .invoke(
+                    'read-app-data-file',
+                    `${connection.settings().host}.${schema}.json`
                 )
-            })
-            .catch(err => {
-                console.log('load schema error', err)
-            })
+                .catch(err => {
+                    console.log('error reading schema', err)
+                    return '[]'
+                })
+
+            try {
+                const data: any[] = JSON.parse(schemaContent)
+                data.forEach(table => {
+                    index[table.table.toUpperCase()] = table
+                })
+            } catch (err) {
+                console.log('schema parse error', err)
+            }
+        }
+        pubsub.emit('schema-loaded', index)
     }
 
-    const exportSchema = () => {
+    const exportSchema = async () => {
+        const baseDir = await ipcRenderer.invoke('get-app-data-path')
+        console.log('baseDir', baseDir)
         const settings = connection.settings()
         pubsub.emit('export-schema-start')
-        settings.schemas
-            .reduce(
-                (promise, schema) =>
-                    promise.then(
-                        () =>
-                            new Promise((resolve, reject) => {
-                                connection
-                                    .exportSchemaToFile({
-                                        schema,
-                                        file: join(
-                                            baseDir,
-                                            `${settings.host}.${schema}.json`
-                                        ),
-                                        pubsub,
-                                    })
-                                    .on('close', resolve)
-                                    .on('error', reject)
-                            })
-                    ),
-                Promise.resolve()
-            )
-            .then(() => {
-                localStorage.setItem('schemaLastExported', String(Date.now()))
-                loadSchema()
-                pubsub.emit('export-schema-end')
+        const { schemas } = connection.settings()
+        for (const schema of schemas) {
+            await new Promise((resolve, reject) => {
+                connection
+                    .exportSchemaToFile({
+                        schema,
+                        file: join(baseDir, `${settings.host}.${schema}.json`),
+                        pubsub,
+                    })
+                    .on('close', resolve)
+                    .on('error', reject)
             })
+        }
+        localStorage.setItem('schemaLastExported', String(Date.now()))
+        loadSchema()
+        pubsub.emit('export-schema-end')
     }
 
     pubsub.on('schema-export', exportSchema)

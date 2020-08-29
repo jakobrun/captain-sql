@@ -84,7 +84,7 @@ getSettings()
         )
 
         createExecuter(pubsub, editor, m)
-        createSchemaHandler(fs, pubsub)
+        createSchemaHandler(pubsub)
         createSqlHint(pubsub, editor, getTables, CodeMirror)
 
         pubsub.on('new-window', () => {
@@ -110,12 +110,11 @@ getSettings()
                 )
                 if (connSettings && connSettings.host === 'hsql:inmemory') {
                     console.log('reconnect to hsql:inmemory!!')
-                    connect(
-                        { host: connSettings.host },
-                        connSettings
-                    ).then(connection => {
-                        pubsub.emit('connected', connection)
-                    })
+                    connect({ host: connSettings.host }, connSettings).then(
+                        connection => {
+                            pubsub.emit('connected', connection)
+                        }
+                    )
                 } else {
                     pubsub.emit('login')
                 }

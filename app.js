@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron')
+const fs = require('fs')
 
 const path = require('path')
 const url = require('url')
@@ -10,6 +11,14 @@ let windows = []
 global.sharedObject = {
     dev: process.argv.find(arg => arg === 'dev=true'),
 }
+ipcMain.handle('get-app-data-path', () => app.getPath('appData'))
+ipcMain.handle('read-app-data-file', async (_, fileName) => {
+    const buf = await fs.promises.readFile(
+        path.join(app.getPath('appData'), fileName)
+    )
+    return buf.toString('utf8')
+})
+
 function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
