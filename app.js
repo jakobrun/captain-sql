@@ -18,6 +18,12 @@ ipcMain.handle('read-app-data-file', async (_, fileName) => {
     )
     return buf.toString('utf8')
 })
+ipcMain.handle('write-app-data-file', async (_, fileName, content) => {
+    await fs.promises.writeFile(
+        path.join(app.getPath('appData'), fileName),
+        content
+    )
+})
 
 function createWindow() {
     // Create the browser window.

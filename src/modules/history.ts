@@ -1,15 +1,12 @@
-import { remote } from 'electron'
-import { readFile, writeFile } from 'fs'
-import { join } from 'path'
-import * as q from 'q'
+import { ReadAppDataFile, WriteAppDataFile } from './appData'
+import { IHistorySettings } from './settings'
 
-export function getHistoryModel(
-    options,
-    basePath = remote.app.getPath('userData')
-) {
+export const createGetHistoryModel = (
+    readAppDataFile: ReadAppDataFile,
+    writeAppDataFile: WriteAppDataFile
+) => async (options: IHistorySettings) => {
     let buffer: any[] = []
-    let promise = q()
-    const fileName = join(basePath, options.file)
+    let promise = Promise.resolve()
     const history = {
         push(item) {
             promise = promise.then(() => {
@@ -17,9 +14,8 @@ export function getHistoryModel(
                 if (buffer.length > options.max) {
                     buffer = buffer.slice(0, options.min)
                 }
-                return q.nfcall(
-                    writeFile,
-                    fileName,
+                return writeAppDataFile(
+                    options.file,
                     buffer.map(obj => JSON.stringify(obj)).join(',')
                 )
             })
@@ -27,11 +23,11 @@ export function getHistoryModel(
         },
         list: () => buffer,
     }
-    return q.nfcall(readFile, fileName).then(
-        content => {
-            buffer = JSON.parse('[' + content + ']')
-            return history
-        },
-        () => history
-    )
+    try {
+        const content = await readAppDataFile(options.file)
+        buffer = JSON.parse('[' + content + ']')
+    } catch (err) {
+        // ignore error
+    }
+    return history
 }

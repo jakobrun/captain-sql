@@ -1,21 +1,22 @@
 import { ipcRenderer } from 'electron'
 import { join } from 'path'
+import { ReadAppDataFile } from './appData'
 
-export const createSchemaHandler = pubsub => {
+export const createSchemaHandler = (
+    readAppDataFile: ReadAppDataFile,
+    pubsub
+) => {
     let connection
     const loadSchema = async () => {
         const index: any = {}
         const { schemas } = connection.settings()
         for (const schema of schemas) {
-            const schemaContent = await ipcRenderer
-                .invoke(
-                    'read-app-data-file',
-                    `${connection.settings().host}.${schema}.json`
-                )
-                .catch(err => {
-                    console.log('error reading schema', err)
-                    return '[]'
-                })
+            const schemaContent = await readAppDataFile(
+                `${connection.settings().host}.${schema}.json`
+            ).catch(err => {
+                console.log('error reading schema', err)
+                return '[]'
+            })
 
             try {
                 const data: any[] = JSON.parse(schemaContent)

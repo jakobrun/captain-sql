@@ -1,5 +1,4 @@
 import * as faker from 'faker'
-import * as q from 'q'
 
 const numberOfPersons = 200
 const numberOfProducts = 100
@@ -19,7 +18,7 @@ function createArray(n, f) {
 export const createFakedata = db => {
     function innsertArray(insertSt, array) {
         return () => {
-            return q.all(
+            return Promise.all(
                 array.map(row => {
                     return db.update(insertSt, row)
                 })
@@ -29,7 +28,7 @@ export const createFakedata = db => {
 
     function commentColumns(tableName, comments) {
         return () => {
-            return q.all(
+            return Promise.all(
                 comments.map(c => {
                     return db.update(
                         `comment on column ${tableName}.${c[0]} IS '${c[1]}'`

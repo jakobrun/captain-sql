@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import { unlinkSync } from 'fs'
-import { getHistoryModel } from '../history'
+import { createGetHistoryModel } from '../history'
+import { WriteAppDataFile, ReadAppDataFile } from '../appData'
 
 describe('history', () => {
     const options = {
@@ -8,59 +8,70 @@ describe('history', () => {
         max: 5,
         file: 'unittest.history',
     }
-    let history
+    const createAppData = () => {
+        const index = {}
+        const writeAppDataFile: WriteAppDataFile = async (
+            fileName,
+            content
+        ) => {
+            index[fileName] = content
+        }
+        const readAppDataFile: ReadAppDataFile = async fileName => {
+            if (!index[fileName]) {
+                throw new Error(`file not found: ${fileName}`)
+            }
+            return index[fileName]
+        }
+        return { writeAppDataFile, readAppDataFile }
+    }
+    const createMockedHistoryModel = () => {
+        const { writeAppDataFile, readAppDataFile } = createAppData()
+        return createGetHistoryModel(readAppDataFile, writeAppDataFile)(options)
+    }
 
-    beforeEach(() =>
-        getHistoryModel(options, __dirname).then(res => {
-            history = res
-        })
-    )
-
-    afterEach(() => {
-        unlinkSync(__dirname + '/' + options.file)
+    it('should push to history up to max', async () => {
+        const history = await createMockedHistoryModel()
+        await history.push('a')
+        expect(history.list()).to.eql(['a'])
+        await history.push('b')
+        await history.push('c')
+        await history.push('d')
+        await history.push('e')
+        expect(history.list()).to.eql(['e', 'd', 'c', 'b', 'a'])
     })
 
-    it('should push to history up to max', () => {
-        return history
-            .push('a')
-            .then(() => {
-                expect(history.list()).to.eql(['a'])
-                history.push('b')
-                history.push('c')
-                history.push('d')
-                return history.push('e')
-            })
-            .then(() => {
-                expect(history.list()).to.eql(['e', 'd', 'c', 'b', 'a'])
-            })
+    it('should slice down to min when max is reached', async () => {
+        const history = await createMockedHistoryModel()
+        await history.push('a')
+        await history.push('b')
+        await history.push('c')
+        await history.push('d')
+        await history.push('e')
+        await history.push('f')
+        expect(history.list()).to.eql(['f', 'e'])
     })
 
-    it('should slice down to min when max is reached', () => {
-        history.push('a')
-        history.push('b')
-        history.push('c')
-        history.push('d')
-        history.push('e')
-        return history.push('f').then(() => {
-            expect(history.list()).to.eql(['f', 'e'])
-        })
-    })
-
-    it('should persist in file', () => {
-        return history
-            .push('a')
-            .then(() => getHistoryModel(options, __dirname))
-            .then(h2 => {
-                expect(h2.list()).to.eql(['a'])
-                h2.push('b')
-                h2.push('c')
-                h2.push('d')
-                h2.push('e')
-                return h2.push('f')
-            })
-            .then(() => getHistoryModel(options, __dirname))
-            .then(h3 => {
-                expect(h3.list()).to.eql(['f', 'e'])
-            })
+    it('should persist in file', async () => {
+        const { writeAppDataFile, readAppDataFile } = createAppData()
+        const history1 = await createGetHistoryModel(
+            readAppDataFile,
+            writeAppDataFile
+        )(options)
+        await history1.push('a')
+        const history2 = await createGetHistoryModel(
+            readAppDataFile,
+            writeAppDataFile
+        )(options)
+        expect(history2.list()).to.eql(['a'])
+        await history2.push('b')
+        await history2.push('c')
+        await history2.push('d')
+        await history2.push('e')
+        await history2.push('f')
+        const history3 = await createGetHistoryModel(
+            readAppDataFile,
+            writeAppDataFile
+        )(options)
+        expect(history3.list()).to.eql(['f', 'e'])
     })
 })

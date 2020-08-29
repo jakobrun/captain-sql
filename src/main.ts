@@ -5,7 +5,7 @@ import { connect } from './modules/connectors/connect'
 import { createExecuter } from './modules/executer'
 import { getTables } from './modules/get_tables'
 import { createGlobalShortcuts } from './modules/globalShortcuts'
-import { getHistoryModel } from './modules/history'
+import { createGetHistoryModel } from './modules/history'
 import { createSchemaHandler } from './modules/schema'
 import { getSettings } from './modules/settings'
 import { createSqlHint } from './modules/sql-hint'
@@ -22,6 +22,7 @@ import { createResult } from './views/result'
 import { createSplitter } from './views/splitter'
 import { createStatusbar } from './views/statusbar'
 import { createTableSearch } from './views/tableSearch'
+import { readAppDataFile, writeAppDataFile } from './modules/appData'
 
 const { ipcRenderer, remote } = require('electron')
 const m = require('mithril')
@@ -64,7 +65,7 @@ getSettings()
             m,
             pubsub,
             createPopupmenu,
-            getHistoryModel
+            createGetHistoryModel(readAppDataFile, writeAppDataFile)
         )
         const columnsPrompt = createColumnsPrompt(
             m,
@@ -84,7 +85,7 @@ getSettings()
         )
 
         createExecuter(pubsub, editor, m)
-        createSchemaHandler(pubsub)
+        createSchemaHandler(readAppDataFile, pubsub)
         createSqlHint(pubsub, editor, getTables, CodeMirror)
 
         pubsub.on('new-window', () => {

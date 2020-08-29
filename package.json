@@ -37,6 +37,7 @@
         "prettier": "^1.19.1",
         "rimraf": "^3.0.2",
         "source-map-support": "^0.5.16",
+        "ts-node": "^9.0.0",
         "tslint": "^6.1.3",
         "tslint-config-prettier": "^1.18.0",
         "typescript": "^3.7.5"
@@ -57,6 +58,7 @@
         "dev": "gulp serve",
         "dev-with-tools": "OPEN_DEV_TOOLS=1 gulp serve",
         "test": "mocha --require source-map-support/register --recursive dist/modules/tests",
+        "tdd": "mocha --require source-map-support/register --require ts-node/register --recursive --watch --watch-extensions ts \"src/modules/tests/**/*.ts\"",
         "contract-test": "mocha --require source-map-support/register dist/contract-tests",
         "ui-test": "electron-mocha --renderer ./dist/views/tests/",
         "start": "electron .",
