@@ -55,7 +55,7 @@
         "package-linux": "electron-packager . Gandalf --platform=linux --arch=x64",
         "package-windows": "electron-packager . Gandalf --platform=win32 --arch=x64",
         "dev-less": "less-watch-compiler less css main.less",
-        "dev-tsc": "rm -rf dist && tsc -w",
+        "dev-tsc": "tsc -w",
         "dev-electron": "electron . dev=true",
         "dev": "concurrently \"npm:dev-*\"",
         "test": "mocha --require source-map-support/register --recursive dist/modules/tests",

@@ -1,4 +1,11 @@
-const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron')
+const {
+    app,
+    BrowserWindow,
+    ipcMain,
+    Menu,
+    dialog,
+    session,
+} = require('electron')
 const fs = require('fs')
 
 const path = require('path')
@@ -11,6 +18,7 @@ let windows = []
 const isDev = process.argv.find(arg => arg === 'dev=true')
 if (isDev) {
     require('electron-reload')([
+        path.join(__dirname, 'app.js'),
         path.join(__dirname, 'dist'),
         path.join(__dirname, 'css'),
     ])
@@ -139,6 +147,19 @@ function createMenu() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+    if (!isDev) {
+        session.defaultSession.webRequest.onHeadersReceived(
+            (details, callback) => {
+                callback({
+                    responseHeaders: {
+                        ...details.responseHeaders,
+                        'Content-Security-Policy': [`default-src 'self'`],
+                    },
+                })
+            }
+        )
+    }
+
     createWindow()
     createMenu()
 })
