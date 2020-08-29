@@ -8,8 +8,15 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let windows = []
 
+const isDev = process.argv.find(arg => arg === 'dev=true')
 global.sharedObject = {
-    dev: process.argv.find(arg => arg === 'dev=true'),
+    dev: isDev,
+}
+if (isDev) {
+    require('electron-reload')([
+        path.join(__dirname, 'dist'),
+        path.join(__dirname, 'css'),
+    ])
 }
 // console.log('userData', app.getPath('userData'))
 ipcMain.handle('get-user-data-path', () => app.getPath('userData'))
@@ -33,8 +40,8 @@ ipcMain.handle('open-dialog', async (_, options) => {
 function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1000,
+        height: 800,
         icon: path.join(__dirname, 'icons/png/64x64.png'),
         webPreferences: {
             nodeIntegration: true,
@@ -51,7 +58,7 @@ function createWindow() {
     )
 
     // Open the DevTools.
-    if (process.argv.find(arg => arg === 'dev-tools=true')) {
+    if (isDev) {
         win.webContents.openDevTools()
     }
 
