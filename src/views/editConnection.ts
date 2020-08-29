@@ -1,8 +1,6 @@
 import classnames from 'classnames'
-import { remote } from 'electron'
+import { ipcRenderer } from 'electron'
 import { IConnectionInfo, ISettings, SaveSettings } from '../modules/settings'
-const { dialog } = remote
-
 export const createEditConnection = (
     m,
     pubsub,
@@ -191,21 +189,18 @@ export const createEditConnection = (
                                 m('div.connection-image', [
                                     m('div.login-icon', {
                                         onclick: () => {
-                                            dialog
-                                                .showOpenDialog(
-                                                    remote.getCurrentWindow(),
-                                                    {
-                                                        filters: [
-                                                            {
-                                                                name: 'images',
-                                                                extensions: [
-                                                                    'png',
-                                                                    'jpg',
-                                                                ],
-                                                            },
-                                                        ],
-                                                    }
-                                                )
+                                            ipcRenderer
+                                                .invoke('open-dialog', {
+                                                    filters: [
+                                                        {
+                                                            name: 'images',
+                                                            extensions: [
+                                                                'png',
+                                                                'jpg',
+                                                            ],
+                                                        },
+                                                    ],
+                                                })
                                                 .then(res => {
                                                     if (
                                                         res &&

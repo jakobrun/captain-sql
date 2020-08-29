@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu } = require('electron')
+const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron')
 const fs = require('fs')
 
 const path = require('path')
@@ -24,6 +24,10 @@ ipcMain.handle('write-user-data-file', async (_, fileName, content) => {
         path.join(app.getPath('userData'), fileName),
         content
     )
+})
+ipcMain.handle('open-dialog', async (_, options) => {
+    const res = await dialog.showOpenDialog(options)
+    return res
 })
 
 function createWindow() {
