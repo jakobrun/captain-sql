@@ -13,8 +13,14 @@ gulp.task('less', compileLess)
 
 gulp.task('serve', function() {
     compileLess()
+
     // Start browser process
-    electron.start(['.', 'dev=true'])
+    const args = ['.', 'dev=true']
+    if (process.env.OPEN_DEV_TOOLS) {
+        console.log('open dev tools')
+        args.push('dev-tools=true')
+    }
+    electron.start(args)
 
     // Restart browser process
     gulp.watch('app.js', electron.restart)

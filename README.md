@@ -22,4 +22,7 @@ npm run build-watch
 
 # Run In another tap or window
 npm run dev
+
+# or with dev tools open
+npm run dev-with-tools
 ```
