@@ -1,28 +1,35 @@
-import { remote } from 'electron'
 import { IController } from './popupmenu'
-import { join } from 'path'
+import { WriteUserDataFile, ReadUserDataFile } from 'src/modules/userData'
 
 interface IBookmarkItem {
     name: string
     value: string
     description: string
 }
-export const createBookmarkModel = (m, fs, pubsub, editor, createPopupmenu) => {
+export const createBookmarkModel = (
+    m,
+    pubsub,
+    editor,
+    createPopupmenu,
+    readUserDataFile: ReadUserDataFile,
+    writeUserDataFile: WriteUserDataFile
+) => {
     let show = false
     const description = m.prop('')
     let bookmarks
     let nameEl
     let content
-    const basePath = remote.app.getPath('userData')
-    let fileName = join(basePath, '/bookmarks.json')
+    let fileName = 'bookmarks.json'
     const configName = el => {
         nameEl = el
     }
-    const writeToFile = () => {
-        fs.writeFile(fileName, JSON.stringify(bookmarks), err => {
-            // TODO error handling
-            console.log(err)
-        })
+    const writeToFile = async () => {
+        await writeUserDataFile(fileName, JSON.stringify(bookmarks)).catch(
+            err => {
+                // TODO error handling
+                console.log('Error saving bookmarks', err)
+            }
+        )
     }
     const save = () => {
         const bookmark: IBookmarkItem = {
@@ -69,14 +76,14 @@ export const createBookmarkModel = (m, fs, pubsub, editor, createPopupmenu) => {
     pubsub.on('bookmark-delete', listView.toggleShow)
     pubsub.on('connected', connection => {
         const settings = connection.settings()
-        fileName =
-            basePath +
-            '/' +
-            (settings.bookmarksFile || settings.name + '.bookmarks.json')
-        fs.readFile(fileName, (err, data) => {
-            bookmarks = err ? [] : JSON.parse(data)
-            pubsub.emit('bookmarks', bookmarks)
-        })
+        fileName = settings.bookmarksFile || settings.name + '.bookmarks.json'
+        readUserDataFile(fileName)
+            .then(JSON.parse)
+            .catch(() => [])
+            .then(data => {
+                bookmarks = data
+                pubsub.emit('bookmarks', bookmarks)
+            })
     })
 
     document.addEventListener('keyup', e => {

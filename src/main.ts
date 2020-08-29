@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events'
-import * as fs from 'fs'
 import { createCommitControl } from './modules/commitControl'
 import { connect } from './modules/connectors/connect'
 import { createExecuter } from './modules/executer'
@@ -69,10 +68,11 @@ getSettings(readUserDataFile, writeUserDataFile)
         )
         const bookmarkModule = createBookmarkModel(
             m,
-            fs,
             pubsub,
             editor,
-            createPopupmenu
+            createPopupmenu,
+            readUserDataFile,
+            writeUserDataFile
         )
         const historyModule = createHistoryView(
             m,
