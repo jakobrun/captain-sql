@@ -1,12 +1,18 @@
 import * as classnames from 'classnames'
 import { centerItem } from '../modules/centerItem'
-import { ISettings, saveSettings } from '../modules/settings'
+import { ISettings, SaveSettings } from '../modules/settings'
 import { createBack } from './icons/back'
 import { createCopy } from './icons/copy'
 import { createDelete } from './icons/delete'
 import { createEditIcon } from './icons/edit'
 
-export const createLoginModule = (m, pubsub, connect, settings: ISettings) => {
+export const createLoginModule = (
+    m,
+    pubsub,
+    connect,
+    settings: ISettings,
+    saveSettings: SaveSettings
+) => {
     const connecting = m.prop(false)
     const show = m.prop(true)
     const errorMsg = m.prop('')
@@ -37,10 +43,7 @@ export const createLoginModule = (m, pubsub, connect, settings: ISettings) => {
         config.password = loginInfo.password()
 
         // Connect
-        connect(
-            config,
-            conn
-        )
+        connect(config, conn)
             .then(connection => {
                 m.startComputation()
                 pubsub.emit('connected', connection)
@@ -290,9 +293,7 @@ export const createLoginModule = (m, pubsub, connect, settings: ISettings) => {
                                         onclick: () => {
                                             if (
                                                 window.confirm(
-                                                    `Are you sure you want to delete ${
-                                                        conn.name
-                                                    }?`
+                                                    `Are you sure you want to delete ${conn.name}?`
                                                 )
                                             ) {
                                                 settings.connections = settings.connections.filter(

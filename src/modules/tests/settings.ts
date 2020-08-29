@@ -1,27 +1,15 @@
 import { expect } from 'chai'
-import { mkdir, writeFile } from 'fs'
-import { join } from 'path'
-import { nfcall } from 'q'
-import * as rimraf from 'rimraf'
-import { getSettings, ISettings } from '../settings'
-
-const userDataFolder = join(__dirname, '/userData')
+import { getSettings, ISettings, createSaveSettings } from '../settings'
+import { createAppDataMock } from './userDataMock'
 
 describe('get settings', () => {
-    const fileName = join(__dirname, '/userData/settings.json')
-
-    beforeEach(done => {
-        mkdir(userDataFolder, () => done())
-    })
-
-    afterEach(done => rimraf(userDataFolder, () => done()))
-
     it('should create default settings', async () => {
-        const settings = await getSettings(userDataFolder)
+        const { readUserDataFile, writeUserDataFile } = createAppDataMock()
+        const settings = await getSettings(readUserDataFile, writeUserDataFile)
         expect(settings.connections.length).to.equal(0)
     })
 
-    it('should return settings file', async () => {
+    it('should save settings', async () => {
         const settings: ISettings = {
             connections: [
                 {
@@ -39,8 +27,10 @@ describe('get settings', () => {
                 },
             ],
         }
-        await nfcall(writeFile, fileName, JSON.stringify(settings))
-        const res = await getSettings(userDataFolder)
-        expect(res.connections.length).to.equal(1)
+        const { readUserDataFile, writeUserDataFile } = createAppDataMock()
+        const saveSettings = createSaveSettings(writeUserDataFile)
+        await saveSettings(settings)
+        const res = await getSettings(readUserDataFile, writeUserDataFile)
+        expect(res).to.deep.equal(settings)
     })
 })

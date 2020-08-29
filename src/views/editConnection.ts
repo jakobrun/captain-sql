@@ -1,9 +1,14 @@
 import classnames from 'classnames'
 import { remote } from 'electron'
-import { IConnectionInfo, ISettings, saveSettings } from '../modules/settings'
+import { IConnectionInfo, ISettings, SaveSettings } from '../modules/settings'
 const { dialog } = remote
 
-export const createEditConnection = (m, pubsub, settings: ISettings) => {
+export const createEditConnection = (
+    m,
+    pubsub,
+    settings: ISettings,
+    saveSettings: SaveSettings
+) => {
     const show = m.prop(false)
     const image = m.prop()
     const name = m.prop('')

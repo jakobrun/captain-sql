@@ -1,9 +1,9 @@
 import { ipcRenderer } from 'electron'
 import { join } from 'path'
-import { ReadAppDataFile } from './appData'
+import { ReadUserDataFile } from './userData'
 
 export const createSchemaHandler = (
-    readAppDataFile: ReadAppDataFile,
+    readUserDataFile: ReadUserDataFile,
     pubsub
 ) => {
     let connection
@@ -11,7 +11,7 @@ export const createSchemaHandler = (
         const index: any = {}
         const { schemas } = connection.settings()
         for (const schema of schemas) {
-            const schemaContent = await readAppDataFile(
+            const schemaContent = await readUserDataFile(
                 `${connection.settings().host}.${schema}.json`
             ).catch(err => {
                 console.log('error reading schema', err)
@@ -31,8 +31,7 @@ export const createSchemaHandler = (
     }
 
     const exportSchema = async () => {
-        const baseDir = await ipcRenderer.invoke('get-app-data-path')
-        console.log('baseDir', baseDir)
+        const baseDir = await ipcRenderer.invoke('get-user-data-path')
         const settings = connection.settings()
         pubsub.emit('export-schema-start')
         const { schemas } = connection.settings()

@@ -7,7 +7,7 @@ import { getTables } from './modules/get_tables'
 import { createGlobalShortcuts } from './modules/globalShortcuts'
 import { createGetHistoryModel } from './modules/history'
 import { createSchemaHandler } from './modules/schema'
-import { getSettings } from './modules/settings'
+import { getSettings, createSaveSettings } from './modules/settings'
 import { createSqlHint } from './modules/sql-hint'
 import { createActions } from './views/actions'
 import { createBookmarkModel } from './views/bookmark'
@@ -22,7 +22,7 @@ import { createResult } from './views/result'
 import { createSplitter } from './views/splitter'
 import { createStatusbar } from './views/statusbar'
 import { createTableSearch } from './views/tableSearch'
-import { readAppDataFile, writeAppDataFile } from './modules/appData'
+import { readUserDataFile, writeUserDataFile } from './modules/userData'
 
 const { ipcRenderer, remote } = require('electron')
 const m = require('mithril')
@@ -39,7 +39,9 @@ if (remote.getGlobal('sharedObject').dev) {
     require('electron-css-reload')()
 }
 
-getSettings()
+const saveSettings = createSaveSettings(writeUserDataFile)
+
+getSettings(readUserDataFile, writeUserDataFile)
     .then(settings => {
         const splitter = createSplitter(m)
 
@@ -47,13 +49,24 @@ getSettings()
         createGlobalShortcuts(pubsub)
         createCommitControl(pubsub)
         const errorHandler = createErrorHandler(m)
-        const loginModule = createLoginModule(m, pubsub, connect, settings)
+        const loginModule = createLoginModule(
+            m,
+            pubsub,
+            connect,
+            settings,
+            saveSettings
+        )
         const actions = createActions(m, pubsub, createPopupmenu)
         const tableSearch = createTableSearch(m, pubsub, createPopupmenu)
         const statusbar = createStatusbar(m, pubsub)
         const editor = createEditor(m, pubsub, CodeMirror)
         const result = createResult(m, pubsub)
-        const editConnection = createEditConnection(m, pubsub, settings)
+        const editConnection = createEditConnection(
+            m,
+            pubsub,
+            settings,
+            saveSettings
+        )
         const bookmarkModule = createBookmarkModel(
             m,
             fs,
@@ -65,7 +78,7 @@ getSettings()
             m,
             pubsub,
             createPopupmenu,
-            createGetHistoryModel(readAppDataFile, writeAppDataFile)
+            createGetHistoryModel(readUserDataFile, writeUserDataFile)
         )
         const columnsPrompt = createColumnsPrompt(
             m,
@@ -85,7 +98,7 @@ getSettings()
         )
 
         createExecuter(pubsub, editor, m)
-        createSchemaHandler(readAppDataFile, pubsub)
+        createSchemaHandler(readUserDataFile, pubsub)
         createSqlHint(pubsub, editor, getTables, CodeMirror)
 
         pubsub.on('new-window', () => {

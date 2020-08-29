@@ -1,9 +1,9 @@
-import { ReadAppDataFile, WriteAppDataFile } from './appData'
+import { ReadUserDataFile, WriteUserDataFile } from './userData'
 import { IHistorySettings } from './settings'
 
 export const createGetHistoryModel = (
-    readAppDataFile: ReadAppDataFile,
-    writeAppDataFile: WriteAppDataFile
+    readUserDataFile: ReadUserDataFile,
+    writeUserDataFile: WriteUserDataFile
 ) => async (options: IHistorySettings) => {
     let buffer: any[] = []
     let promise = Promise.resolve()
@@ -14,7 +14,7 @@ export const createGetHistoryModel = (
                 if (buffer.length > options.max) {
                     buffer = buffer.slice(0, options.min)
                 }
-                return writeAppDataFile(
+                return writeUserDataFile(
                     options.file,
                     buffer.map(obj => JSON.stringify(obj)).join(',')
                 )
@@ -24,7 +24,7 @@ export const createGetHistoryModel = (
         list: () => buffer,
     }
     try {
-        const content = await readAppDataFile(options.file)
+        const content = await readUserDataFile(options.file)
         buffer = JSON.parse('[' + content + ']')
     } catch (err) {
         // ignore error

@@ -15,7 +15,6 @@
         "node-jt400": "^4.0.1",
         "pg": "^7.18.1",
         "pg-cursor": "git+https://github.com/jakobrun/node-pg-cursor",
-        "q": "^1.5.1",
         "sql-parser": "git+https://github.com/jakobrun/sql-parser"
     },
     "devDependencies": {

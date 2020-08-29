@@ -11,16 +11,17 @@ let windows = []
 global.sharedObject = {
     dev: process.argv.find(arg => arg === 'dev=true'),
 }
-ipcMain.handle('get-app-data-path', () => app.getPath('appData'))
-ipcMain.handle('read-app-data-file', async (_, fileName) => {
+// console.log('userData', app.getPath('userData'))
+ipcMain.handle('get-user-data-path', () => app.getPath('userData'))
+ipcMain.handle('read-user-data-file', async (_, fileName) => {
     const buf = await fs.promises.readFile(
-        path.join(app.getPath('appData'), fileName)
+        path.join(app.getPath('userData'), fileName)
     )
     return buf.toString('utf8')
 })
-ipcMain.handle('write-app-data-file', async (_, fileName, content) => {
+ipcMain.handle('write-user-data-file', async (_, fileName, content) => {
     await fs.promises.writeFile(
-        path.join(app.getPath('appData'), fileName),
+        path.join(app.getPath('userData'), fileName),
         content
     )
 })

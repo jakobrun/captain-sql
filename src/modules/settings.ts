@@ -1,6 +1,4 @@
-import { remote } from 'electron'
-import { readFile, writeFile } from 'fs'
-import { join } from 'path'
+import { ReadUserDataFile, WriteUserDataFile } from './userData'
 
 export interface IHistorySettings {
     file: string
@@ -51,36 +49,26 @@ const defaultSettings: ISettings = {
     ],
 }
 
-export function getSettings(
-    baseDir = remote.app.getPath('userData')
-): Promise<ISettings> {
-    const fileName = join(baseDir, 'settings.json')
-    return new Promise((resolve, reject) => {
-        readFile(fileName, (_, data) => {
-            if (data) {
-                resolve(data)
-            } else {
-                const str = JSON.stringify(defaultSettings)
-                writeFile(fileName, str, writeErr => {
-                    if (writeErr) {
-                        reject(writeErr)
-                    } else {
-                        resolve(str)
-                    }
-                })
-            }
+const fileName = 'settings.json'
+export const getSettings = (
+    readUserDataFile: ReadUserDataFile,
+    writeUserDataFile: WriteUserDataFile
+): Promise<ISettings> => {
+    return readUserDataFile(fileName)
+        .catch(() => {
+            const str = JSON.stringify(defaultSettings)
+            return writeUserDataFile(fileName, str).then(() => str)
         })
-    }).then(JSON.parse)
+        .then(JSON.parse)
 }
 
-export const saveSettings = (
-    settings: ISettings,
-    baseDir = remote.app.getPath('userData')
+export type SaveSettings = ReturnType<typeof createSaveSettings>
+export const createSaveSettings = (writeUserDataFile: WriteUserDataFile) => (
+    settings: ISettings
 ) => {
-    const fileName = join(baseDir, '/settings.json')
-    writeFile(fileName, JSON.stringify(settings, null, 4), err => {
-        if (err) {
+    writeUserDataFile(fileName, JSON.stringify(settings, null, 4)).catch(
+        err => {
             console.log('error saving settings', err.message)
         }
-    })
+    )
 }
