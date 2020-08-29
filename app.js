@@ -9,15 +9,13 @@ const url = require('url')
 let windows = []
 
 const isDev = process.argv.find(arg => arg === 'dev=true')
-global.sharedObject = {
-    dev: isDev,
-}
 if (isDev) {
     require('electron-reload')([
         path.join(__dirname, 'dist'),
         path.join(__dirname, 'css'),
     ])
 }
+ipcMain.handle('is-dev', () => isDev)
 // console.log('userData', app.getPath('userData'))
 ipcMain.handle('get-user-data-path', () => app.getPath('userData'))
 ipcMain.handle('read-user-data-file', async (_, fileName) => {

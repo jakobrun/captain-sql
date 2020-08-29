@@ -22,8 +22,8 @@ import { createSplitter } from './views/splitter'
 import { createStatusbar } from './views/statusbar'
 import { createTableSearch } from './views/tableSearch'
 import { readUserDataFile, writeUserDataFile } from './modules/userData'
+import { ipcRenderer } from 'electron'
 
-const { ipcRenderer, remote } = require('electron')
 const m = require('mithril')
 const CodeMirror = require('codemirror')
 require('codemirror/addon/hint/show-hint.js')
@@ -33,131 +33,134 @@ require('codemirror/keymap/sublime.js')
 require('codemirror/mode/sql/sql.js')
 require('./modules/sql-hint.js')
 
-const saveSettings = createSaveSettings(writeUserDataFile)
-getSettings(readUserDataFile, writeUserDataFile)
-    .then(settings => {
-        const splitter = createSplitter(m)
+const main = async () => {
+    const isDev = await ipcRenderer.invoke('is-dev')
+    const saveSettings = createSaveSettings(writeUserDataFile)
+    return getSettings(readUserDataFile, writeUserDataFile)
+        .then(settings => {
+            const splitter = createSplitter(m)
 
-        const pubsub = new EventEmitter()
-        createGlobalShortcuts(pubsub)
-        createCommitControl(pubsub)
-        const errorHandler = createErrorHandler(m)
-        const loginModule = createLoginModule(
-            m,
-            pubsub,
-            connect,
-            settings,
-            saveSettings
-        )
-        const actions = createActions(m, pubsub, createPopupmenu)
-        const tableSearch = createTableSearch(m, pubsub, createPopupmenu)
-        const statusbar = createStatusbar(m, pubsub)
-        const editor = createEditor(m, pubsub, CodeMirror)
-        const result = createResult(m, pubsub)
-        const editConnection = createEditConnection(
-            m,
-            pubsub,
-            settings,
-            saveSettings
-        )
-        const bookmarkModule = createBookmarkModel(
-            m,
-            pubsub,
-            editor,
-            createPopupmenu,
-            readUserDataFile,
-            writeUserDataFile
-        )
-        const historyModule = createHistoryView(
-            m,
-            pubsub,
-            createPopupmenu,
-            createGetHistoryModel(readUserDataFile, writeUserDataFile)
-        )
-        const columnsPrompt = createColumnsPrompt(
-            m,
-            editor,
-            getTables,
-            pubsub,
-            createPopupmenu
-        )
-        let connected = false
+            const pubsub = new EventEmitter()
+            createGlobalShortcuts(pubsub)
+            createCommitControl(pubsub)
+            const errorHandler = createErrorHandler(m)
+            const loginModule = createLoginModule(
+                m,
+                pubsub,
+                connect,
+                settings,
+                saveSettings
+            )
+            const actions = createActions(m, pubsub, createPopupmenu)
+            const tableSearch = createTableSearch(m, pubsub, createPopupmenu)
+            const statusbar = createStatusbar(m, pubsub)
+            const editor = createEditor(m, pubsub, CodeMirror)
+            const result = createResult(m, pubsub)
+            const editConnection = createEditConnection(
+                m,
+                pubsub,
+                settings,
+                saveSettings
+            )
+            const bookmarkModule = createBookmarkModel(
+                m,
+                pubsub,
+                editor,
+                createPopupmenu,
+                readUserDataFile,
+                writeUserDataFile
+            )
+            const historyModule = createHistoryView(
+                m,
+                pubsub,
+                createPopupmenu,
+                createGetHistoryModel(readUserDataFile, writeUserDataFile)
+            )
+            const columnsPrompt = createColumnsPrompt(
+                m,
+                editor,
+                getTables,
+                pubsub,
+                createPopupmenu
+            )
+            let connected = false
 
-        window.addEventListener(
-            'beforeunload',
-            () => {
-                pubsub.emit('disconnect')
-            },
-            false
-        )
+            window.addEventListener(
+                'beforeunload',
+                () => {
+                    pubsub.emit('disconnect')
+                },
+                false
+            )
 
-        createExecuter(pubsub, editor, m)
-        createSchemaHandler(readUserDataFile, pubsub)
-        createSqlHint(pubsub, editor, getTables, CodeMirror)
+            createExecuter(pubsub, editor, m)
+            createSchemaHandler(readUserDataFile, pubsub)
+            createSqlHint(pubsub, editor, getTables, CodeMirror)
 
-        pubsub.on('new-window', () => {
-            console.log('emit new-window')
-            ipcRenderer.send('new-window')
-        })
+            pubsub.on('new-window', () => {
+                ipcRenderer.send('new-window')
+            })
 
-        pubsub.on('connected', connection => {
-            document.body.className =
-                'theme--' + (connection.settings().theme || 'dark-orange')
+            pubsub.on('connected', connection => {
+                document.body.className =
+                    'theme--' + (connection.settings().theme || 'dark-orange')
 
-            connected = true
-            document.title =
-                'Gandalf - connected to ' + connection.settings().name
-            m.route('/sql/' + connection.settings().name)
-        })
+                connected = true
+                document.title =
+                    'Gandalf - connected to ' + connection.settings().name
+                m.route('/sql/' + connection.settings().name)
+            })
 
-        function Controller() {
-            const connName = m.route.param('conn')
-            if (!connected && connName) {
-                const connSettings = settings.connections.find(
-                    c => c.name === connName
-                )
-                if (connSettings && connSettings.host === 'hsql:inmemory') {
-                    console.log('reconnect to hsql:inmemory!!')
-                    connect({ host: connSettings.host }, connSettings).then(
-                        connection => {
-                            pubsub.emit('connected', connection)
-                        }
+            function Controller() {
+                const connName = m.route.param('conn')
+                if (!connected && connName) {
+                    const connSettings = settings.connections.find(
+                        c => c.name === connName
                     )
-                } else {
-                    pubsub.emit('login')
+                    if (connSettings && connSettings.host === 'hsql:inmemory') {
+                        console.log('reconnect to hsql:inmemory!!')
+                        connect({ host: connSettings.host }, connSettings).then(
+                            connection => {
+                                pubsub.emit('connected', connection)
+                            }
+                        )
+                    } else {
+                        pubsub.emit('login')
+                    }
                 }
             }
-        }
-        const sqlModule = {
-            controller: Controller,
-            view() {
-                return [
-                    loginModule.view(),
-                    editor.view(),
-                    splitter(),
-                    result.view(),
-                    statusbar.view(),
-                    actions.view(),
-                    tableSearch.view(),
-                    bookmarkModule.view(),
-                    historyModule.view(),
-                    columnsPrompt.view(),
-                    errorHandler.view(),
-                    editConnection.view(),
-                ]
-            },
-        }
-
-        m.route(
-            document.getElementById('body'),
-            '/sql/' +
-                (remote.getGlobal('sharedObject').dev ? 'Gandalf dev' : ''),
-            {
-                '/sql': sqlModule,
-                '/sql/:conn': sqlModule,
+            const sqlModule = {
+                controller: Controller,
+                view() {
+                    return [
+                        loginModule.view(),
+                        editor.view(),
+                        splitter(),
+                        result.view(),
+                        statusbar.view(),
+                        actions.view(),
+                        tableSearch.view(),
+                        bookmarkModule.view(),
+                        historyModule.view(),
+                        columnsPrompt.view(),
+                        errorHandler.view(),
+                        editConnection.view(),
+                    ]
+                },
             }
-        )
-    })
-    .catch(err => {
-        console.error('startup error', err.message, err.stack)
-    })
+
+            m.route(
+                document.getElementById('body'),
+                '/sql/' + (isDev ? 'Gandalf dev' : ''),
+                {
+                    '/sql': sqlModule,
+                    '/sql/:conn': sqlModule,
+                }
+            )
+        })
+        .catch(err => {
+            console.error('startup error', err.message, err.stack)
+        })
+}
+
+main()
