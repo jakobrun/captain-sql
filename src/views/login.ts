@@ -5,6 +5,7 @@ import { createBack } from './icons/back'
 import { createCopy } from './icons/copy'
 import { createDelete } from './icons/delete'
 import { createEditIcon } from './icons/edit'
+const prop = require('mithril/stream')
 
 export const createLoginModule = (
     m,
@@ -13,11 +14,11 @@ export const createLoginModule = (
     settings: ISettings,
     saveSettings: SaveSettings
 ) => {
-    const connecting = m.prop(false)
-    const show = m.prop(true)
-    const errorMsg = m.prop('')
+    const connecting = prop(false)
+    const show = prop(true)
+    const errorMsg = prop('')
     const loginInfo = {
-        password: m.prop(''),
+        password: '',
     }
     let conn
 
@@ -33,22 +34,20 @@ export const createLoginModule = (
     }
 
     const login = () => {
-        m.startComputation()
         errorMsg('')
         connecting(true)
-        m.endComputation()
+        m.redraw()
         const config: any = clone(conn.properties || {})
         config.host = conn.host
         config.user = conn.user
-        config.password = loginInfo.password()
+        config.password = loginInfo.password
 
         // Connect
         connect(config, conn)
             .then(connection => {
-                m.startComputation()
                 pubsub.emit('connected', connection)
                 show(false)
-                m.endComputation()
+                m.redraw()
                 pubsub.once('disconnect', () => {
                     connection.close()
                     show(true)
@@ -56,15 +55,13 @@ export const createLoginModule = (
                 })
             })
             .catch(err => {
-                console.log('connection failure')
-                m.startComputation()
+                console.log('connection failure', err.message)
                 errorMsg(err.message)
-                m.endComputation()
+                m.redraw()
             })
             .then(() => {
-                m.startComputation()
                 connecting(false)
-                m.endComputation()
+                m.redraw()
             })
     }
 
@@ -83,7 +80,7 @@ export const createLoginModule = (
 
     const resetConn = () => {
         conn = undefined
-        loginInfo.password('')
+        loginInfo.password = ''
         document.body.style.setProperty('--login-pos', '0px')
         const el = document.querySelector('.login-item') as HTMLElement
         if (el) {
@@ -222,11 +219,10 @@ export const createLoginModule = (
                                     class: '',
                                     placeholder: 'Password',
                                     type: 'password',
-                                    value: loginInfo.password(),
-                                    oninput: m.withAttr(
-                                        'value',
-                                        loginInfo.password
-                                    ),
+                                    value: loginInfo.password,
+                                    oninput: e => {
+                                        loginInfo.password = e.target.value
+                                    },
                                     onkeydown: loginOnEnter,
                                 }),
                                 m(

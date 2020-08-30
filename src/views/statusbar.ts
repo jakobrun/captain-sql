@@ -1,4 +1,5 @@
 import { ICommitControlUpdateEvent } from '../modules/commitControl'
+const prop = require('mithril/stream')
 
 export const createStatusbar = (m, pubsub) => {
     let rowCount = 0
@@ -8,11 +9,11 @@ export const createStatusbar = (m, pubsub) => {
         tables: 0,
         errors: 0,
     }
-    const status = m.prop('')
-    const exportStatus = m.prop('')
-    const commitStatus = m.prop('')
-    const uncommited = m.prop(0)
-    const uncommitedClass = m.prop('')
+    const status = prop('')
+    const exportStatus = prop('')
+    const commitStatus = prop('')
+    const uncommited = prop(0)
+    const uncommitedClass = prop('')
     const getRowsText = res => {
         if (res.data && res.data.length) {
             rowCount += res.data.length
@@ -30,9 +31,8 @@ export const createStatusbar = (m, pubsub) => {
     }
 
     function setStatus(text) {
-        m.startComputation()
         status(text)
-        m.endComputation()
+        m.redraw()
     }
 
     pubsub.on('run-query', () => {
@@ -52,13 +52,12 @@ export const createStatusbar = (m, pubsub) => {
     })
 
     const setExportStatus = () => {
-        m.startComputation()
         exportStatus(
             `Exported tables: ${exportData.tables}${
                 exportData.errors ? `, errors ${exportData.errors}` : ''
             }`
         )
-        m.endComputation()
+        m.redraw()
     }
     pubsub.on('export-schema-start', () => {
         exportData.tables = 0
@@ -84,9 +83,8 @@ export const createStatusbar = (m, pubsub) => {
         if (event.uncommited.length) {
             uncommitedClass('statusbar-uncommited notify-uncommited')
             setTimeout(() => {
-                m.startComputation()
                 uncommitedClass('statusbar-uncommited')
-                m.endComputation()
+                m.redraw()
             }, 1000)
         } else {
             uncommitedClass('statusbar-uncommited hide-login-item')

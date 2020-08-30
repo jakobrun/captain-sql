@@ -1,4 +1,6 @@
 import { IResultItem, search, ValuesToSearch } from '../modules/listSearch'
+const prop = require('mithril/stream')
+
 export const createIdGenerator = () => {
     let i = 0
     return () => {
@@ -18,10 +20,10 @@ export interface IController<I> {
 }
 const defaultValuesToSearch = item => [item.name]
 export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
-    const searchValue = m.prop('')
-    const selectedIndex = m.prop(0)
+    let searchValue = ''
+    const selectedIndex = prop(0)
     const menuId = createId()
-    const show = m.prop(false)
+    const show = prop(false)
     const defaultRender = item => [
         m('div.p-menu-item-text', m.trust(item.highlighted[0])),
     ]
@@ -39,32 +41,29 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
     }
 
     const toggleShow = () => {
-        m.startComputation()
         show(!show())
-        searchValue('')
+        searchValue = ''
         selectedIndex(0)
-        m.endComputation()
+        m.redraw()
         if (show()) {
             document.addEventListener('click', hidePopup)
             setTimeout(() => {
-                if (searchElement) {
-                    searchElement.focus()
-                }
-            }, 50)
+                searchElement?.focus()
+            }, 300)
         } else {
             document.removeEventListener('click', hidePopup)
         }
     }
-    const popupConfig = el => (popupElement = el)
-    const config = el => {
-        searchElement = el
+    const popupConfig = el => (popupElement = el.dom)
+    const oncreate = el => {
+        searchElement = el.dom
     }
     const getList = () => {
         if (!show()) {
             return []
         }
         const list = search({
-            searchValue: searchValue(),
+            searchValue,
             list: controller.getList(),
             valuesToSearch: controller.valuesToSearch || defaultValuesToSearch,
         })
@@ -116,7 +115,7 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
             return m(
                 'div',
                 {
-                    config: popupConfig,
+                    oncreate: popupConfig,
                     class: 'p-menu popup' + (show() ? '' : ' hidden'),
                 },
                 [
@@ -125,9 +124,11 @@ export const createPopupmenu = <I>(pubsub, controller: IController<I>, m) => {
                         m('input', {
                             class: 'p-menu-search',
                             placeholder: 'Search',
-                            config,
-                            value: searchValue(),
-                            oninput: m.withAttr('value', searchValue),
+                            oncreate,
+                            value: searchValue,
+                            oninput: e => {
+                                searchValue = e.target.value
+                            },
                             onkeydown: keyDown,
                             onkeyup: keyUp,
                         }),

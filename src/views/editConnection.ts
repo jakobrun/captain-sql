@@ -1,27 +1,28 @@
 import classnames from 'classnames'
 import { ipcRenderer } from 'electron'
 import { IConnectionInfo, ISettings, SaveSettings } from '../modules/settings'
+const prop = require('mithril/stream')
 export const createEditConnection = (
     m,
     pubsub,
     settings: ISettings,
     saveSettings: SaveSettings
 ) => {
-    const show = m.prop(false)
-    const image = m.prop()
-    const name = m.prop('')
-    const connectionType = m.prop('')
+    const show = prop(false)
+    const image = prop()
+    let name = ''
+    const connectionType = prop('')
     const connectionTypes = ['jt400', 'postgres']
-    const host = m.prop('')
-    const database = m.prop('')
-    const username = m.prop('')
-    const bookmarks = m.prop('')
-    const theam = m.prop('')
+    let host = ''
+    let database = ''
+    let username = ''
+    let bookmarks = ''
+    const theam = prop('')
     const theams = ['dark-orange', 'dark-lime', 'dark-green', 'dark-blue']
-    const autoCommit = m.prop(false)
-    const ssl = m.prop(false)
-    const properties = m.prop()
-    const schemas = m.prop()
+    const autoCommit = prop(false)
+    const ssl = prop(false)
+    const properties = prop()
+    const schemas = prop()
     let currentConn
     let nameEl
     const configName = el => {
@@ -30,45 +31,46 @@ export const createEditConnection = (
     const reset = () => {
         show(false)
         connectionType('jt400')
-        name('')
-        host('')
-        username('')
-        database('')
+        name = ''
+        host = ''
+        username = ''
+        database = ''
+        bookmarks = ''
         image('')
         theam('dark-orange')
         autoCommit(false)
         ssl(false)
         properties([
             {
-                name: m.prop(''),
-                value: m.prop(''),
+                name: '',
+                value: '',
             },
         ])
-        schemas([m.prop('')])
+        schemas([prop('')])
         currentConn = undefined
     }
     reset()
     const save = () => {
         const connection: IConnectionInfo = {
             type: connectionType(),
-            name: name(),
-            host: host(),
-            user: username(),
-            database: database(),
-            bookmarksFile: bookmarks(),
+            name,
+            host,
+            user: username,
+            database,
+            bookmarksFile: bookmarks,
             ssl: ssl(),
             theme: theam(),
             autoCommit: autoCommit(),
             history: {
-                file: host() + '.history',
+                file: host + '.history',
                 min: 200,
                 max: 400,
             },
             image: image(),
             properties: properties()
-                .filter(p => p.name())
-                .reduce((obj, prop) => {
-                    obj[prop.name()] = prop.value()
+                .filter(p => p.name)
+                .reduce((obj, property) => {
+                    obj[property.name] = property.value
                     return obj
                 }, {}),
             schemas: schemas()
@@ -89,16 +91,16 @@ export const createEditConnection = (
     }
     const showEdit = () => {
         show(true)
-        setTimeout(nameEl.focus.bind(nameEl), 0)
+        setTimeout(() => nameEl.dom.focus(), 0)
     }
 
     const displayConnection = (conn: IConnectionInfo) => {
         connectionType(conn.type)
-        name(conn.name)
-        host(conn.host)
-        username(conn.user)
-        database(conn.database || '')
-        bookmarks(conn.bookmarksFile || '')
+        name = conn.name
+        host = conn.host
+        username = conn.user
+        database = conn.database || ''
+        bookmarks = conn.bookmarksFile || ''
         theam(conn.theme)
         autoCommit(conn.autoCommit || false)
         ssl(conn.ssl || false)
@@ -106,17 +108,17 @@ export const createEditConnection = (
         properties(
             Object.keys(conn.properties)
                 .map(k => ({
-                    name: m.prop(k),
-                    value: m.prop(conn.properties[k]),
+                    name: k,
+                    value: conn.properties[k],
                 }))
                 .concat([
                     {
-                        name: m.prop(''),
-                        value: m.prop(''),
+                        name: '',
+                        value: '',
                     },
                 ])
         )
-        schemas(conn.schemas.map(schema => m.prop(schema)).concat([m.prop('')]))
+        schemas(conn.schemas.map(schema => prop(schema)).concat([prop('')]))
         showEdit()
     }
 
@@ -129,9 +131,8 @@ export const createEditConnection = (
 
     document.addEventListener('keyup', e => {
         if (e.keyCode === 27 && show()) {
-            m.startComputation()
             reset()
-            m.endComputation()
+            m.redraw()
         }
     })
 
@@ -139,16 +140,16 @@ export const createEditConnection = (
         const props = properties()
         if (
             props.length > 1 &&
-            !props[props.length - 2].name() &&
-            !props[props.length - 1].name()
+            !props[props.length - 2].name &&
+            !props[props.length - 1].name
         ) {
             properties(props.slice(0, -1))
-        } else if (props[props.length - 1].name()) {
+        } else if (props[props.length - 1].name) {
             properties([
                 ...props,
                 {
-                    name: m.prop(''),
-                    value: m.prop(''),
+                    name: '',
+                    value: '',
                 },
             ])
         }
@@ -161,7 +162,7 @@ export const createEditConnection = (
         ) {
             schemas(schemas().slice(0, -1))
         } else if (schemas()[schemas().length - 1]()) {
-            schemas([...schemas(), m.prop('')])
+            schemas([...schemas(), prop('')])
         }
     }
     return {
@@ -208,9 +209,8 @@ export const createEditConnection = (
                                                         res.filePaths &&
                                                         res.filePaths[0]
                                                     ) {
-                                                        m.startComputation()
                                                         image(res.filePaths[0])
-                                                        m.endComputation()
+                                                        m.redraw()
                                                     }
                                                 })
                                         },
@@ -250,50 +250,51 @@ export const createEditConnection = (
                                         m('input', {
                                             class: 'h-fill',
                                             placeholder: 'Name',
-                                            config: configName,
-                                            value: name(),
-                                            onchange: m.withAttr('value', name),
+                                            oncreate: configName,
+                                            value: name,
+                                            onchange: e => {
+                                                name = e.target.value
+                                            },
                                         }),
                                     ]),
                                     m('div.form-element', [
                                         m('input', {
                                             class: 'h-fill',
                                             placeholder: 'Host',
-                                            value: host(),
-                                            onchange: m.withAttr('value', host),
+                                            value: host,
+                                            onchange: e => {
+                                                host = e.target.value
+                                            },
                                         }),
                                     ]),
                                     m('div.form-element', [
                                         m('input', {
                                             class: 'h-fill',
                                             placeholder: 'Database',
-                                            value: database(),
-                                            onchange: m.withAttr(
-                                                'value',
-                                                database
-                                            ),
+                                            value: database,
+                                            onchange: e => {
+                                                database = e.target.value
+                                            },
                                         }),
                                     ]),
                                     m('div.form-element', [
                                         m('input', {
                                             class: 'h-fill',
                                             placeholder: 'Bookmarks',
-                                            value: bookmarks(),
-                                            onchange: m.withAttr(
-                                                'value',
-                                                bookmarks
-                                            ),
+                                            value: bookmarks,
+                                            onchange: e => {
+                                                bookmarks = e.target.value
+                                            },
                                         }),
                                     ]),
                                     m('div.form-element', [
                                         m('input', {
                                             class: 'h-fill',
                                             placeholder: 'Username',
-                                            value: username(),
-                                            onchange: m.withAttr(
-                                                'value',
-                                                username
-                                            ),
+                                            value: username,
+                                            onchange: e => {
+                                                username = e.target.value
+                                            },
                                         }),
                                     ]),
                                     m('div.form-element', [
@@ -374,18 +375,17 @@ export const createEditConnection = (
                                 connectionType() !== 'postgres'
                                     ? m(
                                           'div.connection-props',
-                                          properties().map(prop =>
+                                          properties().map(property =>
                                               m('div.connection-prop', [
                                                   m(
                                                       'input.connection-prop-name',
                                                       {
                                                           placeholder: 'Name',
                                                           rows: '5',
-                                                          value: prop.name(),
+                                                          value: property.name,
                                                           onkeyup: e => {
-                                                              prop.name(
+                                                              property.name =
                                                                   e.target.value
-                                                              )
                                                               checkPropRows()
                                                           },
                                                       }
@@ -395,11 +395,11 @@ export const createEditConnection = (
                                                       {
                                                           placeholder: 'Value',
                                                           rows: '5',
-                                                          value: prop.value(),
-                                                          onchange: m.withAttr(
-                                                              'value',
-                                                              prop.value
-                                                          ),
+                                                          value: property.value,
+                                                          onchange: e => {
+                                                              property.value =
+                                                                  e.target.value
+                                                          },
                                                       }
                                                   ),
                                               ])

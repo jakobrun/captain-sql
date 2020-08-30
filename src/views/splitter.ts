@@ -35,9 +35,8 @@ export const createColSplitter = (m, col) => {
     const onMove = e => {
         const diff = e.pageX - currentPos
         currentPos = e.pageX
-        m.startComputation()
         col.colWidth = Math.max(10, col.colWidth + diff)
-        m.endComputation()
+        m.redraw()
     }
     const onUp = () => {
         document.removeEventListener('mouseup', onUp, false)

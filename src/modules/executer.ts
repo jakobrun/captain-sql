@@ -9,9 +9,8 @@ export const createExecuter = (pubsub, editor, m) => {
 
     const compute = fun => {
         return (...args) => {
-            m.startComputation()
             fun(...args)
-            m.endComputation()
+            m.redraw()
         }
     }
     const emit = eventName => {

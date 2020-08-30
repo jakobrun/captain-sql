@@ -10,62 +10,60 @@ export const createEditor = (m, pubsub, codeMirror) => {
         })
     }
     const sqlEditor = () => {
-        return (element, isInitialized) => {
+        return element => {
             let assistTimeoutId
-            if (!isInitialized) {
-                const cmdOrCtrl = process.platform === 'darwin' ? 'Cmd' : 'Ctrl'
-                cm = codeMirror(element, {
-                    value: '',
-                    mode: 'text/x-sql',
-                    lineNumbers: true,
-                    theme: 'gandalf',
-                    keyMap: 'sublime',
-                    extraKeys: {
-                        [cmdOrCtrl + '-Enter']: () => {
-                            pubsub.emit('run-query')
-                        },
-                        'Ctrl-Space': assist,
+            const cmdOrCtrl = process.platform === 'darwin' ? 'Cmd' : 'Ctrl'
+            cm = codeMirror(element.dom, {
+                value: '',
+                mode: 'text/x-sql',
+                lineNumbers: true,
+                theme: 'gandalf',
+                keyMap: 'sublime',
+                extraKeys: {
+                    [cmdOrCtrl + '-Enter']: () => {
+                        pubsub.emit('run-query')
                     },
-                })
-                cm.on('change', () => {
-                    if (assistTimeoutId) {
-                        clearTimeout(assistTimeoutId)
+                    'Ctrl-Space': assist,
+                },
+            })
+            cm.on('change', () => {
+                if (assistTimeoutId) {
+                    clearTimeout(assistTimeoutId)
+                }
+                if (errorMark) {
+                    errorMark.clear()
+                }
+                assistTimeoutId = setTimeout(assist, 100)
+            })
+            let lastRange
+            cm.on('cursorActivity', () => {
+                const range = getCursorStatementRange()
+                const where = 'background'
+                if (lastRange) {
+                    for (
+                        let i = lastRange.from.line;
+                        i <= lastRange.to.line;
+                        i++
+                    ) {
+                        cm.removeLineClass(i, where, 'active-statement')
                     }
-                    if (errorMark) {
-                        errorMark.clear()
-                    }
-                    assistTimeoutId = setTimeout(assist, 100)
-                })
-                let lastRange
-                cm.on('cursorActivity', () => {
-                    const range = getCursorStatementRange()
-                    const where = 'background'
-                    if (lastRange) {
-                        for (
-                            let i = lastRange.from.line;
-                            i <= lastRange.to.line;
-                            i++
-                        ) {
-                            cm.removeLineClass(i, where, 'active-statement')
-                        }
-                        lastRange = undefined
-                    }
+                    lastRange = undefined
+                }
 
-                    if (cm.getSelection() || !editor.getCursorStatement(' ')) {
-                        return
-                    }
+                if (cm.getSelection() || !editor.getCursorStatement(' ')) {
+                    return
+                }
 
-                    for (let i = range.from.line; i <= range.to.line; i++) {
-                        cm.addLineClass(i, where, 'active-statement')
-                    }
-                    lastRange = range
-                })
-                const focus = cm.focus.bind(cm)
-                pubsub.on('editor-focus', focus)
-                pubsub.on('run-query', focus)
-                pubsub.on('bookmark-closed', focus)
-                pubsub.on('content-assist', assist)
-            }
+                for (let i = range.from.line; i <= range.to.line; i++) {
+                    cm.addLineClass(i, where, 'active-statement')
+                }
+                lastRange = range
+            })
+            const focus = cm.focus.bind(cm)
+            pubsub.on('editor-focus', focus)
+            pubsub.on('run-query', focus)
+            pubsub.on('bookmark-closed', focus)
+            pubsub.on('content-assist', assist)
         }
     }
     const eachTokenUntil = (f, start?, direction?) => {
@@ -307,7 +305,7 @@ export const createEditor = (m, pubsub, codeMirror) => {
         },
         view() {
             return m('div', {
-                config: sqlEditor(),
+                oncreate: sqlEditor(),
                 class: 'editor',
             })
         },

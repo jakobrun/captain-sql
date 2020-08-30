@@ -15,13 +15,13 @@ export const createBookmarkModel = (
     writeUserDataFile: WriteUserDataFile
 ) => {
     let show = false
-    const description = m.prop('')
+    let description = ''
     let bookmarks
     let nameEl
     let content
     let fileName = 'bookmarks.json'
     const configName = el => {
-        nameEl = el
+        nameEl = el.dom
     }
     const writeToFile = async () => {
         await writeUserDataFile(fileName, JSON.stringify(bookmarks)).catch(
@@ -35,7 +35,7 @@ export const createBookmarkModel = (
         const bookmark: IBookmarkItem = {
             name: nameEl.value.trim(),
             value: content,
-            description: description(),
+            description,
         }
         nameEl.value = ''
         bookmarks.push(bookmark)
@@ -44,12 +44,10 @@ export const createBookmarkModel = (
         pubsub.emit('editor-focus', {})
     }
     const showAdd = () => {
-        m.startComputation()
         content = editor.getSelection() || editor.getCursorStatement()
-        description(content)
+        description = content
         show = true
-        m.endComputation()
-        setTimeout(nameEl.focus.bind(nameEl), 0)
+        setTimeout(() => nameEl.focus(), 100)
     }
     const popupController: IController<IBookmarkItem> = {
         getList: () => bookmarks || [],
@@ -88,10 +86,9 @@ export const createBookmarkModel = (
 
     document.addEventListener('keyup', e => {
         if (e.keyCode === 27 && show) {
-            m.startComputation()
             show = false
             pubsub.emit('bookmark-closed')
-            m.endComputation()
+            m.redraw()
         }
     })
     return {
@@ -119,7 +116,7 @@ export const createBookmarkModel = (
                                 m('input', {
                                     class: 'h-fill',
                                     placeholder: 'Name',
-                                    config: configName,
+                                    oncreate: configName,
                                     onkeyup(e) {
                                         if (e.keyCode === 13) {
                                             save()
@@ -138,8 +135,10 @@ export const createBookmarkModel = (
                                     class: 'h-fill',
                                     placeholder: 'Content',
                                     rows: '5',
-                                    value: description(),
-                                    onchange: m.withAttr('value', description),
+                                    value: description,
+                                    onchange: e => {
+                                        description = e.target.value
+                                    },
                                 }),
                             ]
                         ),

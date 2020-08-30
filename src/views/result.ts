@@ -1,5 +1,7 @@
 import * as classnames from 'classnames'
 import { createColSplitter } from './splitter'
+const prop = require('mithril/stream')
+
 const getElIndex = el => {
     let i = -1
     for (; el; i++) {
@@ -64,13 +66,13 @@ const onCellKeydown = (e: KeyboardEvent) => {
     }
 }
 export const createResult = (m, pubsub) => {
-    const metadata = m.prop([])
-    const updated = m.prop('')
-    const data = m.prop([])
-    const running = m.prop(false)
-    const errorMsg = m.prop('')
-    const selectedRow = m.prop(-1)
-    const selectedCol = m.prop(-1)
+    const metadata = prop([])
+    const updated = prop('')
+    const data = prop([])
+    const running = prop(false)
+    const errorMsg = prop('')
+    const selectedRow = prop(-1)
+    const selectedCol = prop(-1)
     pubsub.on('results-focus', () => {
         const selector =
             selectedRow() === -1
@@ -97,13 +99,12 @@ export const createResult = (m, pubsub) => {
     }
     const reset = run => {
         return () => {
-            m.startComputation()
             errorMsg('')
             updated('')
             metadata([])
             data([])
             running(run)
-            m.endComputation()
+            m.redraw()
         }
     }
 
@@ -168,13 +169,8 @@ export const createResult = (m, pubsub) => {
                                     ? m(
                                           'button.reconnect-btn',
                                           {
-                                              config: (
-                                                  element,
-                                                  isInitialized
-                                              ) => {
-                                                  if (!isInitialized) {
-                                                      element.focus()
-                                                  }
+                                              oncreate: element => {
+                                                  element.dom.focus()
                                               },
                                               onclick: () => {
                                                   errorMsg('')
