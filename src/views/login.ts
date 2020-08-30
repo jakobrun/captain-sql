@@ -204,6 +204,7 @@ export const createLoginModule = (
                             {
                                 class: classnames(
                                     'login-password-container',
+                                    'theme--' + (conn?.theme || 'dark-orange'),
                                     (connecting() || !conn || !show()) &&
                                         ' hide-login-item'
                                 ),
