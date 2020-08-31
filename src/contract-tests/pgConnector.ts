@@ -7,7 +7,7 @@ const settings: IConnectionInfo = {
     type: 'postgres',
     name: 'test',
     host: 'localhost',
-    database: 'gandalf_test',
+    database: 'captain_sql_test',
     user: '',
     properties: {},
     history: {

@@ -17,7 +17,7 @@ export const createEditor = (m, pubsub, codeMirror) => {
                 value: '',
                 mode: 'text/x-sql',
                 lineNumbers: true,
-                theme: 'gandalf',
+                theme: 'captain-sql',
                 keyMap: 'sublime',
                 extraKeys: {
                     [cmdOrCtrl + '-Enter']: () => {

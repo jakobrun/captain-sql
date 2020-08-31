@@ -5,7 +5,7 @@ const numberOfPersons = 200
 const numberOfProducts = 100
 
 const client = new Client({
-    database: 'gandalf_test',
+    database: 'captain_sql_test',
 })
 
 function randomNumber(max, from?) {
@@ -150,11 +150,11 @@ const run = async () => {
     const dbCreate = new Client({})
     await dbCreate.connect()
     try {
-        await dbCreate.query('drop database gandalf_test')
+        await dbCreate.query('drop database captain_sql_test')
     } catch (err) {
         console.log('drop err', err.message)
     }
-    await dbCreate.query('create database gandalf_test')
+    await dbCreate.query('create database captain_sql_test')
     await dbCreate.end()
     await client.connect()
     await createPersons()

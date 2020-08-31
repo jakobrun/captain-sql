@@ -1,4 +1,4 @@
-# Gandalf
+# Captain SQL
 
 sql client built with electron
 

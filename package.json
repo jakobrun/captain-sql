@@ -1,5 +1,5 @@
 {
-    "name": "gandalf",
+    "name": "captain-sql",
     "version": "0.0.1",
     "description": "sql client",
     "main": "app.js",
@@ -43,7 +43,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "gh:jakobrun/gandalf.git"
+        "url": "gh:jakobrun/captain-sql.git"
     },
     "scripts": {
         "precommit": "npm run lint && npm run check-format && npm run build && npm t && npm run ui-test",
@@ -51,9 +51,9 @@
         "postinstall": "npm run build-deps && npm run build",
         "build": "rm -rf dist && tsc && npm run compile-less",
         "compile-less": "lessc less/main.less css/main.css",
-        "package-mac": "electron-packager . Gandalf --overwrite --platform=darwin --arch=x64 --icon=icons/mac/icon.icns --prune=true",
-        "package-linux": "electron-packager . Gandalf --platform=linux --arch=x64",
-        "package-windows": "electron-packager . Gandalf --platform=win32 --arch=x64",
+        "package-mac": "electron-packager . Captain-SQL --overwrite --platform=darwin --arch=x64 --icon=icons/mac/icon.icns --prune=true",
+        "package-linux": "electron-packager . Captain-SQL --platform=linux --arch=x64",
+        "package-windows": "electron-packager . Captain-SQL --platform=win32 --arch=x64",
         "dev-less": "less-watch-compiler less css main.less",
         "dev-tsc": "tsc -w",
         "dev-electron": "electron . dev=true",

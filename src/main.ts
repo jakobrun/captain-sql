@@ -107,7 +107,7 @@ const main = async () => {
 
                 connected = true
                 document.title =
-                    'Gandalf - connected to ' + connection.settings().name
+                    'Captain SQL - connected to ' + connection.settings().name
                 m.route('/sql/' + connection.settings().name)
             })
 
@@ -151,7 +151,7 @@ const main = async () => {
 
             m.route(
                 document.getElementById('body'),
-                '/sql/' + (isDev ? 'Gandalf dev' : ''),
+                '/sql/' + (isDev ? 'Captain SQL dev' : ''),
                 {
                     '/sql': sqlModule,
                     '/sql/:conn': sqlModule,
