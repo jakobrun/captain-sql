@@ -46,8 +46,8 @@ ipcMain.handle('open-dialog', async (_, options) => {
 function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
-        width: 1000,
-        height: 800,
+        width: 1400,
+        height: 900,
         icon: path.join(__dirname, 'icons/png/64x64.png'),
         webPreferences: {
             nodeIntegration: true,
