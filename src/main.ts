@@ -108,7 +108,7 @@ const main = async () => {
                 connected = true
                 document.title =
                     'Captain SQL - connected to ' + connection.settings().name
-                m.route('/sql/' + connection.settings().name)
+                m.route.set('/sql/:conn', { conn: connection.settings().name })
             })
 
             function Controller() {
