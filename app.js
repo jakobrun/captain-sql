@@ -51,6 +51,7 @@ function createWindow() {
         icon: path.join(__dirname, 'icons/png/64x64.png'),
         webPreferences: {
             nodeIntegration: true,
+            contextIsolation: false,
         },
     })
 

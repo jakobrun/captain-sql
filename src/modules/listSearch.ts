@@ -29,35 +29,29 @@ export const search = <I>({
         }))
     }
     return list
-        .reduce(
-            (arr, item) => {
-                const values = valuesToSearch(item)
-                const results = values.map(v => single(searchValue, v))
-                if (results.some(result => Boolean(result))) {
-                    const resultItem: IResultItem<I> = {
-                        item,
-                        score: Math.max(
-                            ...results.map(res => (res ? res.score : -Infinity))
-                        ),
-                        highlighted: results.map((res, i) => {
-                            if (res) {
-                                return (
-                                    highlight(
-                                        res,
-                                        highlightOpen,
-                                        highlightClose
-                                    ) || ''
-                                )
-                            }
-                            return values[i]
-                        }),
-                    }
-                    arr.push(resultItem)
+        .reduce((arr, item) => {
+            const values = valuesToSearch(item)
+            const results = values.map(v => single(searchValue, v))
+            if (results.some(result => Boolean(result))) {
+                const resultItem: IResultItem<I> = {
+                    item,
+                    score: Math.max(
+                        ...results.map(res => (res ? res.score : -Infinity))
+                    ),
+                    highlighted: results.map((res, i) => {
+                        if (res) {
+                            return (
+                                highlight(res, highlightOpen, highlightClose) ||
+                                ''
+                            )
+                        }
+                        return values[i]
+                    }),
                 }
-                return arr
-            },
-            [] as Array<IResultItem<I>>
-        )
+                arr.push(resultItem)
+            }
+            return arr
+        }, [] as Array<IResultItem<I>>)
         .sort((a, b) => {
             if (a.score > b.score) {
                 return -1

@@ -9,10 +9,19 @@ describe('get tables', () => {
         ['select * from foo', [['foo']]],
         ['select * from foo f', [['foo', 'f']]],
         ['select * from foo as f', [['foo', 'f']]],
-        ['select * from foo as f, bar b', [['foo', 'f'], ['bar', 'b']]],
+        [
+            'select * from foo as f, bar b',
+            [
+                ['foo', 'f'],
+                ['bar', 'b'],
+            ],
+        ],
         [
             'select * from foo as f join bar b on b.a = f.a',
-            [['foo', 'f'], ['bar', 'b']],
+            [
+                ['foo', 'f'],
+                ['bar', 'b'],
+            ],
         ],
         [
             'select * from foo as f join bar b on b.a = f.a join baz on baza=b.c',
